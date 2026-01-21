@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/app/views/auth/user_auth/userLogin_screen.dart';
-import 'package:smart_quiz/app/views/loading_screen.dart';
 
 class OnboardingFlow extends StatefulWidget {
   const OnboardingFlow({super.key});
@@ -92,7 +91,19 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
                     _steps.length,
-                    (index) => _buildDot(isActive: _currentPage == index),
+                    (index) => GestureDetector(
+                      onTap: () {
+                        _pageController.animateToPage(
+                          index,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                        child: _buildDot(isActive: _currentPage == index),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 30),

@@ -9,21 +9,28 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool _navigated = false;
+
+  void _navigateToOnboarding() {
+    if (_navigated) return;
+    _navigated = true;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const OnboardingFlow(),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
 
-    // ⏳ Delay splash screen for 5 seconds
-    Future.delayed(const Duration(seconds: 20), () {
-      if (!mounted) return;
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const OnboardingFlow(),
-        ),
-      );
-    });
+    // // ⏳ Delay splash screen for 5 seconds
+    // Future.delayed(const Duration(seconds: 20), () {
+    //   if (!mounted) return;
+    //   _navigateToOnboarding();
+    // });
   }
 
   @override
@@ -40,12 +47,44 @@ class _SplashScreenState extends State<SplashScreen> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: const Center(
-          child: Padding(
-            padding: EdgeInsets.all(25.0),
-            child: Image(
-              image: AssetImage('assets/images/imageLogo.png'),
-            ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(25.0),
+                  child: Image(
+                    image: AssetImage('assets/images/imageLogo.png'),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 24,
+                right: 24,
+                bottom: 32,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: _navigateToOnboarding,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF4C2D68),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      'Get Started',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
