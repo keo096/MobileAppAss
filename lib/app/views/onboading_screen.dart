@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/app/views/auth/user_auth/userLogin_screen.dart';
+import 'package:smart_quiz/app/views/auth/login_screen.dart';
 
 class OnboardingFlow extends StatefulWidget {
   const OnboardingFlow({super.key});
@@ -122,7 +122,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                             curve: Curves.easeInOut,
                           );
                         } else {
-                         Navigator.push(context, MaterialPageRoute(builder: (context)=> const Login()));
+                         Navigator.push(context, MaterialPageRoute(builder: (context)=> const LoginScreen()));
                         }
                       },
                       style: ElevatedButton.styleFrom(

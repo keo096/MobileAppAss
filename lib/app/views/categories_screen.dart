@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:smart_quiz/app/models/category_model.dart';
 
 class CategorySection extends StatefulWidget {
-  const CategorySection({super.key});
+  final String role;
+  const CategorySection({super.key, required this.role});
 
   @override
   State<CategorySection> createState() => _CategorySectionState();
@@ -71,7 +72,7 @@ class _CategorySectionState extends State<CategorySection> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text(
-          "Continue Learning",
+          "Recently quizes",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -202,7 +203,26 @@ class _CategorySectionState extends State<CategorySection> {
                         SizedBox(
                           height: 30,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              // Users can only view, admin can edit
+                              if (widget.role == 'admin') {
+                                // Show edit/delete options for admin
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Admin: Edit/Delete options available"),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              } else {
+                                // Regular user can only view
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Viewing quiz results"),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.deepPurple,
                               foregroundColor: Colors.white,
@@ -213,9 +233,9 @@ class _CategorySectionState extends State<CategorySection> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
-                            child: const Text(
-                              "Resume",
-                              style: TextStyle(fontSize: 16),
+                            child: Text(
+                              widget.role == 'admin' ? "Manage" : "View result",
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ),
                         ),

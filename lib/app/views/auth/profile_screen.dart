@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:smart_quiz/app/views/home_screen.dart';
+import 'package:smart_quiz/app/views/history_screen.dart';
+import 'package:smart_quiz/app/views/categories_full_screen.dart';
+import 'package:smart_quiz/app/views/leaderboard_screen.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class ProfileScreen extends StatefulWidget {
+  final String role;
+  final String username;
+  const ProfileScreen({super.key, required this.role, required this.username});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,6 +171,49 @@ class _ProfilePageState extends State<ProfilePage> {
         selectedItemColor: Colors.deepPurple,
         unselectedItemColor: Colors.black,
         currentIndex: 4,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeScreen(
+                  username: widget.username,
+                  role: widget.role,
+                ),
+              ),
+            );
+          } else if (index == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HistoryScreen(
+                  role: widget.role,
+                  username: widget.username,
+                ),
+              ),
+            );
+          } else if (index == 2) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CategoriesFullScreen(
+                  role: widget.role,
+                  username: widget.username,
+                ),
+              ),
+            );
+          } else if (index == 3) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LeaderboardScreen(
+                  role: widget.role,
+                  username: widget.username,
+                ),
+              ),
+            );
+          }
+        },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
@@ -223,3 +272,4 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+
