@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/app/views/auth/user_auth/userHomePage_screen.dart';
-import 'package:smart_quiz/app/views/auth/user_auth/userLogin_screen.dart';
+import 'package:smart_quiz/features/home/presentation/pages/home_page.dart';
+import 'package:smart_quiz/features/auth/presentation/pages/login_page.dart';
 // import 'package:smart_quiz/app/views/splash_screen.dart';
 
 class Loading extends StatefulWidget {
