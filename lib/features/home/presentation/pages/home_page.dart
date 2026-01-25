@@ -1,6 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/features/profile/presentation/pages/profile_page.dart';
+import 'package:smart_quiz/core/constants/app_colors.dart';
+import 'package:smart_quiz/core/constants/app_strings.dart';
+import 'package:smart_quiz/core/constants/app_assets.dart';
+import 'package:smart_quiz/core/theme/app_theme.dart';
+import 'package:smart_quiz/core/utils/formatters.dart';
+import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
+import 'package:smart_quiz/features/home/presentation/widgets/quiz_card.dart';
 import 'package:smart_quiz/features/category/presentation/pages/category_page.dart';
 
 class UserHomePage extends StatelessWidget {
@@ -12,12 +18,8 @@ class UserHomePage extends StatelessWidget {
     return Scaffold(
       extendBody: true,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF6A2CA0), Color(0xFFB59AD8)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+        decoration: BoxDecoration(
+          gradient: AppTheme.homeGradient,
         ),
         child: SafeArea(
           child: CustomScrollView(
@@ -30,30 +32,19 @@ class UserHomePage extends StatelessWidget {
                     children: [
                       const CircleAvatar(
                         radius: 30,
-                        backgroundImage: AssetImage('assets/images/pf.png'),
+                        backgroundImage: AssetImage(AppAssets.profileImage),
                       ),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Hello, $username 👋",
-                            style: const TextStyle(
-                              fontFamily: 'SFPro',
-                              color: Colors.white,
-                              fontSize: 25,
-                              letterSpacing: 1,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            Formatters.formatGreeting(username),
+                            style: AppTheme.greetingText,
                           ),
-
-                          const Text(
-                            "Ready to learn today?",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 16,
-                              fontFamily: 'SFPro',
-                            ),
+                          Text(
+                            AppStrings.readyToLearn,
+                            style: AppTheme.subtitleText,
                           ),
                         ],
                       ),
@@ -87,13 +78,8 @@ class UserHomePage extends StatelessWidget {
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               icon: Icon(Icons.search, color: Colors.white70),
-                              hintText:
-                                  "Search topics, quizzes, or subjects...",
-                              hintStyle: TextStyle(
-                                color: Colors.white70,
-                                fontFamily: 'SFPro',
-                                fontSize: 18,
-                              ),
+                              hintText: AppStrings.searchHint,
+                              hintStyle: AppTheme.searchHintText,
                               border: InputBorder.none,
                             ),
                           ),
@@ -129,7 +115,7 @@ class UserHomePage extends StatelessWidget {
               ),
 
               // Categories
-              _buildSectionTitle("Select your Category"),
+              _buildSectionTitle(AppStrings.selectCategory),
               SliverToBoxAdapter(
                 child: SizedBox(
                   height: 120,
@@ -178,25 +164,25 @@ class UserHomePage extends StatelessWidget {
                       autoPlayInterval: const Duration(seconds: 4),
                     ),
                     items: [
-                      buildQuizCard(
-                        title: "Daily Quiz Challenge",
+                      QuizCard(
+                        title: AppStrings.dailyQuizChallenge,
                         subtitle: "15 Questions • 7-10mins",
-                        imagePath: "assets/images/imgcopy.png",
-                        buttonText: "Start Now",
+                        imagePath: AppAssets.dailyQuizImage,
+                        buttonText: AppStrings.startNow,
                       ),
-                      buildQuizCard(
-                        title: "Learnig Goals",
+                      QuizCard(
+                        title: AppStrings.learningGoals,
                         subtitle:
                             "Choose how many quizzes you want to finish each week",
-                        imagePath: "assets/images/imagecopyGoal.png",
-                        buttonText: "Set Goal",
+                        imagePath: AppAssets.goalsImage,
+                        buttonText: AppStrings.setGoal,
                       ),
-                      buildQuizCard(
-                        title: "Complete With Friends",
+                      QuizCard(
+                        title: AppStrings.completeWithFriends,
                         subtitle:
                             "See how your rank compares on the leaderboard",
-                        imagePath: "assets/images/imagecopyProgress.png",
-                        buttonText: "View Leaderboard",
+                        imagePath: AppAssets.progressImage,
+                        buttonText: AppStrings.viewLeaderboard,
                       ),
                     ],
                   ),
@@ -209,12 +195,7 @@ class UserHomePage extends StatelessWidget {
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   // padding: const EdgeInsets.all(1),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(
-                      120,
-                      255,
-                      255,
-                      255,
-                    ), // 👈 Background color for the whole section
+                    color: AppColors.backgroundLightGrey,
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
@@ -246,26 +227,9 @@ class UserHomePage extends StatelessWidget {
       // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
       // Bottom Navigation Bar
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 10,
-        child: Container(
-          height: 70,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavIcon(Icons.home, "Home", isSelected: true),
-              const SizedBox(width: 4),
-              _buildNavIcon(Icons.history, "History"),
-              const SizedBox(width: 4), 
-              _buildNavIcon(Icons.category_outlined, "Category"),
-              const SizedBox(width: 4), 
-              _buildNavIcon(Icons.emoji_events, "Leader Board"),
-              const SizedBox(width: 4),
-              _buildNavIcon(Icons.person, "Profile"),
-            ],
-          ),
-        ),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: 0,
+        username: username,
       ),
     );
   }
@@ -320,13 +284,7 @@ class UserHomePage extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                color: Color.fromARGB(255, 224, 221, 221),
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'SFPro',
-                letterSpacing: 1,
-              ),
+              style: AppTheme.categoryTitle,
             ),
 
             const Icon(Icons.chevron_right, color: Colors.white70),
@@ -366,10 +324,8 @@ class UserHomePage extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 12,
+            style: AppTheme.caption.copyWith(
               fontWeight: FontWeight.w600,
-              fontFamily: 'SFPro',
               letterSpacing: 1,
             ),
           ),
@@ -378,187 +334,7 @@ class UserHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildLearningCard(String title, String subtitle, double progress) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 60,
-            width: 80,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    fontFamily: 'SFPro',
-                    letterSpacing: 2,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                    fontFamily: 'SFPro',
-                  ),
-                ),
-                const SizedBox(height: 10),
-                LinearProgressIndicator(
-                  value: progress,
-                  backgroundColor: Colors.grey[200],
-                  color: Colors.deepPurple,
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(width: 10),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
-              shape: StadiumBorder(),
-              padding: EdgeInsets.symmetric(horizontal: 12),
-            ),
-            child: const Text(
-              "Resume",
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.white,
-                fontFamily: 'SFPro',
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-Widget _buildNavIcon(IconData icon, String label, {bool isSelected = false}) {
-  return Builder(
-    builder: (context) {
-      return InkWell(
-        onTap: () {
-          if (label == "Profile") {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProfilePage()),
-            );
-          }
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.deepPurple : Colors.black,
-              size: 28,
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.deepPurple : Colors.black,
-                fontSize: 13,
-                fontFamily: 'SFPro',
-              ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
 
 
 
-Widget buildQuizCard({
-  required String title,
-  required String subtitle,
-  required String imagePath,
-  required String buttonText,
-}) {
-  return Container(
-    padding: const EdgeInsets.all(10),
-    decoration: BoxDecoration(
-      gradient: const LinearGradient(
-        colors: [
-          Color.fromARGB(255, 166, 93, 197),
-          Color.fromARGB(255, 149, 34, 250),
-        ],
-      ),
-      borderRadius: BorderRadius.circular(30),
-      // boxShadow: [
-      //   BoxShadow(
-      //     color: Colors.black.withOpacity(0.2),
-      //     blurRadius: 10,
-      //     offset: const Offset(0, 5),
-      //   ),
-      // ],
-    ),
-
-    child: Row(
-      children: [
-        Image.asset(imagePath, width: 100, height: 100),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontFamily: 'SFPro',
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                ),
-              ),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 15,
-                  fontFamily: 'SFPro',
-                ),
-              ),
-              const SizedBox(height: 15),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  shape: const StadiumBorder(),
-                ),
-                child: Text(
-                  buttonText,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                    fontFamily: 'SFPro',
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
 }

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'onboading_screen.dart';
+import 'package:smart_quiz/core/pages/onboarding_page.dart';
+import 'package:smart_quiz/core/constants/app_assets.dart';
+import 'package:smart_quiz/core/theme/app_theme.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
@@ -20,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const OnboardingFlow(),
+          builder: (context) => const OnboardingPage(),
         ),
       );
     });
@@ -30,21 +32,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF4C2D68),
-              Color.fromARGB(255, 166, 93, 197),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+        decoration: BoxDecoration(
+          gradient: AppTheme.splashGradient,
         ),
         child: const Center(
           child: Padding(
             padding: EdgeInsets.all(25.0),
             child: Image(
-              image: AssetImage('assets/images/imageLogo.png'),
+              image: AssetImage(AppAssets.logo),
             ),
           ),
         ),
@@ -52,3 +47,4 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+

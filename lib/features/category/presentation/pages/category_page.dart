@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/app/models/category_model.dart';
+import 'package:smart_quiz/core/models/category_model.dart';
+import 'package:smart_quiz/core/constants/app_colors.dart';
+import 'package:smart_quiz/core/constants/app_strings.dart';
+import 'package:smart_quiz/core/theme/app_theme.dart';
+import 'package:smart_quiz/core/utils/formatters.dart';
+import 'package:smart_quiz/features/category/presentation/providers/category_provider.dart';
 
 class CategorySection extends StatefulWidget {
   const CategorySection({super.key});
@@ -9,48 +14,78 @@ class CategorySection extends StatefulWidget {
 }
 
 class _CategorySectionState extends State<CategorySection> {
-  bool isExpanded = true;
+  final CategoryProvider _provider = CategoryProvider();
 
-  final List<Category> categories = [
-    Category(
-      title: "Present Simple",
-      subtitle: "English Tense",
-      progress: 0.65,
-      icon: Icons.menu_book,
-      color: Colors.deepPurple,
-    ),
-    Category(
-      title: "Khmer History",
-      subtitle: "History",
-      progress: 0.50,
-      icon: Icons.history_edu,
-      color: Colors.brown,
-    ),
-    Category(
-      title: "Function Complex",
-      subtitle: "Math",
-      progress: 0.30,
-      icon: Icons.calculate,
-      color: Colors.blue,
-    ),
-    Category(
-      title: "Khmer Culture",
-      subtitle: "General Knowledge",
-      progress: 0.80,
-      icon: Icons.account_balance,
-      color: Colors.purple,
-    ),
-    Category(
-      title: "Chemistry Experiment",
-      subtitle: "Chemistry",
-      progress: 0.95,
-      icon: Icons.science,
-      color: Colors.teal,
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Listen to provider changes - UI will update automatically
+    _provider.addListener(_onProviderChange);
+    // Load categories
+    _provider.loadCategories();
+  }
+
+  // This method is called whenever provider state changes
+  void _onProviderChange() {
+    if (mounted) {
+      setState(() {}); // Rebuild UI when provider state changes
+    }
+  }
+
+  @override
+  void dispose() {
+    // Remove listener to prevent memory leaks
+    _provider.removeListener(_onProviderChange);
+    _provider.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Use provider state - UI updates automatically when provider changes
+    if (_provider.isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_provider.errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text(
+                _provider.errorMessage!,
+                style: AppTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => _provider.loadCategories(),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_provider.categories.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Text('No categories available'),
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -58,9 +93,9 @@ class _CategorySectionState extends State<CategorySection> {
        Container(
   // 1. Add the background color and round the top corners to match the card
   decoration: const BoxDecoration(
-    color: Colors.deepPurple, // 👈 Your background color
+    color: AppColors.categoryPurple,
     borderRadius: BorderRadius.only(
-      topLeft: Radius.circular(22), 
+      topLeft: Radius.circular(22),
       topRight: Radius.circular(22),
     ),
   ),
@@ -70,28 +105,21 @@ class _CategorySectionState extends State<CategorySection> {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          "Continue Learning",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Color.fromARGB(255, 224, 221, 221), 
-            letterSpacing: 2,
-            fontFamily: 'SFPro',
-          ),
+        Text(
+          AppStrings.continueLearning,
+          style: AppTheme.categoryTitle,
         ),
         InkWell(
           onTap: () {
-            setState(() {
-              isExpanded = !isExpanded;
-            });
+            // Use provider method - it will notify listeners automatically
+            _provider.toggleExpanded();
           },
           child: AnimatedRotation(
-            turns: isExpanded ? 0.0 : 0.5,
+            turns: _provider.isExpanded ? 0.0 : 0.5,
             duration: const Duration(milliseconds: 250),
-            child: const Icon(
+              child: const Icon(
               Icons.keyboard_arrow_down_sharp,
-              color: Colors.white, // 👈 Change to white to match the text
+              color: AppColors.textWhite,
               size: 28,
             ),
           ),
@@ -121,13 +149,13 @@ class _CategorySectionState extends State<CategorySection> {
           child: AnimatedSize(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            child: isExpanded
+            child: _provider.isExpanded
                 ? ListView.builder(
-                    itemCount: categories.length,
+                    itemCount: _provider.categories.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
-                      return _buildCategoryCard(categories[index]);
+                      return _buildCategoryCard(_provider.categories[index]);
                     },
                   )
                 : const SizedBox(),
@@ -141,7 +169,7 @@ class _CategorySectionState extends State<CategorySection> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.backgroundWhite,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -164,7 +192,7 @@ class _CategorySectionState extends State<CategorySection> {
                 ),
               ),
               child: Center(
-                child: Icon(category.icon, color: Colors.white, size: 40),
+                child: Icon(category.icon, color: AppColors.textWhite, size: 40),
               ),
             ),
             Expanded(
@@ -182,18 +210,15 @@ class _CategorySectionState extends State<CategorySection> {
                             children: [
                               Text(
                                 category.title,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                style: AppTheme.bodySmall.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: AppColors.textBlack87,
                                 ),
                               ),
                               Text(
                                 category.subtitle,
-                                style: const TextStyle(
-                                  color: Color.fromARGB(196, 0, 0, 0),
-                                  fontSize: 13,
-                                  fontFamily: 'SFPro',
+                                style: AppTheme.caption.copyWith(
+                                  color: AppColors.textGrey600,
                                 ),
                               ),
                             ],
@@ -204,8 +229,8 @@ class _CategorySectionState extends State<CategorySection> {
                           child: ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                              foregroundColor: Colors.white,
+                              backgroundColor: AppColors.categoryPurple,
+                              foregroundColor: AppColors.textWhite,
                               elevation: 0,
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
@@ -213,9 +238,9 @@ class _CategorySectionState extends State<CategorySection> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
-                            child: const Text(
-                              "Resume",
-                              style: TextStyle(fontSize: 16),
+                            child: Text(
+                              AppStrings.resume,
+                              style: AppTheme.bodySmall,
                             ),
                           ),
                         ),
@@ -232,7 +257,7 @@ class _CategorySectionState extends State<CategorySection> {
                               backgroundColor: Colors.grey.shade200,
                               valueColor:
                                   const AlwaysStoppedAnimation<Color>(
-                                Colors.deepPurple,
+                                AppColors.categoryPurple,
                               ),
                               minHeight: 8,
                             ),
@@ -240,14 +265,11 @@ class _CategorySectionState extends State<CategorySection> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          "${(category.progress * 100).toInt()}%",
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
+                          Formatters.formatPercentage(category.progress),
+                          style: AppTheme.caption.copyWith(
+                            color: AppColors.textBlack,
                             fontWeight: FontWeight.w500,
-                            fontFamily: 'SFPro',
                           ),
-
                         ),
                       ],
                     ),

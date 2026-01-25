@@ -1,9 +1,6 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/features/home/presentation/pages/home_page.dart';
-import 'package:smart_quiz/features/auth/presentation/pages/login_page.dart';
-import 'package:smart_quiz/app/views/onboading_screen.dart';
-import 'package:smart_quiz/app/views/splash_screen.dart';
+import 'package:smart_quiz/core/pages/splash_page.dart';
 
 void main() {
   runApp(
@@ -21,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {  
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const SplashPage(),
     );
   }
 }

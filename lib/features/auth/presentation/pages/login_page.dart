@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/app/views/loading_screen.dart';
+import 'package:smart_quiz/core/widgets/loading_widget.dart';
+import 'package:smart_quiz/core/constants/app_colors.dart';
+import 'package:smart_quiz/core/constants/app_strings.dart';
+import 'package:smart_quiz/core/constants/app_assets.dart';
+import 'package:smart_quiz/core/theme/app_theme.dart';
 import 'package:smart_quiz/features/home/presentation/pages/home_page.dart';
 
 class Login extends StatefulWidget {
@@ -30,8 +34,8 @@ class _LoginState extends State<Login> {
     final password = _passwordController.text.trim();
 
     setState(() {
-      _usernameError = username.isEmpty ? "Please input username" : null;
-      _passwordError = password.isEmpty ? "Please input password" : null;
+      _usernameError = username.isEmpty ? AppStrings.pleaseInputUsername : null;
+      _passwordError = password.isEmpty ? AppStrings.pleaseInputPassword : null;
 
       if (_usernameError == null && _passwordError == null) {
         if (username == 'admin' && password == '112233') {
@@ -39,33 +43,17 @@ class _LoginState extends State<Login> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  Loading(nextPage: UserHomePage(username: username)),
+                  LoadingWidget(nextPage: UserHomePage(username: username)),
             ),
           );
         } else {
-          _usernameError = "Invalid username or password";
-          _passwordError = "Invalid username or password";
+          _usernameError = AppStrings.invalidCredentials;
+          _passwordError = AppStrings.invalidCredentials;
           _usernameController.clear();
           _passwordController.clear();
         }
       }
     });
-  }
-
-  // Optimized Social Icon Widget
-  Widget _socialIcon(String assetPath, {required double extraPadding}) {
-    return Container(
-      width: 55,
-      height: 55,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0), // Consistent internal spacing
-        child: Image.asset(assetPath, fit: BoxFit.contain),
-      ),
-    );
   }
 
   Widget _buildInputField(
@@ -81,19 +69,15 @@ class _LoginState extends State<Login> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
+          style: AppTheme.label,
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.backgroundWhite,
             borderRadius: BorderRadius.circular(15),
             border: Border.all(
-              color: errorText != null ? Colors.red : Colors.transparent,
+              color: errorText != null ? AppColors.error : Colors.transparent,
               width: 2,
             ),
             boxShadow: [
@@ -127,7 +111,7 @@ class _LoginState extends State<Login> {
             padding: const EdgeInsets.only(top: 5, left: 5),
             child: Text(
               errorText,
-              style: const TextStyle(color: Colors.red, fontSize: 14),
+              style: AppTheme.caption.copyWith(color: AppColors.error),
             ),
           ),
       ],
@@ -150,19 +134,14 @@ class _LoginState extends State<Login> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/images/mainLogo.png',
+              AppAssets.mainLogo,
               height: 35,
-              color: const Color(0xFF4B2B83),
+              color: AppColors.primaryPurpleLogo,
             ),
             const SizedBox(width: 10),
-            const Text(
-              "SmartQuiz",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 26,
-                fontFamily: 'SFPro',
-              ),
+            Text(
+              AppStrings.appName,
+              style: AppTheme.headingMedium,
             ),
           ],
         ),
@@ -170,12 +149,8 @@ class _LoginState extends State<Login> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFE6DFF1), Color(0xFFB59AD8), Color(0xFF6A2CA0)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+        decoration: BoxDecoration(
+          gradient: AppTheme.primaryGradient,
         ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -183,26 +158,22 @@ class _LoginState extends State<Login> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 140),
-              const Text(
-                "Login",
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'AHKbalThom',
-                ),
+              Text(
+                AppStrings.login,
+                style: AppTheme.headingLarge,
               ),
               const SizedBox(height: 30),
               _buildInputField(
-                "Username",
-                "Enter your username",
+                AppStrings.username,
+                AppStrings.enterUsername,
                 controller: _usernameController,
                 icon: Icons.person,
                 errorText: _usernameError,
               ),
               const SizedBox(height: 20),
               _buildInputField(
-                "Password",
-                "Enter your password",
+                AppStrings.password,
+                AppStrings.enterPassword,
                 controller: _passwordController,
                 isPassword: true,
                 icon: Icons.lock,
@@ -212,20 +183,19 @@ class _LoginState extends State<Login> {
 
               // Divider
               Row(
-                children: const [
-                  Expanded(child: Divider(color: Colors.black38, thickness: 1)),
+                children: [
+                  const Expanded(child: Divider(color: Colors.black38, thickness: 1)),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
-                      "Or Login With",
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 14,
+                      AppStrings.orLoginWith,
+                      style: AppTheme.caption.copyWith(
+                        color: AppColors.textBlack87,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                  Expanded(child: Divider(color: Colors.black38, thickness: 1)),
+                  const Expanded(child: Divider(color: Colors.black38, thickness: 1)),
                 ],
               ),
               const SizedBox(height: 25),
@@ -241,10 +211,9 @@ class _LoginState extends State<Login> {
                       borderRadius: BorderRadius.circular(50),
                       color: const Color.fromARGB(159, 255, 255, 255),
                     ),
-                    child: Image.asset("assets/images/google.png"),
+                    child: Image.asset(AppAssets.googleIcon),
                   ),
                   SizedBox(width: 20),
-                  // Container(width: 50, height: 50, color: Colors.amber),
                   Container(
                     width: 50,
                     height: 50,
@@ -254,7 +223,7 @@ class _LoginState extends State<Login> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(7.0),
-                      child: Image.asset("assets/images/facebook.png"),
+                      child: Image.asset(AppAssets.facebookIcon),
                     ),
                   ),
                   SizedBox(width: 20),
@@ -267,7 +236,7 @@ class _LoginState extends State<Login> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Image.asset("assets/images/image copy.png"),
+                      child: Image.asset(AppAssets.appleIcon),
                     ),
                   ),
                   // Container(width: 50, height: 50, color: Colors.amber),
@@ -280,16 +249,18 @@ class _LoginState extends State<Login> {
                 child: ElevatedButton(
                   onPressed: _login,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE0E0E0),
-                    foregroundColor: Colors.black,
+                    backgroundColor: AppColors.backgroundGrey,
+                    foregroundColor: AppColors.textBlack,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  child: Text(
+                    AppStrings.login,
+                    style: AppTheme.bodyMedium.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -300,20 +271,4 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-}
-
-Widget _socialIcon(String assetPath, {double extraPadding = 10.0}) {
-  return Container(
-    width: 55,
-    height: 55,
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      shape: BoxShape.circle,
-    ),
-    child: Padding(
-      // We use the extraPadding variable here to shrink the icon inside the circle
-      padding: EdgeInsets.all(extraPadding),
-      child: Image.asset(assetPath, fit: BoxFit.contain),
-    ),
-  );
 }

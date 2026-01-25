@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/features/home/presentation/pages/home_page.dart';
-import 'package:smart_quiz/features/auth/presentation/pages/login_page.dart';
-// import 'package:smart_quiz/app/views/splash_screen.dart';
+import 'package:smart_quiz/core/constants/app_colors.dart';
+import 'package:smart_quiz/core/constants/app_strings.dart';
+import 'package:smart_quiz/core/constants/app_assets.dart';
+import 'package:smart_quiz/core/theme/app_theme.dart';
 
-class Loading extends StatefulWidget {
+class LoadingWidget extends StatefulWidget {
   final Widget nextPage;
-  const Loading({super.key,required this.nextPage});
+  const LoadingWidget({super.key, required this.nextPage});
 
   @override
-  State<Loading> createState() => _LoadingState();
+  State<LoadingWidget> createState() => _LoadingWidgetState();
 }
 
-class _LoadingState extends State<Loading> {
+class _LoadingWidgetState extends State<LoadingWidget> {
   @override
   void initState() {
     super.initState();
 
-    // ⏳ Delay splash screen for 5 seconds
+    // ⏳ Delay loading for 5 seconds
     Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
 
@@ -27,31 +28,16 @@ class _LoadingState extends State<Loading> {
         ),
       );
     });
-
-    //  Future.delayed(const Duration(seconds: 3), () {
-    //   if (!mounted) return;
-
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) =>  UserHomePage(username: '',),
-    //     ),
-    //   );
-    // });
-
-    
   }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF4C2D68), Color.fromARGB(255, 166, 93, 197)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+          decoration: BoxDecoration(
+            gradient: AppTheme.splashGradient,
           ),
           child: Padding(
             padding: const EdgeInsets.only(top: 70.0),
@@ -59,33 +45,28 @@ class _LoadingState extends State<Loading> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Text(
-                    "SmartQuiz",
-                    style: TextStyle(
+                  Text(
+                    AppStrings.appName,
+                    style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontFamily: 'SFPro'
+                      color: AppColors.textWhite,
+                      fontFamily: AppTheme.fontFamilySFPro,
                     ),
                   ),
                   const SizedBox(height: 100),
                   Padding(
                     padding: const EdgeInsets.only(top: 80.0),
                     child: Image.asset(
-                      'assets/images/mainLogo.png',
-                      width: 200, // Adjust size as needed
+                      AppAssets.mainLogo,
+                      width: 200,
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
-
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 90),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        2,
-                      ), // Makes the bar rounded
+                      borderRadius: BorderRadius.circular(2),
                       child: const LinearProgressIndicator(
                         minHeight: 8,
                         backgroundColor: Colors.white24,
@@ -93,9 +74,12 @@ class _LoadingState extends State<Loading> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10,),
-                  Container(
-                    child: Text("Loading...",style: TextStyle(fontSize: 20, color: Colors.white),),
+                  const SizedBox(height: 10),
+                  Text(
+                    AppStrings.loading,
+                    style: AppTheme.bodyLarge.copyWith(
+                      color: AppColors.textWhite,
+                    ),
                   ),
                 ],
               ),
@@ -106,3 +90,4 @@ class _LoadingState extends State<Loading> {
     );
   }
 }
+

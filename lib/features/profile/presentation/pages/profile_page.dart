@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:smart_quiz/core/constants/app_colors.dart';
+import 'package:smart_quiz/core/constants/app_strings.dart';
+import 'package:smart_quiz/core/constants/app_assets.dart';
+import 'package:smart_quiz/core/theme/app_theme.dart';
+import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -11,7 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF7B3AD9), // purple background
+      backgroundColor: AppColors.primaryPurpleAccent,
       body: SafeArea(
         child: Column(
           children: [
@@ -26,8 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     backgroundColor: Colors.white,
                     child: CircleAvatar(
                       radius: 42,
-                      backgroundImage:
-                          AssetImage('assets/images/pf.png'), // your avatar
+                      backgroundImage: AssetImage(AppAssets.profileImage),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -51,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ElevatedButton.icon(
                     onPressed: () {},
                     icon: const Icon(Icons.edit, size: 18),
-                    label: const Text("Edit Profile"),
+                    label: Text(AppStrings.editProfile),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white.withOpacity(0.25),
                       shape: StadiumBorder(),
@@ -82,11 +86,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "Performance Summary",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            AppStrings.performanceSummary,
+                            style: AppTheme.headingSmall,
                           ),
                         ),
                       ),
@@ -143,12 +144,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       const SizedBox(height: 20),
 
-                      // More Section
-                      _menuItem(Icons.emoji_events, "My Achievements"),
-                      _menuItem(Icons.save_alt, "Saved Quizzes"),
-                      _menuItem(Icons.settings, "App Settings"),
-                      _menuItem(Icons.help, "Help & Support"),
-                      _menuItem(Icons.logout, "Logout"),
+      // More Section
+      _menuItem(Icons.emoji_events, AppStrings.myAchievements),
+      _menuItem(Icons.save_alt, AppStrings.savedQuizzes),
+      _menuItem(Icons.settings, AppStrings.appSettings),
+      _menuItem(Icons.help, AppStrings.helpSupport),
+      _menuItem(Icons.logout, AppStrings.logout),
 
                       const SizedBox(height: 20),
                     ],
@@ -160,18 +161,9 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
 
-      // Bottom Navigation Bar (same style as image)
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.black,
+      // Bottom Navigation Bar
+      bottomNavigationBar: const BottomNavBar(
         currentIndex: 4,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
-          BottomNavigationBarItem(icon: Icon(Icons.category_outlined), label: "Category"),
-          BottomNavigationBarItem(icon: Icon(Icons.emoji_events), label: "Leaderboard"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
       ),
     );
   }

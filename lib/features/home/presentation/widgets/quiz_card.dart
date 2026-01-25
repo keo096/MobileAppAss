@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_quiz/core/constants/app_colors.dart';
+import 'package:smart_quiz/core/theme/app_theme.dart';
 
 class QuizCard extends StatelessWidget {
   final String title;
@@ -19,12 +21,7 @@ class QuizCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color.fromARGB(255, 166, 93, 197),
-            Color.fromARGB(255, 149, 34, 250),
-          ],
-        ),
+        gradient: AppTheme.quizCardGradient,
         borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
@@ -37,37 +34,25 @@ class QuizCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontFamily: 'SFPro',
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
+                  style: AppTheme.cardTitle,
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 15,
-                    fontFamily: 'SFPro',
-                  ),
+                  style: AppTheme.cardSubtitle,
                 ),
                 const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    shape: const StadiumBorder(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.categoryPurple,
+                  shape: const StadiumBorder(),
+                ),
+                child: Text(
+                  buttonText,
+                  style: AppTheme.bodyLarge.copyWith(
+                    color: AppColors.textWhite,
                   ),
-                  child: Text(
-                    buttonText,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                      fontFamily: 'SFPro',
-                    ),
-                  ),
+                ),
                 ),
               ],
             ),

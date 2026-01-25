@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/app/models/category_model.dart';
+import 'package:smart_quiz/core/models/category_model.dart';
+import 'package:smart_quiz/core/constants/app_colors.dart';
+import 'package:smart_quiz/core/constants/app_strings.dart';
+import 'package:smart_quiz/core/theme/app_theme.dart';
+import 'package:smart_quiz/core/utils/formatters.dart';
 
 class CategoryCard extends StatelessWidget {
   final Category category;
@@ -14,7 +18,7 @@ class CategoryCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.backgroundWhite,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -37,7 +41,7 @@ class CategoryCard extends StatelessWidget {
                 ),
               ),
               child: Center(
-                child: Icon(category.icon, color: Colors.white, size: 40),
+                child: Icon(category.icon, color: AppColors.textWhite, size: 40),
               ),
             ),
             Expanded(
@@ -55,18 +59,15 @@ class CategoryCard extends StatelessWidget {
                             children: [
                               Text(
                                 category.title,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                style: AppTheme.bodySmall.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: AppColors.textBlack87,
                                 ),
                               ),
                               Text(
                                 category.subtitle,
-                                style: const TextStyle(
-                                  color: Color.fromARGB(196, 0, 0, 0),
-                                  fontSize: 13,
-                                  fontFamily: 'SFPro',
+                                style: AppTheme.caption.copyWith(
+                                  color: AppColors.textGrey600,
                                 ),
                               ),
                             ],
@@ -77,8 +78,8 @@ class CategoryCard extends StatelessWidget {
                           child: ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                              foregroundColor: Colors.white,
+                              backgroundColor: AppColors.categoryPurple,
+                              foregroundColor: AppColors.textWhite,
                               elevation: 0,
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
@@ -86,9 +87,9 @@ class CategoryCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
-                            child: const Text(
-                              "Resume",
-                              style: TextStyle(fontSize: 16),
+                            child: Text(
+                              AppStrings.resume,
+                              style: AppTheme.bodySmall,
                             ),
                           ),
                         ),
@@ -105,7 +106,7 @@ class CategoryCard extends StatelessWidget {
                               backgroundColor: Colors.grey.shade200,
                               valueColor:
                                   const AlwaysStoppedAnimation<Color>(
-                                Colors.deepPurple,
+                                AppColors.categoryPurple,
                               ),
                               minHeight: 8,
                             ),
@@ -113,12 +114,10 @@ class CategoryCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          "${(category.progress * 100).toInt()}%",
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
+                          Formatters.formatPercentage(category.progress),
+                          style: AppTheme.caption.copyWith(
+                            color: AppColors.textBlack,
                             fontWeight: FontWeight.w500,
-                            fontFamily: 'SFPro',
                           ),
                         ),
                       ],

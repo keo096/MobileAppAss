@@ -1,37 +1,36 @@
-
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/features/auth/presentation/pages/login_page.dart';
-import 'package:smart_quiz/app/views/loading_screen.dart';
+import 'package:smart_quiz/core/constants/app_colors.dart';
+import 'package:smart_quiz/core/constants/app_strings.dart';
+import 'package:smart_quiz/core/constants/app_assets.dart';
+import 'package:smart_quiz/core/theme/app_theme.dart';
 
-class OnboardingFlow extends StatefulWidget {
-  const OnboardingFlow({super.key});
+class OnboardingPage extends StatefulWidget {
+  const OnboardingPage({super.key});
 
   @override
-  State<OnboardingFlow> createState() => _OnboardingFlowState();
+  State<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingFlowState extends State<OnboardingFlow> {
-  // 1. Controller to handle page movement
+class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final Color primaryPurple = const Color(0xFF4A306D);
 
-  // Data for our steps
   final List<Map<String, String>> _steps = [
     {
-      "title": "Learn Smarter with Quizzes",
-      "desc": "Practise Knowledge anytime, anywhere",
-      "img": "assets/images/onboard1.png"
+      "title": AppStrings.onboardingTitle1,
+      "desc": AppStrings.onboardingDesc1,
+      "img": AppAssets.onboarding1,
     },
     {
-      "title": "Choose your Topic",
-      "desc": "General knowledge,\nEnglish,\ntechnology& \nmore",
-      "img": "assets/images/onboard2.png" 
+      "title": AppStrings.onboardingTitle2,
+      "desc": AppStrings.onboardingDesc2,
+      "img": AppAssets.onboarding2,
     },
     {
-      "title": "Track Your Progress",
-      "desc": "Instant feedback and time-based quizzes",
-      "img": "assets/images/onboard3.png"
+      "title": AppStrings.onboardingTitle3,
+      "desc": AppStrings.onboardingDesc3,
+      "img": AppAssets.onboarding3,
     },
   ];
 
@@ -47,15 +46,21 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                 width: 400,
                 height: 40,
                 child: ListTile(
-                  title: Text("Smart Quiz",style: TextStyle(fontSize: 35,fontWeight: FontWeight.w900,fontFamily: 'SFPro'),),
+                  title: Text(
+                    AppStrings.appName,
+                    style: const TextStyle(
+                      fontSize: 35,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: AppTheme.fontFamilySFPro,
+                    ),
+                  ),
                   subtitle: Padding(
                     padding: const EdgeInsets.all(5.0),
-                    child: Text("We are learner & Creator"),
+                    child: Text(AppStrings.appTagline),
                   ),
                 ),
               ),
             ),
-        
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
@@ -72,9 +77,12 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                       Image.asset(_steps[index]["img"]!, width: 250),
                       Text(
                         _steps[index]["title"]!,
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      const SizedBox(height: 10,width: 10,),
+                      const SizedBox(height: 10, width: 10),
                       Text(
                         _steps[index]["desc"]!,
                         textAlign: TextAlign.center,
@@ -85,7 +93,6 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                 },
               ),
             ),
-        
             Column(
               children: [
                 Row(
@@ -96,32 +103,39 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                   ),
                 ),
                 const SizedBox(height: 30),
-        
                 Padding(
                   padding: const EdgeInsets.all(18.0),
                   child: SizedBox(
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: (
-                      ) {
+                      onPressed: () {
                         if (_currentPage < _steps.length - 1) {
                           _pageController.nextPage(
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
                           );
                         } else {
-                         Navigator.push(context, MaterialPageRoute(builder: (context)=> const Login()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Login(),
+                            ),
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryPurple,
+                        backgroundColor: AppColors.primaryPurpleDark,
                         shape: const StadiumBorder(),
                         elevation: 0,
                       ),
                       child: Text(
-                        _currentPage == _steps.length - 1 ? "Get Started" : "Next",
-                        style: const TextStyle(fontSize: 18, color: Colors.white),
+                        _currentPage == _steps.length - 1
+                            ? AppStrings.getStarted
+                            : AppStrings.next,
+                        style: AppTheme.bodyMedium.copyWith(
+                          color: AppColors.textWhite,
+                        ),
                       ),
                     ),
                   ),
@@ -140,11 +154,12 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
       duration: const Duration(milliseconds: 200),
       margin: const EdgeInsets.symmetric(horizontal: 4),
       height: 6,
-      width: isActive ? 24 : 10, // Active dot is wider
+      width: isActive ? 24 : 10,
       decoration: BoxDecoration(
-        color: isActive ? primaryPurple : Colors.grey[300],
+        color: isActive ? AppColors.primaryPurpleDark : AppColors.textGrey,
         borderRadius: BorderRadius.circular(10),
       ),
     );
   }
 }
+
