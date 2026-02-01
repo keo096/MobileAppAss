@@ -5,6 +5,7 @@ import 'package:smart_quiz/features/category/presentation/providers/category_pro
 import 'package:smart_quiz/features/category/presentation/widgets/category_card.dart';
 import 'package:smart_quiz/features/category/presentation/widgets/create_category_widget.dart';
 import 'package:smart_quiz/features/category/presentation/widgets/add_category_bottom_sheet.dart';
+import 'package:smart_quiz/features/quiz/presentation/pages/category_detail_page.dart';
 
 class CategoryPage extends StatelessWidget {
   final bool isScrollable;
@@ -39,7 +40,14 @@ class CategoryPage extends StatelessWidget {
                         return CategoryCard(
                           category: categories[index],
                           onTap: () {
-                            // Handle navigation
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CategoryDetailPage(
+                                  categoryTitle: categories[index].title,
+                                ),
+                              ),
+                            );
                           },
                         );
                       }, childCount: categories.length),

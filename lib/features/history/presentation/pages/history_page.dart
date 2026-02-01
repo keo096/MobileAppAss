@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
-import 'package:smart_quiz/core/widgets/empty_state.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/constants/app_strings.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
+import 'package:smart_quiz/core/data/mock_data.dart';
 import 'package:smart_quiz/core/models/history_model.dart';
-import 'package:smart_quiz/features/history/presentation/providers/history_provider.dart';
+import 'package:smart_quiz/core/models/quiz_model.dart';
+import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
+import 'package:smart_quiz/features/history/presentation/widgets/history_header.dart';
+import 'package:smart_quiz/features/history/presentation/widgets/history_tab_bar.dart';
+import 'package:smart_quiz/features/history/presentation/widgets/history_statistics_card.dart';
+import 'package:smart_quiz/features/history/presentation/widgets/history_card.dart';
+import 'package:smart_quiz/features/quiz/presentation/pages/quiz_review_page.dart';
+import 'package:smart_quiz/features/quiz/presentation/pages/quiz_resume_page.dart';
+import 'package:smart_quiz/features/quiz/presentation/pages/admin_quiz_detail_page.dart';
 
-/// History page showing user's quiz history
+/// History page showing quiz history with tabs and statistics
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
 
@@ -15,251 +21,338 @@ class HistoryPage extends StatefulWidget {
   State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _HistoryPageState extends State<HistoryPage> {
-  final HistoryProvider _provider = HistoryProvider();
+class _HistoryPageState extends State<HistoryPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  List<dynamic> _filteredHistory = []; // Can hold QuizHistory or Quiz
+  Map<String, dynamic> _statistics = {};
+  bool _isLoading = true;
+  bool _isAdmin = false;
 
   @override
   void initState() {
     super.initState();
-    // Listen to provider changes - UI will update automatically
-    _provider.addListener(_onProviderChange);
-    // Load history
-    _provider.loadHistory();
-  }
-
-  // This method is called whenever provider state changes
-  void _onProviderChange() {
-    if (mounted) {
-      setState(() {}); // Rebuild UI when provider state changes
-    }
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(_onTabChanged);
+    _checkRoleAndLoadData();
   }
 
   @override
   void dispose() {
-    // Remove listener to prevent memory leaks
-    _provider.removeListener(_onProviderChange);
-    _provider.dispose();
+    _tabController.dispose();
     super.dispose();
+  }
+
+  /// Check user role and load appropriate data
+  void _checkRoleAndLoadData() {
+    setState(() {
+      _isAdmin = MockData.isAdmin();
+      _isLoading = true;
+    });
+
+    _loadData();
+  }
+
+  /// Load quiz history data
+  void _loadData() {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Simulate loading delay
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        setState(() {
+          if (_isAdmin) {
+            // Admin: Load created quizzes
+            _filteredHistory = MockData.getCreatedQuizzes();
+          } else {
+            // User: Load quiz history
+            _filteredHistory = MockData.getQuizHistory();
+          }
+          _statistics = MockData.getHistoryStatistics();
+          _isLoading = false;
+        });
+      }
+    });
+  }
+
+  /// Handle tab changes
+  void _onTabChanged() {
+    if (!_tabController.indexIsChanging) {
+      _filterHistory();
+    }
+  }
+
+  /// Filter history based on selected tab
+  void _filterHistory() {
+    setState(() {
+      if (_isAdmin) {
+        // Admin: Show all created quizzes (no filtering by status)
+        _filteredHistory = MockData.getCreatedQuizzes();
+      } else {
+        // User: Filter by status
+        switch (_tabController.index) {
+          case 0: // All
+            _filteredHistory = MockData.getQuizHistory();
+            break;
+          case 1: // Completed
+            _filteredHistory = MockData.getQuizHistoryByStatus('completed');
+            break;
+          case 2: // In Progress
+            _filteredHistory = MockData.getQuizHistoryByStatus('in_progress');
+            break;
+          case 3: // Saved
+            _filteredHistory = MockData.getQuizHistoryByStatus('saved');
+            break;
+        }
+      }
+    });
+  }
+
+  /// Handle filter button tap
+  void _onFilterTap() {
+    // TODO: Implement filter functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Filter functionality coming soon!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  /// Handle history card tap - Navigate based on role
+  void _onHistoryCardTap(dynamic item) {
+    if (_isAdmin && item is Quiz) {
+      // Admin: Navigate to Quiz Detail Page (shows questions + participants)
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              AdminQuizDetailPage(quizId: item.id, quizTitle: item.title),
+        ),
+      );
+    } else if (item is QuizHistory) {
+      // User: Navigate to Review or Resume page based on status
+      if (item.status == 'completed') {
+        // Navigate to Quiz Review Page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuizReviewPage(history: item),
+          ),
+        );
+      } else if (item.status == 'in_progress') {
+        // Navigate to Quiz Resume Page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuizResumePage(history: item),
+          ),
+        );
+      } else {
+        // For saved quizzes or other statuses
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${item.quizTitle} - Status: ${item.status}'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Use provider state - UI updates automatically when provider changes
-    if (_provider.isLoading) {
-      return Scaffold(
-        backgroundColor: AppColors.backgroundWhite,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text(
-            AppStrings.history,
-            style: AppTheme.headingMedium,
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primaryPurple,
+              AppColors.primaryPurple.withOpacity(0.85),
+            ],
           ),
-          centerTitle: true,
         ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
-        bottomNavigationBar: const BottomNavBar(
-          currentIndex: 1,
-        ),
-      );
-    }
-
-    if (_provider.errorMessage != null) {
-      return Scaffold(
-        backgroundColor: AppColors.backgroundWhite,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text(
-            AppStrings.history,
-            style: AppTheme.headingMedium,
-          ),
-          centerTitle: true,
-        ),
-        body: Center(
+        child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: AppColors.error),
-              const SizedBox(height: 16),
-              Text(
-                _provider.errorMessage!,
-                style: AppTheme.bodyMedium,
-                textAlign: TextAlign.center,
+              // Header - Different title based on role
+              HistoryHeader(
+                onFilterTap: _onFilterTap,
+                title: _isAdmin ? 'Created Quizzes' : 'Quiz History',
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => _provider.loadHistory(),
-                child: const Text('Retry'),
+
+              // Tab Bar - Only show for users
+              if (!_isAdmin) HistoryTabBar(controller: _tabController),
+
+              // Admin Info Banner
+              if (_isAdmin)
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.admin_panel_settings,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Tap any quiz to view questions and participants',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.95),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              // Content Area
+              Expanded(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.backgroundLightGrey,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primaryPurple,
+                          ),
+                        )
+                      : _buildContent(),
+                ),
               ),
             ],
           ),
         ),
-        bottomNavigationBar: const BottomNavBar(
-          currentIndex: 1,
-        ),
-      );
-    }
-
-    return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          AppStrings.history,
-          style: AppTheme.headingMedium,
-        ),
-        centerTitle: true,
       ),
-      body: _provider.isEmpty
-          ? EmptyState(
-              type: EmptyStateType.noHistory,
-              actionText: 'Start a Quiz',
-              onAction: () {
-                // TODO: Navigate to category/quiz selection
-              },
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _provider.history.length,
-              itemBuilder: (context, index) {
-                return _buildHistoryCard(_provider.history[index]);
-              },
-            ),
-      bottomNavigationBar: const BottomNavBar(
-        currentIndex: 1,
-      ),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 1),
     );
   }
 
-
-  Widget _buildHistoryCard(QuizHistory history) {
-    // Format date
-    final dateStr = _formatDate(history.completedAt);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundWhite,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.backgroundGrey,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
+  Widget _buildContent() {
+    if (_isAdmin) {
+      // Admin: Show simple list of created quizzes (no tabs, no statistics)
+      return _buildQuizList();
+    } else {
+      // User: Show tabbed content with statistics
+      return Column(
         children: [
-          // Category Icon
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: AppColors.primaryPurpleLight.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              Icons.quiz,
-              color: AppColors.primaryPurple,
-              size: 30,
-            ),
+          // Statistics Card
+          HistoryStatisticsCard(
+            totalQuizzes: _statistics['totalQuizzes'] ?? 0,
+            averageScore: (_statistics['averageScore'] ?? 0.0).toDouble(),
+            totalTimeInSeconds: _statistics['totalTime'] ?? 0,
           ),
-          const SizedBox(width: 16),
-          // Quiz Info
+
+          // Tab Content
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: TabBarView(
+              controller: _tabController,
               children: [
-                Text(
-                  history.quizTitle,
-                  style: AppTheme.bodyLarge.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textBlack87,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  history.category,
-                  style: AppTheme.caption.copyWith(
-                    color: AppColors.textGrey600,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 14,
-                      color: AppColors.textGrey600,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      dateStr,
-                      style: AppTheme.caption.copyWith(
-                        color: AppColors.textGrey600,
-                      ),
-                    ),
-                  ],
-                ),
+                _buildQuizList(), // All
+                _buildQuizList(), // Completed
+                _buildQuizList(), // In Progress
+                _buildQuizList(), // Saved
               ],
             ),
           ),
-          // Score
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryPurple.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  "${history.score.toInt()}%",
-                  style: AppTheme.bodySmall.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryPurple,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: AppColors.textGrey600,
-              ),
-            ],
-          ),
         ],
-      ),
-    );
+      );
+    }
   }
 
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
+  Widget _buildQuizList() {
+    if (_filteredHistory.isEmpty) {
+      String message;
+      if (_isAdmin) {
+        message = 'No quizzes created yet';
+      } else {
+        switch (_tabController.index) {
+          case 0: // All
+            message = 'No quiz history yet';
+            break;
+          case 1: // Completed
+            message = 'No completed quizzes yet';
+            break;
+          case 2: // In Progress
+            message = 'No quizzes in progress yet';
+            break;
+          case 3: // Saved
+            message = 'No saved quizzes yet';
+            break;
+          default:
+            message = 'No history found';
+            break;
+        }
+      }
 
-    if (difference.inDays == 0) {
-      return 'Today';
-    } else if (difference.inDays == 1) {
-      return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              _isAdmin ? Icons.quiz_outlined : Icons.history,
+              size: 80,
+              color: AppColors.textGrey600.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              style: TextStyle(
+                color: AppColors.textGrey600,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _isAdmin
+                  ? 'Create your first quiz to see it here'
+                  : 'Start taking quizzes to build your history',
+              style: TextStyle(
+                color: AppColors.textGrey600.withOpacity(0.7),
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      );
     }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _filteredHistory.length,
+      itemBuilder: (context, index) {
+        return HistoryCard(
+          history: _filteredHistory[index],
+          onTap: () => _onHistoryCardTap(_filteredHistory[index]),
+          isAdmin: _isAdmin,
+        );
+      },
+    );
   }
 }
