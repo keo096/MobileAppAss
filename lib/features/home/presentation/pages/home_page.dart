@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
 import 'package:smart_quiz/core/constants/app_strings.dart';
 import 'package:smart_quiz/core/constants/app_assets.dart';
+import 'package:smart_quiz/core/data/mock_data.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
 import 'package:smart_quiz/core/utils/formatters.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
@@ -10,17 +11,14 @@ import 'package:smart_quiz/features/home/presentation/widgets/quiz_card.dart';
 import 'package:smart_quiz/features/category/presentation/pages/category_page.dart';
 
 class UserHomePage extends StatelessWidget {
-  final String username;
-  const UserHomePage({super.key, required this.username});
+  const UserHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final username = MockData.getCurrentUser().username;
     return Scaffold(
-      extendBody: true,
       body: Container(
-        decoration: BoxDecoration(
-          gradient: AppTheme.homeGradient,
-        ),
+        decoration: BoxDecoration(gradient: AppTheme.homeGradient),
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
@@ -205,7 +203,7 @@ class UserHomePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: CategorySection(),
+                  child: CategoryPage(isScrollable: false),
                 ),
               ),
 
@@ -227,10 +225,7 @@ class UserHomePage extends StatelessWidget {
       // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
       // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 0,
-        username: username,
-      ),
+      bottomNavigationBar: BottomNavBar(currentIndex: 0),
     );
   }
 
@@ -282,10 +277,7 @@ class UserHomePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: AppTheme.categoryTitle,
-            ),
+            Text(title, style: AppTheme.categoryTitle),
 
             const Icon(Icons.chevron_right, color: Colors.white70),
           ],
@@ -333,8 +325,4 @@ class UserHomePage extends StatelessWidget {
       ),
     );
   }
-
-
-
-
 }

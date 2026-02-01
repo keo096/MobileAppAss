@@ -19,7 +19,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   // Error messages
   String? _usernameError;
@@ -53,8 +54,8 @@ class _RegisterPageState extends State<RegisterPage> {
       _confirmPasswordError = confirmPassword.isEmpty
           ? "Please confirm password"
           : password != confirmPassword
-              ? "Passwords do not match"
-              : null;
+          ? "Passwords do not match"
+          : null;
 
       if (_usernameError == null &&
           _emailError == null &&
@@ -64,8 +65,7 @@ class _RegisterPageState extends State<RegisterPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                LoadingWidget(nextPage: UserHomePage(username: username)),
+            builder: (context) => LoadingWidget(nextPage: const UserHomePage()),
           ),
         );
       }
@@ -76,9 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.primaryGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),

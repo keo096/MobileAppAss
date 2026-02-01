@@ -4,6 +4,7 @@ import 'package:smart_quiz/core/constants/app_colors.dart';
 import 'package:smart_quiz/core/constants/app_strings.dart';
 import 'package:smart_quiz/core/constants/app_assets.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
+import 'package:smart_quiz/features/auth/repository/auth_repository.dart';
 import 'package:smart_quiz/features/home/presentation/pages/home_page.dart';
 
 class Login extends StatefulWidget {
@@ -17,10 +18,12 @@ class _LoginState extends State<Login> {
   // Controllers
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthRepository _authRepository = AuthRepository();
 
   // Error messages
   String? _usernameError;
   String? _passwordError;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -29,31 +32,49 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-  void _login() {
+  Future<void> _login() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
+    // Clear previous errors
     setState(() {
       _usernameError = username.isEmpty ? AppStrings.pleaseInputUsername : null;
       _passwordError = password.isEmpty ? AppStrings.pleaseInputPassword : null;
-
-      if (_usernameError == null && _passwordError == null) {
-        if (username == 'admin' && password == '112233') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  LoadingWidget(nextPage: UserHomePage(username: username)),
-            ),
-          );
-        } else {
-          _usernameError = AppStrings.invalidCredentials;
-          _passwordError = AppStrings.invalidCredentials;
-          _usernameController.clear();
-          _passwordController.clear();
-        }
-      }
     });
+
+    // Don't proceed if validation fails
+    if (_usernameError != null || _passwordError != null) {
+      return;
+    }
+
+    // Start loading
+    setState(() {
+      _isLoading = true;
+      _passwordError = null; // Clear any previous auth errors
+    });
+
+    try {
+      // Attempt authentication
+      await _authRepository.login(username: username, password: password);
+
+      // Success - navigate to home
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoadingWidget(nextPage: const UserHomePage()),
+          ),
+        );
+      }
+    } catch (e) {
+      // Authentication failed - show error
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _passwordError = 'Invalid username or password';
+        });
+      }
+    }
   }
 
   Widget _buildInputField(
@@ -67,10 +88,7 @@ class _LoginState extends State<Login> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTheme.label,
-        ),
+        Text(label, style: AppTheme.label),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
@@ -139,29 +157,21 @@ class _LoginState extends State<Login> {
               color: AppColors.primaryPurpleLogo,
             ),
             const SizedBox(width: 10),
-            Text(
-              AppStrings.appName,
-              style: AppTheme.headingMedium,
-            ),
+            Text(AppStrings.appName, style: AppTheme.headingMedium),
           ],
         ),
       ),
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: AppTheme.primaryGradient,
-        ),
+        decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 140),
-              Text(
-                AppStrings.login,
-                style: AppTheme.headingLarge,
-              ),
+              Text(AppStrings.login, style: AppTheme.headingLarge),
               const SizedBox(height: 30),
               _buildInputField(
                 AppStrings.username,
@@ -184,7 +194,9 @@ class _LoginState extends State<Login> {
               // Divider
               Row(
                 children: [
-                  const Expanded(child: Divider(color: Colors.black38, thickness: 1)),
+                  const Expanded(
+                    child: Divider(color: Colors.black38, thickness: 1),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Text(
@@ -195,7 +207,9 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                   ),
-                  const Expanded(child: Divider(color: Colors.black38, thickness: 1)),
+                  const Expanded(
+                    child: Divider(color: Colors.black38, thickness: 1),
+                  ),
                 ],
               ),
               const SizedBox(height: 25),
@@ -247,21 +261,34 @@ class _LoginState extends State<Login> {
                 width: double.infinity,
                 height: 55,
                 child: ElevatedButton(
-                  onPressed: _login,
+                  onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.backgroundGrey,
                     foregroundColor: AppColors.textBlack,
+                    disabledBackgroundColor: AppColors.backgroundGrey
+                        .withOpacity(0.6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                     elevation: 0,
                   ),
-                  child: Text(
-                    AppStrings.login,
-                    style: AppTheme.bodyMedium.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.textBlack,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          AppStrings.login,
+                          style: AppTheme.bodyMedium.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 30),

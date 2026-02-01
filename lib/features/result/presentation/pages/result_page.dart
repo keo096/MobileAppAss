@@ -37,9 +37,7 @@ class ResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.primaryGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -59,7 +57,7 @@ class ResultPage extends StatelessWidget {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const UserHomePage(username: 'User'),
+                          builder: (context) => const UserHomePage(),
                         ),
                         (route) => false,
                       );
@@ -75,7 +73,9 @@ class ResultPage extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    score >= 70 ? Icons.emoji_events : Icons.sentiment_dissatisfied,
+                    score >= 70
+                        ? Icons.emoji_events
+                        : Icons.sentiment_dissatisfied,
                     size: 80,
                     color: AppColors.textWhite,
                   ),
@@ -99,10 +99,7 @@ class ResultPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: gradeColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: gradeColor,
-                      width: 2,
-                    ),
+                    border: Border.all(color: gradeColor, width: 2),
                   ),
                   child: Text(
                     grade,
@@ -192,7 +189,7 @@ class ResultPage extends StatelessWidget {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const UserHomePage(username: 'User'),
+                              builder: (context) => const UserHomePage(),
                             ),
                             (route) => false,
                           );
@@ -242,9 +239,7 @@ class ResultPage extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: AppTheme.caption.copyWith(
-                  color: AppColors.textGrey600,
-                ),
+                style: AppTheme.caption.copyWith(color: AppColors.textGrey600),
               ),
               const SizedBox(height: 4),
               Text(

@@ -7,16 +7,14 @@ import 'package:smart_quiz/features/history/presentation/pages/history_page.dart
 import 'package:smart_quiz/features/category/presentation/pages/category_page_wrapper.dart';
 import 'package:smart_quiz/features/profile/presentation/pages/profile_page.dart';
 
+import 'package:smart_quiz/features/result/presentation/pages/result_page.dart';
+
 /// Shared bottom navigation bar widget used across all main feature pages
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
-  final String? username;
+  // REMOVED: final String? username; - No longer needed as we fetch from source of truth
 
-  const BottomNavBar({
-    super.key,
-    required this.currentIndex,
-    this.username,
-  });
+  const BottomNavBar({super.key, required this.currentIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +87,9 @@ class BottomNavBar extends StatelessWidget {
           Text(
             label,
             style: AppTheme.caption.copyWith(
-              color: isSelected ? AppColors.categoryPurple : AppColors.textBlack,
+              color: isSelected
+                  ? AppColors.categoryPurple
+                  : AppColors.textBlack,
             ),
           ),
         ],
@@ -104,18 +104,21 @@ class BottomNavBar extends StatelessWidget {
     Widget? page;
     switch (index) {
       case 0: // Home
-        page = UserHomePage(username: username ?? 'User');
+        page = const UserHomePage();
         break;
       case 1: // History
         page = const HistoryPage();
         break;
       case 2: // Category
-        page = const CategoryPage();
+        page = const CategoryPageWrapper();
         break;
-      case 3: // Leaderboard
-        // TODO: Replace with actual leaderboard page when created
-        // For now, navigate to category as placeholder
-        page = const CategoryPage();
+      case 3: // Leaderboard (Temporarily ResultPage)
+        page = const ResultPage(
+          quizTitle: "Daily Challenge",
+          totalQuestions: 20,
+          correctAnswers: 18,
+          timeTaken: 300,
+        );
         break;
       case 4: // Profile
         page = const ProfilePage();
@@ -125,9 +128,12 @@ class BottomNavBar extends StatelessWidget {
     if (page != null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => page!),
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => page!,
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
       );
     }
   }
 }
-

@@ -3,7 +3,7 @@ import 'package:smart_quiz/core/models/category_model.dart';
 import 'package:smart_quiz/features/category/repository/category_repository.dart';
 
 /// Provider for category state management
-/// 
+///
 /// Handles category data, loading states, and category operations
 class CategoryProvider extends ChangeNotifier {
   final CategoryRepository _repository = CategoryRepository();
@@ -43,6 +43,27 @@ class CategoryProvider extends ChangeNotifier {
   void toggleExpanded() {
     _isExpanded = !_isExpanded;
     notifyListeners();
+  }
+
+  /// Add a new category
+  Future<bool> addCategory(Category category) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      await _repository.addCategory(category);
+
+      await loadCategories(); // Reload to fetch the new list
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   /// Update category progress

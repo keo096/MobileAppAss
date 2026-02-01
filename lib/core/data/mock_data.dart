@@ -5,7 +5,7 @@ import 'package:smart_quiz/core/models/history_model.dart';
 import 'package:smart_quiz/core/models/user_model.dart';
 
 /// Centralized mock data service
-/// 
+///
 /// This class contains all mock data used throughout the app.
 /// To add or modify data, simply edit the lists below.
 class MockData {
@@ -14,46 +14,53 @@ class MockData {
   // ============================================
   // CATEGORIES DATA
   // ============================================
-  /// Add or modify categories here
+
+  static final List<Category> _categories = [
+    Category(
+      title: "Present Simple",
+      subtitle: "English Tense",
+      progress: 0.65,
+      icon: Icons.menu_book,
+      color: Colors.deepPurple,
+    ),
+    Category(
+      title: "Khmer History",
+      subtitle: "History",
+      progress: 0.50,
+      icon: Icons.history_edu,
+      color: Colors.brown,
+    ),
+    Category(
+      title: "Function Complex",
+      subtitle: "Math",
+      progress: 0.30,
+      icon: Icons.calculate,
+      color: Colors.blue,
+    ),
+    Category(
+      title: "Khmer Culture",
+      subtitle: "General Knowledge",
+      progress: 0.80,
+      icon: Icons.account_balance,
+      color: Colors.purple,
+    ),
+    Category(
+      title: "Chemistry Experiment",
+      subtitle: "Chemistry",
+      progress: 0.95,
+      icon: Icons.science,
+      color: Colors.teal,
+    ),
+  ];
+
+  /// Get all categories
   static List<Category> getCategories() {
-    return [
-      Category(
-        title: "Present Simple",
-        subtitle: "English Tense",
-        progress: 0.65,
-        icon: Icons.menu_book,
-        color: Colors.deepPurple,
-      ),
-      Category(
-        title: "Khmer History",
-        subtitle: "History",
-        progress: 0.50,
-        icon: Icons.history_edu,
-        color: Colors.brown,
-      ),
-      Category(
-        title: "Function Complex",
-        subtitle: "Math",
-        progress: 0.30,
-        icon: Icons.calculate,
-        color: Colors.blue,
-      ),
-      Category(
-        title: "Khmer Culture",
-        subtitle: "General Knowledge",
-        progress: 0.80,
-        icon: Icons.account_balance,
-        color: Colors.purple,
-      ),
-      Category(
-        title: "Chemistry Experiment",
-        subtitle: "Chemistry",
-        progress: 0.95,
-        icon: Icons.science,
-        color: Colors.teal,
-      ),
-      // Add more categories here...
-    ];
+    return _categories;
+  }
+
+  /// Add a new category
+  static void addCategory(Category category) {
+    _categories.add(category);
   }
 
   // ============================================
@@ -136,7 +143,8 @@ class MockData {
           question: 'Which planet is known as the Red Planet?',
           options: ['Venus', 'Mars', 'Jupiter', 'Saturn'],
           correctAnswer: 1,
-          explanation: 'Mars is called the Red Planet due to iron oxide on its surface.',
+          explanation:
+              'Mars is called the Red Planet due to iron oxide on its surface.',
           points: 10,
         ),
         Question(
@@ -253,20 +261,128 @@ class MockData {
   // ============================================
   // USER DATA
   // ============================================
+
+  /// Predefined users with credentials
+  static final Map<String, Map<String, dynamic>> _predefinedUsers = {
+    'admin': {
+      'password': '112233',
+      'user': User(
+        id: 'admin_1',
+        username: 'admin',
+        email: 'admin@smartquiz.com',
+        fullName: 'Admin User',
+        totalQuizzes: 15,
+        totalScore: 1200,
+        averageScore: 78.5,
+        rank: 5,
+        role: 'admin',
+        joinedAt: DateTime(2025, 1, 1),
+      ),
+    },
+    'user': {
+      'password': '123456',
+      'user': User(
+        id: 'user_1',
+        username: 'user',
+        email: 'user@smartquiz.com',
+        fullName: 'Standard User',
+        totalQuizzes: 5,
+        totalScore: 350,
+        averageScore: 65.0,
+        rank: 120,
+        role: 'user',
+        joinedAt: DateTime(2025, 1, 15),
+      ),
+    },
+  };
+
+  static User? _currentUser;
+
+  /// Authenticate user with username and password
+  /// Returns true if authentication successful, false otherwise
+  static bool authenticate(String username, String password) {
+    final userEntry = _predefinedUsers[username.toLowerCase()];
+
+    if (userEntry != null && userEntry['password'] == password) {
+      _currentUser = userEntry['user'] as User;
+      return true;
+    }
+
+    // Authentication failed - no fallback
+    return false;
+  }
+
+  /// Login with username (backward compatibility - for testing only)
+  /// This allows login without password for dynamic usernames
+  static void login(String username) {
+    // Check if user exists in predefined users first
+    final userEntry = _predefinedUsers[username.toLowerCase()];
+    if (userEntry != null) {
+      _currentUser = userEntry['user'] as User;
+      return;
+    }
+
+    // Fallback: Create dynamic user based on keyword
+    if (username.toLowerCase().contains('admin')) {
+      _currentUser = User(
+        id: 'admin_dynamic',
+        username: username,
+        email: '$username@smartquiz.com',
+        fullName: 'Admin User',
+        totalQuizzes: 15,
+        totalScore: 1200,
+        averageScore: 78.5,
+        rank: 5,
+        role: 'admin',
+        joinedAt: DateTime.now(),
+      );
+    } else if (username.toLowerCase().contains('user')) {
+      _currentUser = User(
+        id: 'user_dynamic',
+        username: username,
+        email: '$username@smartquiz.com',
+        fullName: 'Standard User',
+        totalQuizzes: 5,
+        totalScore: 350,
+        averageScore: 65.0,
+        rank: 120,
+        role: 'user',
+        joinedAt: DateTime.now(),
+      );
+    }
+  }
+
   /// Get current user data
-  /// Modify user information here
   static User getCurrentUser() {
-    return User(
-      id: 'user_1',
-      username: 'admin',
-      email: 'admin@smartquiz.com',
-      fullName: 'Admin User',
-      totalQuizzes: 15,
-      totalScore: 1200,
-      averageScore: 78.5,
-      rank: 5,
-      joinedAt: DateTime.now().subtract(const Duration(days: 30)),
-    );
+    // Return logged in user or default guest user
+    return _currentUser ??
+        User(
+          id: 'guest',
+          username: 'Guest',
+          email: 'guest@smartquiz.com',
+          fullName: 'Guest User',
+          totalQuizzes: 0,
+          totalScore: 0,
+          averageScore: 0.0,
+          rank: 999,
+          role: 'user',
+          joinedAt: DateTime.now(),
+        );
+  }
+
+  /// Check if user is logged in
+  static bool isLoggedIn() {
+    return _currentUser != null;
+  }
+
+  /// Logout current user
+  static void logout() {
+    _currentUser = null;
+  }
+
+  /// Check if current user is admin
+  static bool isAdmin() {
+    return getCurrentUser().role == 'admin';
   }
 
   // ============================================
@@ -324,9 +440,7 @@ class MockData {
   // ============================================
   /// Get quizzes by category
   static List<Quiz> getQuizzesByCategory(String categoryId) {
-    return getQuizzes()
-        .where((quiz) => quiz.categoryId == categoryId)
-        .toList();
+    return getQuizzes().where((quiz) => quiz.categoryId == categoryId).toList();
   }
 
   /// Get quiz by ID
@@ -352,4 +466,3 @@ class MockData {
     return history.take(limit).toList();
   }
 }
-
