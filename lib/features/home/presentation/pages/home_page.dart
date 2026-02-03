@@ -121,7 +121,7 @@ class UserHomePage extends StatelessWidget {
                   height: 120,
                   child: ListView(
                     scrollDirection: Axis.horizontal, 
-                    physics: const BouncingScrollPhysics(), // smooth iOS feel
+                    physics: const BouncingScrollPhysics(), 
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     children: [
                       _buildCategoryItem(
