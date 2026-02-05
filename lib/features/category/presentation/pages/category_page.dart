@@ -1,16 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:smart_quiz/core/data/mock_data.dart';
+import 'package:smart_quiz/core/data/api_config.dart';
 import 'package:smart_quiz/features/category/presentation/providers/category_provider.dart';
 import 'package:smart_quiz/features/category/presentation/widgets/category_card.dart';
 import 'package:smart_quiz/features/category/presentation/widgets/create_category_widget.dart';
 import 'package:smart_quiz/features/category/presentation/widgets/add_category_bottom_sheet.dart';
 import 'package:smart_quiz/features/quiz/presentation/pages/category_detail_page.dart';
 
-class CategoryPage extends StatelessWidget {
+class CategoryPage extends StatefulWidget {
   final bool isScrollable;
 
   const CategoryPage({super.key, this.isScrollable = true});
+
+  @override
+  State<CategoryPage> createState() => _CategoryPageState();
+}
+
+class _CategoryPageState extends State<CategoryPage> {
+  bool _isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAdmin();
+  }
+
+  Future<void> _checkAdmin() async {
+    final isAdmin = await ApiConfig.service.isAdmin();
+    if (mounted) {
+      setState(() {
+        _isAdmin = isAdmin;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +47,11 @@ class CategoryPage extends StatelessWidget {
               }
 
               final categories = provider.categories;
-              final isAdmin = MockData.getCurrentUser().role == 'admin';
+              final isAdmin = _isAdmin;
 
               return CustomScrollView(
-                shrinkWrap: !isScrollable,
-                physics: isScrollable
+                shrinkWrap: !widget.isScrollable,
+                physics: widget.isScrollable
                     ? const BouncingScrollPhysics()
                     : const NeverScrollableScrollPhysics(),
                 slivers: [
@@ -70,10 +92,6 @@ class CategoryPage extends StatelessWidget {
                         ),
                         child: CreateCategoryWidget(
                           onPressed: () {
-                            final provider = Provider.of<CategoryProvider>(
-                              context,
-                              listen: false,
-                            );
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,

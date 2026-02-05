@@ -112,4 +112,20 @@ class QuizWithQuestions {
   final List<Question> questions;
 
   QuizWithQuestions({required this.quiz, required this.questions});
+
+  factory QuizWithQuestions.fromJson(Map<String, dynamic> json) {
+    return QuizWithQuestions(
+      quiz: Quiz.fromJson(json['quiz']),
+      questions: (json['questions'] as List)
+          .map((q) => Question.fromJson(q))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'quiz': quiz.toJson(),
+      'questions': questions.map((q) => q.toJson()).toList(),
+    };
+  }
 }

@@ -1,31 +1,18 @@
-import 'package:smart_quiz/core/data/mock_data.dart';
+import 'package:smart_quiz/core/data/api_config.dart';
 import 'package:smart_quiz/core/models/category_model.dart';
 
 /// Repository for category-related data operations
 class CategoryRepository {
-  /// Get all categories
-  ///
-  /// Returns a list of all categories
-  /// Throws [Exception] if data fetch fails
   Future<List<Category>> getAllCategories() async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 400));
-      return MockData.getCategories();
+      return await ApiConfig.service.fetchCategories();
     } catch (e) {
       throw Exception('Failed to fetch categories: $e');
     }
   }
 
-  /// Get category by ID
-  ///
-  /// [categoryId] - The unique identifier of the category
-  /// Returns the category if found, null otherwise
-  /// Throws [Exception] if data fetch fails
   Future<Category?> getCategoryById(String categoryId) async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 300));
       final categories = await getAllCategories();
       try {
         return categories.firstWhere((cat) => cat.title == categoryId);
@@ -37,12 +24,9 @@ class CategoryRepository {
     }
   }
 
-  /// Add a new category
   Future<void> addCategory(Category category) async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 300));
-      MockData.addCategory(category);
+      await ApiConfig.service.postCategory(category);
     } catch (e) {
       throw Exception('Failed to add category: $e');
     }
@@ -59,15 +43,10 @@ class CategoryRepository {
     required double progress,
   }) async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 500));
-      // TODO: Replace with actual API call
-      // final response = await apiClient.put('/categories/$categoryId/progress', {
-      //   'progress': progress,
-      // });
-      // return response.statusCode == 200;
-      // For mock data, just return success
-      return true;
+      return await ApiConfig.service.updateCategoryProgress(
+        categoryId: categoryId,
+        progress: progress,
+      );
     } catch (e) {
       throw Exception('Failed to update category progress: $e');
     }

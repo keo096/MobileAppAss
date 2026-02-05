@@ -3,19 +3,41 @@ import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
 import 'package:smart_quiz/core/constants/app_strings.dart';
 import 'package:smart_quiz/core/constants/app_assets.dart';
-import 'package:smart_quiz/core/data/mock_data.dart';
+import 'package:smart_quiz/core/data/api_config.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
 import 'package:smart_quiz/core/utils/formatters.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 import 'package:smart_quiz/features/home/presentation/widgets/quiz_card.dart';
 import 'package:smart_quiz/features/category/presentation/pages/category_page.dart';
 
-class UserHomePage extends StatelessWidget {
+class UserHomePage extends StatefulWidget {
   const UserHomePage({super.key});
 
   @override
+  State<UserHomePage> createState() => _UserHomePageState();
+}
+
+class _UserHomePageState extends State<UserHomePage> {
+  String? _username;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await ApiConfig.service.getCurrentUser();
+    if (mounted) {
+      setState(() {
+        _username = user?.username;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final username = MockData.getCurrentUser().username;
+    final username = _username ?? "User";
     return Scaffold(
       extendBody: true,
       body: Container(

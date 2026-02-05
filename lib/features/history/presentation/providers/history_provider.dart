@@ -3,7 +3,7 @@ import 'package:smart_quiz/core/models/history_model.dart';
 import 'package:smart_quiz/features/history/repository/history_repository.dart';
 
 /// Provider for quiz history state management
-/// 
+///
 /// Handles history data, loading states, and history operations
 class HistoryProvider extends ChangeNotifier {
   final HistoryRepository _repository = HistoryRepository();
@@ -26,7 +26,7 @@ class HistoryProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      final history = await _repository.getAllHistory();
+      final history = await _repository.getQuizHistory();
 
       _history = history;
       _isLoading = false;
@@ -73,57 +73,6 @@ class HistoryProvider extends ChangeNotifier {
       _errorMessage = e.toString();
       _isLoading = false;
       notifyListeners();
-    }
-  }
-
-  /// Save quiz result to history
-  Future<bool> saveQuizResult({
-    required String quizId,
-    required int totalQuestions,
-    required int correctAnswers,
-    required int timeTaken,
-    required String difficulty,
-  }) async {
-    try {
-      _isLoading = true;
-      notifyListeners();
-
-      final history = await _repository.saveQuizResult(
-        quizId: quizId,
-        totalQuestions: totalQuestions,
-        correctAnswers: correctAnswers,
-        timeTaken: timeTaken,
-        difficulty: difficulty,
-      );
-
-      // Add to local state
-      _history.insert(0, history);
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _errorMessage = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
-
-  /// Delete history entry
-  Future<bool> deleteHistory(String historyId) async {
-    try {
-      final success = await _repository.deleteHistory(historyId);
-
-      if (success) {
-        _history.removeWhere((h) => h.id == historyId);
-        notifyListeners();
-      }
-
-      return success;
-    } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-      return false;
     }
   }
 

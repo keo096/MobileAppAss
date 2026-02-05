@@ -4,8 +4,6 @@ import 'package:smart_quiz/core/models/user_model.dart';
 import 'package:smart_quiz/features/home/repository/home_repository.dart';
 
 /// Provider for home page state management
-/// 
-/// Handles featured quizzes, daily quiz, learning progress, and activity
 class HomeProvider extends ChangeNotifier {
   final HomeRepository _repository = HomeRepository();
 
@@ -22,8 +20,10 @@ class HomeProvider extends ChangeNotifier {
   List<Quiz> get featuredQuizzes => List.unmodifiable(_featuredQuizzes);
   Quiz? get dailyQuiz => _dailyQuiz;
   Map<String, dynamic>? get learningProgress => _learningProgress;
-  List<Map<String, dynamic>> get recentActivity => List.unmodifiable(_recentActivity);
-  List<LeaderboardEntry> get leaderboardPreview => List.unmodifiable(_leaderboardPreview);
+  List<Map<String, dynamic>> get recentActivity =>
+      List.unmodifiable(_recentActivity);
+  List<LeaderboardEntry> get leaderboardPreview =>
+      List.unmodifiable(_leaderboardPreview);
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -35,11 +35,11 @@ class HomeProvider extends ChangeNotifier {
       notifyListeners();
 
       await Future.wait([
-        loadFeaturedQuizzes(),
-        loadDailyQuiz(),
-        loadLearningProgress(),
-        loadRecentActivity(),
-        loadLeaderboardPreview(),
+        _loadFeatured(),
+        _loadDaily(),
+        _loadProgress(),
+        _loadRecentActivity(),
+        _loadLeaderboard(),
       ]);
 
       _isLoading = false;
@@ -51,64 +51,24 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  /// Load featured quizzes
-  Future<void> loadFeaturedQuizzes({int limit = 5}) async {
-    try {
-      final quizzes = await _repository.getFeaturedQuizzes(limit: limit);
-      _featuredQuizzes = quizzes;
-      notifyListeners();
-    } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-    }
+  Future<void> _loadFeatured() async {
+    _featuredQuizzes = await _repository.getFeaturedQuizzes();
   }
 
-  /// Load daily quiz
-  Future<void> loadDailyQuiz() async {
-    try {
-      final quiz = await _repository.getDailyQuiz();
-      _dailyQuiz = quiz;
-      notifyListeners();
-    } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-    }
+  Future<void> _loadDaily() async {
+    _dailyQuiz = await _repository.getDailyQuiz();
   }
 
-  /// Load learning progress
-  Future<void> loadLearningProgress() async {
-    try {
-      final progress = await _repository.getLearningProgress();
-      _learningProgress = progress;
-      notifyListeners();
-    } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-    }
+  Future<void> _loadProgress() async {
+    _learningProgress = await _repository.getLearningProgress();
   }
 
-  /// Load recent activity
-  Future<void> loadRecentActivity({int limit = 5}) async {
-    try {
-      final activity = await _repository.getRecentActivity(limit: limit);
-      _recentActivity = activity;
-      notifyListeners();
-    } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-    }
+  Future<void> _loadRecentActivity() async {
+    _recentActivity = await _repository.getRecentActivity();
   }
 
-  /// Load leaderboard preview
-  Future<void> loadLeaderboardPreview({int limit = 5}) async {
-    try {
-      final leaderboard = await _repository.getLeaderboardPreview(limit: limit);
-      _leaderboardPreview = leaderboard;
-      notifyListeners();
-    } catch (e) {
-      _errorMessage = e.toString();
-      notifyListeners();
-    }
+  Future<void> _loadLeaderboard() async {
+    _leaderboardPreview = await _repository.getLeaderboardPreview();
   }
 
   /// Refresh all home data
@@ -122,4 +82,3 @@ class HomeProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-

@@ -1,4 +1,4 @@
-import 'package:smart_quiz/core/data/mock_data.dart';
+import 'package:smart_quiz/core/data/api_config.dart';
 import 'package:smart_quiz/core/models/user_model.dart';
 
 /// Repository for authentication-related data operations
@@ -16,20 +16,7 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 800));
-      // TODO: Replace with actual API call
-      // final response = await apiClient.post('/auth/login', {
-      //   'username': username,
-      //   'password': password,
-      // });
-      // return User.fromJson(response.data);
-      // Mock validation using MockData.authenticate
-      if (MockData.authenticate(username, password)) {
-        return MockData.getCurrentUser();
-      } else {
-        throw Exception('Invalid username or password');
-      }
+      return await ApiConfig.service.login(username, password);
     } catch (e) {
       throw Exception('Login failed: $e');
     }
@@ -50,27 +37,11 @@ class AuthRepository {
     String? fullName,
   }) async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 1000));
-      // TODO: Replace with actual API call
-      // final response = await apiClient.post('/auth/register', {
-      //   'username': username,
-      //   'email': email,
-      //   'password': password,
-      //   'fullName': fullName,
-      // });
-      // return User.fromJson(response.data);
-      // Mock registration - create new user
-      return User(
-        id: 'user_${DateTime.now().millisecondsSinceEpoch}',
-        username: username,
-        email: email,
+      return await ApiConfig.service.register(
+        username,
+        email,
+        password,
         fullName: fullName,
-        totalQuizzes: 0,
-        totalScore: 0,
-        averageScore: 0.0,
-        rank: 0,
-        joinedAt: DateTime.now(),
       );
     } catch (e) {
       throw Exception('Registration failed: $e');
@@ -84,14 +55,8 @@ class AuthRepository {
   /// Throws [Exception] if request fails
   Future<bool> requestPasswordReset(String email) async {
     try {
-      // Simulate network delay
+      // This could also be added to ApiService if needed
       await Future.delayed(const Duration(milliseconds: 600));
-      // TODO: Replace with actual API call
-      // final response = await apiClient.post('/auth/password-reset', {
-      //   'email': email,
-      // });
-      // return response.statusCode == 200;
-      // Mock - always return true
       return true;
     } catch (e) {
       throw Exception('Password reset request failed: $e');
@@ -104,13 +69,7 @@ class AuthRepository {
   /// Throws [Exception] if fetch fails
   Future<User?> getCurrentUser() async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      // TODO: Replace with actual API call
-      // final response = await apiClient.get('/auth/me');
-      // return User.fromJson(response.data);
-      return MockData.getCurrentUser();
+      return await ApiConfig.service.getCurrentUser();
     } catch (e) {
       throw Exception('Failed to get current user: $e');
     }
@@ -122,13 +81,7 @@ class AuthRepository {
   /// Throws [Exception] if logout fails
   Future<bool> logout() async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 400));
-
-      // TODO: Replace with actual API call
-      // final response = await apiClient.post('/auth/logout');
-      // return response.statusCode == 200;
-      // Mock - always return true
+      await ApiConfig.service.logout();
       return true;
     } catch (e) {
       throw Exception('Logout failed: $e');
@@ -140,11 +93,8 @@ class AuthRepository {
   /// Returns true if user is authenticated, false otherwise
   Future<bool> isAuthenticated() async {
     try {
-      // TODO: Replace with actual check (e.g., check token in storage)
-      // final token = await storage.getToken();
-      // return token != null;
-      // Mock - always return true for now
-      return true;
+      final user = await getCurrentUser();
+      return user != null;
     } catch (e) {
       return false;
     }

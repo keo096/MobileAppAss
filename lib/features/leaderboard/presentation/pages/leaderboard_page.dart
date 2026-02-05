@@ -1,16 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/data/mock_data.dart';
+import 'package:smart_quiz/core/data/api_config.dart';
 import 'package:smart_quiz/core/models/user_model.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 
-class LeaderboardPage extends StatelessWidget {
+class LeaderboardPage extends StatefulWidget {
   const LeaderboardPage({super.key});
 
   @override
+  State<LeaderboardPage> createState() => _LeaderboardPageState();
+}
+
+class _LeaderboardPageState extends State<LeaderboardPage> {
+  List<LeaderboardEntry> _leaderboard = [];
+  User? _currentUser;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final results = await Future.wait([
+        ApiConfig.service.fetchLeaderboard(),
+        ApiConfig.service.getCurrentUser(),
+      ]);
+
+      if (mounted) {
+        setState(() {
+          _leaderboard = results[0] as List<LeaderboardEntry>;
+          _currentUser = results[1] as User?;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final leaderboard = MockData.getLeaderboard();
-    final currentUser = MockData.getCurrentUser();
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.primaryPurple,
+        body: Center(child: CircularProgressIndicator(color: Colors.white)),
+      );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.primaryPurple,
@@ -31,16 +73,19 @@ class LeaderboardPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Top 3 Podium (Simplified)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      _buildPodiumItem(leaderboard[1], 2, 70), // Rank 2
-                      _buildPodiumItem(leaderboard[0], 1, 90), // Rank 1
-                      _buildPodiumItem(leaderboard[2], 3, 60), // Rank 3
-                    ],
-                  ),
+                  // Top 3 Podium
+                  if (_leaderboard.isNotEmpty)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (_leaderboard.length > 1)
+                          _buildPodiumItem(_leaderboard[1], 2, 70), // Rank 2
+                        _buildPodiumItem(_leaderboard[0], 1, 90), // Rank 1
+                        if (_leaderboard.length > 2)
+                          _buildPodiumItem(_leaderboard[2], 3, 60), // Rank 3
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -57,13 +102,14 @@ class LeaderboardPage extends StatelessWidget {
                 ),
                 child: ListView.builder(
                   padding: const EdgeInsets.all(20),
-                  itemCount: leaderboard.length > 3
-                      ? leaderboard.length - 3
+                  itemCount: _leaderboard.length > 3
+                      ? _leaderboard.length - 3
                       : 0,
                   itemBuilder: (context, index) {
-                    final entry = leaderboard[index + 3];
+                    final entry = _leaderboard[index + 3];
                     final isCurrentUser =
-                        entry.username == currentUser.username;
+                        _currentUser != null &&
+                        entry.username == _currentUser!.username;
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 15),

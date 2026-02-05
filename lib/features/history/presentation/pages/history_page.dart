@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/data/mock_data.dart';
+import 'package:smart_quiz/core/data/api_config.dart';
 import 'package:smart_quiz/core/models/history_model.dart';
 import 'package:smart_quiz/core/models/quiz_model.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
@@ -43,37 +43,43 @@ class _HistoryPageState extends State<HistoryPage>
   }
 
   /// Check user role and load appropriate data
-  void _checkRoleAndLoadData() {
-    setState(() {
-      _isAdmin = MockData.isAdmin();
-      _isLoading = true;
-    });
+  Future<void> _checkRoleAndLoadData() async {
+    if (!mounted) return;
 
-    _loadData();
+    final isAdmin = await ApiConfig.service.isAdmin();
+
+    if (mounted) {
+      setState(() {
+        _isAdmin = isAdmin;
+      });
+      _loadData();
+    }
   }
 
   /// Load quiz history data
-  void _loadData() {
+  Future<void> _loadData() async {
+    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
     });
 
-    // Simulate loading delay
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (mounted) {
-        setState(() {
-          if (_isAdmin) {
-            // Admin: Load created quizzes
-            _filteredHistory = MockData.getCreatedQuizzes();
-          } else {
-            // User: Load quiz history
-            _filteredHistory = MockData.getQuizHistory();
-          }
-          _statistics = MockData.getHistoryStatistics();
-          _isLoading = false;
-        });
+    try {
+      if (_isAdmin) {
+        _filteredHistory = await ApiConfig.service.fetchCreatedQuizzes();
+      } else {
+        await _filterHistory(); // This will load data based on current tab
       }
-    });
+      _statistics = await ApiConfig.service.fetchHistoryStatistics();
+    } catch (e) {
+      debugPrint('Error loading history: $e');
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   /// Handle tab changes
@@ -84,29 +90,38 @@ class _HistoryPageState extends State<HistoryPage>
   }
 
   /// Filter history based on selected tab
-  void _filterHistory() {
-    setState(() {
-      if (_isAdmin) {
-        // Admin: Show all created quizzes (no filtering by status)
-        _filteredHistory = MockData.getCreatedQuizzes();
-      } else {
-        // User: Filter by status
-        switch (_tabController.index) {
-          case 0: // All
-            _filteredHistory = MockData.getQuizHistory();
-            break;
-          case 1: // Completed
-            _filteredHistory = MockData.getQuizHistoryByStatus('completed');
-            break;
-          case 2: // In Progress
-            _filteredHistory = MockData.getQuizHistoryByStatus('in_progress');
-            break;
-          case 3: // Saved
-            _filteredHistory = MockData.getQuizHistoryByStatus('saved');
-            break;
-        }
+  Future<void> _filterHistory() async {
+    if (_isAdmin) {
+      final quizzes = await ApiConfig.service.fetchCreatedQuizzes();
+      if (mounted) {
+        setState(() {
+          _filteredHistory = quizzes;
+        });
       }
-    });
+      return;
+    }
+
+    List<QuizHistory> history = [];
+    switch (_tabController.index) {
+      case 0: // All
+        history = await ApiConfig.service.fetchUserHistory();
+        break;
+      case 1: // Completed
+        history = await ApiConfig.service.fetchHistoryByStatus('completed');
+        break;
+      case 2: // In Progress
+        history = await ApiConfig.service.fetchHistoryByStatus('in_progress');
+        break;
+      case 3: // Saved
+        history = await ApiConfig.service.fetchHistoryByStatus('saved');
+        break;
+    }
+
+    if (mounted) {
+      setState(() {
+        _filteredHistory = history;
+      });
+    }
   }
 
   /// Handle filter button tap

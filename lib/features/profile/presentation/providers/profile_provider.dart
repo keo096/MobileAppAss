@@ -3,8 +3,6 @@ import 'package:smart_quiz/core/models/user_model.dart';
 import 'package:smart_quiz/features/profile/repository/profile_repository.dart';
 
 /// Provider for user profile state management
-/// 
-/// Handles user profile data, statistics, and profile operations
 class ProfileProvider extends ChangeNotifier {
   final ProfileRepository _repository = ProfileRepository();
 
@@ -21,15 +19,13 @@ class ProfileProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   /// Load user profile
-  Future<void> loadProfile([String? userId]) async {
+  Future<void> loadProfile() async {
     try {
       _isLoading = true;
       _errorMessage = null;
       notifyListeners();
 
-      final user = await _repository.getUserProfile(userId);
-
-      _user = user;
+      _user = await _repository.getUserProfile();
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -40,15 +36,13 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   /// Load user statistics
-  Future<void> loadStatistics([String? userId]) async {
+  Future<void> loadStatistics() async {
     try {
       _isLoading = true;
       _errorMessage = null;
       notifyListeners();
 
-      final stats = await _repository.getUserStatistics(userId);
-
-      _statistics = stats;
+      _statistics = await _repository.getProfileStats();
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -59,25 +53,14 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   /// Update user profile
-  Future<bool> updateProfile({
-    required String userId,
-    String? fullName,
-    String? email,
-    String? avatarUrl,
-  }) async {
+  Future<bool> updateProfile({String? fullName, String? email}) async {
     try {
       _isLoading = true;
       _errorMessage = null;
       notifyListeners();
 
-      final updatedUser = await _repository.updateProfile(
-        userId: userId,
-        fullName: fullName,
-        email: email,
-        avatarUrl: avatarUrl,
-      );
+      _user = await _repository.updateProfile(fullName: fullName, email: email);
 
-      _user = updatedUser;
       _isLoading = false;
       notifyListeners();
       return true;
@@ -89,36 +72,10 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-  /// Delete user account
-  Future<bool> deleteAccount(String userId) async {
-    try {
-      _isLoading = true;
-      _errorMessage = null;
-      notifyListeners();
-
-      final success = await _repository.deleteAccount(userId);
-
-      if (success) {
-        _user = null;
-      }
-
-      _isLoading = false;
-      notifyListeners();
-      return success;
-    } catch (e) {
-      _errorMessage = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
-
   /// Refresh profile data
   Future<void> refresh() async {
-    if (_user != null) {
-      await loadProfile(_user!.id);
-      await loadStatistics(_user!.id);
-    }
+    await loadProfile();
+    await loadStatistics();
   }
 
   /// Clear error message
@@ -127,4 +84,3 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
