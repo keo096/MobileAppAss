@@ -6,8 +6,7 @@ import 'package:smart_quiz/features/home/presentation/pages/home_page.dart';
 import 'package:smart_quiz/features/history/presentation/pages/history_page.dart';
 import 'package:smart_quiz/features/category/presentation/pages/category_page_wrapper.dart';
 import 'package:smart_quiz/features/profile/presentation/pages/profile_page.dart';
-
-import 'package:smart_quiz/features/result/presentation/pages/result_page.dart';
+import 'package:smart_quiz/features/leaderboard/presentation/pages/leaderboard_page.dart';
 
 /// Shared bottom navigation bar widget used across all main feature pages
 class BottomNavBar extends StatelessWidget {
@@ -112,19 +111,12 @@ class BottomNavBar extends StatelessWidget {
       case 2: // Category
         page = const CategoryPageWrapper();
         break;
-      case 3: // Leaderboard (Temporarily ResultPage)
-        page = const ResultPage(
-          quizTitle: "Daily Challenge",
-          totalQuestions: 20,
-          correctAnswers: 18,
-          timeTaken: 300,
-        );
+      case 3: // Leaderboard
+        page = const LeaderboardPage();
         break;
       case 4: // Profile
         page = const ProfilePage();
-        break;
     }
-
     if (page != null) {
       Navigator.pushReplacement(
         context,

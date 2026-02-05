@@ -46,10 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 5),
                   const Text(
                     "chheanglyhok@gmail.com",
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
@@ -58,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     label: Text(AppStrings.editProfile),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white.withOpacity(0.25),
-                      shape: StadiumBorder(),
+                      shape: const StadiumBorder(),
                     ),
                   ),
                 ],
@@ -71,16 +68,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(30),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
 
-                      // Title
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20),
                         child: Align(
@@ -94,7 +88,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       const SizedBox(height: 15),
 
-                      // Summary Boxes
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Column(
@@ -144,12 +137,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       const SizedBox(height: 20),
 
-      // More Section
-      _menuItem(Icons.emoji_events, AppStrings.myAchievements),
-      _menuItem(Icons.save_alt, AppStrings.savedQuizzes),
-      _menuItem(Icons.settings, AppStrings.appSettings),
-      _menuItem(Icons.help, AppStrings.helpSupport),
-      _menuItem(Icons.logout, AppStrings.logout),
+                      // More Section
+                      _menuItem(Icons.emoji_events, AppStrings.myAchievements),
+                      _menuItem(Icons.save_alt, AppStrings.savedQuizzes),
+                      _menuItem(Icons.settings, AppStrings.appSettings),
+                      _menuItem(Icons.help, AppStrings.helpSupport),
+                      _menuItem(Icons.logout, AppStrings.logout),
 
                       const SizedBox(height: 20),
                     ],
@@ -162,9 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
 
       // Bottom Navigation Bar
-      bottomNavigationBar: const BottomNavBar(
-        currentIndex: 4,
-      ),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 4),
     );
   }
 
@@ -196,7 +187,10 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
             const SizedBox(height: 8),
-            Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             if (subtitle.isNotEmpty)
               Text(subtitle, style: const TextStyle(color: Colors.grey)),
           ],

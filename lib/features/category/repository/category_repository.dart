@@ -2,8 +2,6 @@ import 'package:smart_quiz/core/data/mock_data.dart';
 import 'package:smart_quiz/core/models/category_model.dart';
 
 /// Repository for category-related data operations
-///
-/// Currently uses mock data, but structured to easily replace with API calls
 class CategoryRepository {
   /// Get all categories
   ///
@@ -13,11 +11,6 @@ class CategoryRepository {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 400));
-
-      // TODO: Replace with actual API call
-      // final response = await apiClient.get('/categories');
-      // return (response.data as List).map((json) => Category.fromJson(json)).toList();
-
       return MockData.getCategories();
     } catch (e) {
       throw Exception('Failed to fetch categories: $e');
@@ -33,11 +26,6 @@ class CategoryRepository {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 300));
-
-      // TODO: Replace with actual API call
-      // final response = await apiClient.get('/categories/$categoryId');
-      // return Category.fromJson(response.data);
-
       final categories = await getAllCategories();
       try {
         return categories.firstWhere((cat) => cat.title == categoryId);
@@ -73,13 +61,11 @@ class CategoryRepository {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 500));
-
       // TODO: Replace with actual API call
       // final response = await apiClient.put('/categories/$categoryId/progress', {
       //   'progress': progress,
       // });
       // return response.statusCode == 200;
-
       // For mock data, just return success
       return true;
     } catch (e) {

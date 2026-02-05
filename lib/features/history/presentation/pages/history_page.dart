@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/theme/app_theme.dart';
 import 'package:smart_quiz/core/data/mock_data.dart';
 import 'package:smart_quiz/core/models/history_model.dart';
 import 'package:smart_quiz/core/models/quiz_model.dart';
@@ -112,7 +111,6 @@ class _HistoryPageState extends State<HistoryPage>
 
   /// Handle filter button tap
   void _onFilterTap() {
-    // TODO: Implement filter functionality
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Filter functionality coming soon!'),

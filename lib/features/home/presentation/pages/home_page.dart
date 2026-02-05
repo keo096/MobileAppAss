@@ -17,6 +17,7 @@ class UserHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final username = MockData.getCurrentUser().username;
     return Scaffold(
+      extendBody: true,
       body: Container(
         decoration: BoxDecoration(gradient: AppTheme.homeGradient),
         child: SafeArea(
@@ -203,7 +204,7 @@ class UserHomePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: CategoryPage(isScrollable: false),
+                  child: const CategoryPage(isScrollable: false),
                 ),
               ),
 
@@ -225,7 +226,7 @@ class UserHomePage extends StatelessWidget {
       // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
       // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavBar(currentIndex: 0),
+      bottomNavigationBar: const BottomNavBar(currentIndex: 0),
     );
   }
 
@@ -258,8 +259,8 @@ class UserHomePage extends StatelessWidget {
                 color: Colors.red,
                 shape: BoxShape.circle,
               ),
-              child: Center(
-                child: const Text(
+              child: const Center(
+                child: Text(
                   "5",
                   style: TextStyle(color: Colors.white, fontSize: 15),
                 ),

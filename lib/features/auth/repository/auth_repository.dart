@@ -18,14 +18,12 @@ class AuthRepository {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 800));
-
       // TODO: Replace with actual API call
       // final response = await apiClient.post('/auth/login', {
       //   'username': username,
       //   'password': password,
       // });
       // return User.fromJson(response.data);
-
       // Mock validation using MockData.authenticate
       if (MockData.authenticate(username, password)) {
         return MockData.getCurrentUser();
@@ -54,7 +52,6 @@ class AuthRepository {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 1000));
-
       // TODO: Replace with actual API call
       // final response = await apiClient.post('/auth/register', {
       //   'username': username,
@@ -63,7 +60,6 @@ class AuthRepository {
       //   'fullName': fullName,
       // });
       // return User.fromJson(response.data);
-
       // Mock registration - create new user
       return User(
         id: 'user_${DateTime.now().millisecondsSinceEpoch}',
@@ -90,13 +86,11 @@ class AuthRepository {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 600));
-
       // TODO: Replace with actual API call
       // final response = await apiClient.post('/auth/password-reset', {
       //   'email': email,
       // });
       // return response.statusCode == 200;
-
       // Mock - always return true
       return true;
     } catch (e) {
@@ -116,7 +110,6 @@ class AuthRepository {
       // TODO: Replace with actual API call
       // final response = await apiClient.get('/auth/me');
       // return User.fromJson(response.data);
-
       return MockData.getCurrentUser();
     } catch (e) {
       throw Exception('Failed to get current user: $e');
@@ -135,7 +128,6 @@ class AuthRepository {
       // TODO: Replace with actual API call
       // final response = await apiClient.post('/auth/logout');
       // return response.statusCode == 200;
-
       // Mock - always return true
       return true;
     } catch (e) {
@@ -151,7 +143,6 @@ class AuthRepository {
       // TODO: Replace with actual check (e.g., check token in storage)
       // final token = await storage.getToken();
       // return token != null;
-
       // Mock - always return true for now
       return true;
     } catch (e) {

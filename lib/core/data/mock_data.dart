@@ -83,6 +83,7 @@ class MockData {
       topic: 'Grammar',
       deadline: DateTime.now().add(const Duration(days: 7)),
       isPublished: true,
+      averageScore: 75.5,
     ),
     Quiz(
       id: 'quiz_2',
@@ -96,6 +97,7 @@ class MockData {
       topic: 'Grammar',
       deadline: DateTime.now().add(const Duration(days: 5)),
       isPublished: true,
+      averageScore: 68.2,
     ),
 
     // --- Khmer History ---
@@ -139,6 +141,7 @@ class MockData {
       topic: 'Calculus',
       deadline: DateTime.now().add(const Duration(days: 12)),
       isPublished: true,
+      averageScore: 62.8,
     ),
     Quiz(
       id: 'quiz_math_2',
@@ -195,6 +198,7 @@ class MockData {
       topic: 'General Chemistry',
       deadline: DateTime.now().add(const Duration(days: 9)),
       isPublished: true,
+      averageScore: 71.3,
     ),
     Quiz(
       id: 'quiz_chem_2',
@@ -247,7 +251,6 @@ class MockData {
   // QUIZ QUESTIONS DATA
   // ============================================
   /// Get questions for a specific quiz
-  /// Add or modify questions here
   static List<Question> getQuestionsForQuiz(String quizId) {
     // Check dynamic questions first (for admin entries)
     if (_dynamicQuestions.containsKey(quizId)) {
@@ -409,21 +412,20 @@ class MockData {
 
   /// Get full quiz with questions
   static QuizWithQuestions? getQuizWithQuestions(String quizId) {
-    final quiz = getQuizzes().firstWhere(
-      (q) => q.id == quizId,
-      orElse: () => getQuizzes().first,
-    );
-
-    final questions = getQuestionsForQuiz(quizId);
-    if (questions.isEmpty) return null;
-
-    return QuizWithQuestions(quiz: quiz, questions: questions);
+    final quizList = getQuizzes();
+    try {
+      final quiz = quizList.firstWhere((q) => q.id == quizId);
+      final questions = getQuestionsForQuiz(quizId);
+      if (questions.isEmpty) return null;
+      return QuizWithQuestions(quiz: quiz, questions: questions);
+    } catch (e) {
+      return null;
+    }
   }
 
   // ============================================
   // QUIZ HISTORY DATA
   // ============================================
-  /// Add or modify quiz history here
   static List<QuizHistory> getQuizHistory() {
     final now = DateTime.now();
     return [
@@ -435,7 +437,7 @@ class MockData {
         totalQuestions: 10,
         correctAnswers: 10,
         score: 100.0,
-        timeTaken: 720, // 12 minutes
+        timeTaken: 720,
         completedAt: now.subtract(const Duration(days: 2)),
         difficulty: 'easy',
         status: 'completed',
@@ -448,7 +450,7 @@ class MockData {
         totalQuestions: 10,
         correctAnswers: 10,
         score: 100.0,
-        timeTaken: 720, // 12 minutes
+        timeTaken: 720,
         completedAt: now.subtract(const Duration(days: 3)),
         difficulty: 'easy',
         status: 'completed',
@@ -461,7 +463,7 @@ class MockData {
         totalQuestions: 20,
         correctAnswers: 15,
         score: 75.0,
-        timeTaken: 720, // 12 minutes
+        timeTaken: 720,
         completedAt: now.subtract(const Duration(days: 5)),
         difficulty: 'medium',
         status: 'in_progress',
@@ -475,7 +477,7 @@ class MockData {
         totalQuestions: 20,
         correctAnswers: 15,
         score: 75.0,
-        timeTaken: 720, // 12 minutes
+        timeTaken: 720,
         completedAt: now.subtract(const Duration(days: 6)),
         difficulty: 'medium',
         status: 'in_progress',
@@ -489,20 +491,17 @@ class MockData {
         totalQuestions: 15,
         correctAnswers: 15,
         score: 100.0,
-        timeTaken: 720, // 12 minutes
+        timeTaken: 720,
         completedAt: now.subtract(const Duration(days: 8)),
         difficulty: 'easy',
         status: 'completed',
       ),
-      // Add more history entries here...
     ];
   }
 
   // ============================================
   // USER DATA
   // ============================================
-
-  /// Predefined users with credentials
   static final Map<String, Map<String, dynamic>> _predefinedUsers = {
     'admin': {
       'password': '112233',
@@ -519,6 +518,82 @@ class MockData {
         joinedAt: DateTime(2025, 1, 1),
       ),
     },
+    'leap': {
+      'password': '112233',
+      'user': User(
+        id: 'admin_leap',
+        username: 'leap',
+        email: 'leap@smartquiz.com',
+        fullName: 'Leap',
+        totalQuizzes: 0,
+        totalScore: 0,
+        averageScore: 0.0,
+        rank: 0,
+        role: 'admin',
+        joinedAt: DateTime(2025, 2, 1),
+      ),
+    },
+    'mara': {
+      'password': '112233',
+      'user': User(
+        id: 'admin_mara',
+        username: 'mara',
+        email: 'mara@smartquiz.com',
+        fullName: 'Mara',
+        totalQuizzes: 0,
+        totalScore: 0,
+        averageScore: 0.0,
+        rank: 0,
+        role: 'admin',
+        joinedAt: DateTime(2025, 2, 1),
+      ),
+    },
+    'sokea': {
+      'password': '112233',
+      'user': User(
+        id: 'admin_sokea',
+        username: 'sokea',
+        email: 'sokea@smartquiz.com',
+        fullName: 'Sokea',
+        totalQuizzes: 0,
+        totalScore: 0,
+        averageScore: 0.0,
+        rank: 0,
+        role: 'admin',
+        joinedAt: DateTime(2025, 2, 1),
+      ),
+    },
+    'sreykeo': {
+      'password': '112233',
+      'user': User(
+        id: 'admin_sreykeo',
+        username: 'sreykeo',
+        email: 'sreykeo@smartquiz.com',
+        fullName: 'Sreykeo',
+        totalQuizzes: 0,
+        totalScore: 0,
+        averageScore: 0.0,
+        rank: 0,
+        role: 'admin',
+        joinedAt: DateTime(2025, 2, 1),
+      ),
+    },
+    'chheangly': {
+      'password': '112233',
+      'user': User(
+        id: 'admin_chheangly',
+        username: 'chheangly',
+        email: 'chheangly@smartquiz.com',
+        fullName: 'Chheangly',
+        totalQuizzes: 0,
+        totalScore: 0,
+        averageScore: 0.0,
+        rank: 0,
+        role: 'admin',
+        joinedAt: DateTime(2025, 2, 1),
+      ),
+    },
+
     'user': {
       'password': '123456',
       'user': User(
@@ -538,31 +613,21 @@ class MockData {
 
   static User? _currentUser;
 
-  /// Authenticate user with username and password
-  /// Returns true if authentication successful, false otherwise
   static bool authenticate(String username, String password) {
     final userEntry = _predefinedUsers[username.toLowerCase()];
-
     if (userEntry != null && userEntry['password'] == password) {
       _currentUser = userEntry['user'] as User;
       return true;
     }
-
-    // Authentication failed - no fallback
     return false;
   }
 
-  /// Login with username (backward compatibility - for testing only)
-  /// This allows login without password for dynamic usernames
   static void login(String username) {
-    // Check if user exists in predefined users first
     final userEntry = _predefinedUsers[username.toLowerCase()];
     if (userEntry != null) {
       _currentUser = userEntry['user'] as User;
       return;
     }
-
-    // Fallback: Create dynamic user based on keyword
     if (username.toLowerCase().contains('admin')) {
       _currentUser = User(
         id: 'admin_dynamic',
@@ -576,7 +641,7 @@ class MockData {
         role: 'admin',
         joinedAt: DateTime.now(),
       );
-    } else if (username.toLowerCase().contains('user')) {
+    } else {
       _currentUser = User(
         id: 'user_dynamic',
         username: username,
@@ -592,9 +657,7 @@ class MockData {
     }
   }
 
-  /// Get current user data
   static User getCurrentUser() {
-    // Return logged in user or default guest user
     return _currentUser ??
         User(
           id: 'guest',
@@ -610,17 +673,14 @@ class MockData {
         );
   }
 
-  /// Check if user is logged in
   static bool isLoggedIn() {
     return _currentUser != null;
   }
 
-  /// Logout current user
   static void logout() {
     _currentUser = null;
   }
 
-  /// Check if current user is admin
   static bool isAdmin() {
     return getCurrentUser().role == 'admin';
   }
@@ -628,7 +688,6 @@ class MockData {
   // ============================================
   // LEADERBOARD DATA
   // ============================================
-  /// Add or modify leaderboard entries here
   static List<LeaderboardEntry> getLeaderboard() {
     return [
       LeaderboardEntry(
@@ -665,20 +724,18 @@ class MockData {
       ),
       LeaderboardEntry(
         userId: 'user_5',
-        username: 'admin', // Current user
+        username: 'admin',
         totalScore: 1800,
         totalQuizzes: 35,
         averageScore: 75.3,
         rank: 5,
       ),
-      // Add more leaderboard entries here...
     ];
   }
 
   // ============================================
   // HELPER METHODS
   // ============================================
-  /// Get quizzes by category
   static List<Quiz> getQuizzesByCategory(String categoryTitle) {
     return getQuizzes()
         .where(
@@ -687,7 +744,6 @@ class MockData {
         .toList();
   }
 
-  /// Get quiz by ID
   static Quiz? getQuizById(String quizId) {
     try {
       return getQuizzes().firstWhere((quiz) => quiz.id == quizId);
@@ -696,58 +752,47 @@ class MockData {
     }
   }
 
-  /// Get history by quiz ID
   static List<QuizHistory> getHistoryByQuizId(String quizId) {
     return getQuizHistory()
         .where((history) => history.quizId == quizId)
         .toList();
   }
 
-  /// Get recent history (last N entries)
   static List<QuizHistory> getRecentHistory({int limit = 10}) {
     final history = getQuizHistory();
     history.sort((a, b) => b.completedAt.compareTo(a.completedAt));
     return history.take(limit).toList();
   }
 
-  /// Get quiz history by status
   static List<QuizHistory> getQuizHistoryByStatus(String status) {
     return getQuizHistory().where((h) => h.status == status).toList();
   }
 
-  /// Get created categories (for admin)
   static List<Category> getCreatedCategories() {
-    // In a real app, this would filter by creator ID
-    // For now, return all categories as if admin created them
     return getCategories();
   }
 
-  /// Get statistics for history
   static Map<String, dynamic> getHistoryStatistics() {
     final history = getQuizHistory();
     if (history.isEmpty) {
       return {'totalQuizzes': 0, 'averageScore': 0.0, 'totalTime': 0};
     }
-
     final totalQuizzes = history.length;
     final averageScore =
         history.map((h) => h.score).reduce((a, b) => a + b) / totalQuizzes;
     final totalTime = history.map((h) => h.timeTaken).reduce((a, b) => a + b);
-
     return {
       'totalQuizzes': totalQuizzes,
       'averageScore': averageScore,
-      'totalTime': totalTime, // in seconds
+      'totalTime': totalTime,
     };
   }
 
-  /// Get summary statistics for admin
   static Map<String, dynamic> getAdminSummaryStatistics() {
     final quizzes = getCreatedQuizzes();
     int totalParticipants = 0;
     double totalScoreSum = 0;
     int quizCountWithParticipants = 0;
-
     for (var quiz in quizzes) {
       final participants = getQuizParticipants(quiz.id);
       totalParticipants += participants.length;
@@ -759,11 +804,9 @@ class MockData {
         quizCountWithParticipants++;
       }
     }
-
     final overallAverageScore = quizCountWithParticipants > 0
         ? totalScoreSum / quizCountWithParticipants
         : 0.0;
-
     return {
       'totalQuizzes': quizzes.length,
       'totalParticipants': totalParticipants,
@@ -771,90 +814,62 @@ class MockData {
     };
   }
 
-  /// Get quiz questions by quiz ID
   static List<Question> getQuizQuestions(String quizId) {
     return getQuestionsForQuiz(quizId);
   }
 
-  /// Add a question to a quiz
   static void addQuestionToQuiz(String quizId, Question question) {
     if (!_dynamicQuestions.containsKey(quizId)) {
-      // If first dynamic question, start fresh
       _dynamicQuestions[quizId] = [];
     }
     _dynamicQuestions[quizId]!.add(question);
   }
 
-  /// Check if quiz has real questions (not just defaults)
   static bool hasRealQuestions(String quizId) {
     if (_dynamicQuestions.containsKey(quizId) &&
         _dynamicQuestions[quizId]!.isNotEmpty) {
       return true;
     }
-    // For hardcoded quizzes
-    return quizId.startsWith('quiz_') &&
-        !quizId.contains('custom_') &&
-        !quizId.startsWith(
-          'quiz_17',
-        ); // Exclude new quizzes created with timestamp
+    return quizId.startsWith('quiz_') && !quizId.contains('custom_');
   }
 
-  /// Get user answers for a quiz history
   static Map<int, int> getUserAnswers(String historyId) {
-    // Mock user answers (questionIndex -> answerIndex)
-    // This simulates what the user answered
     return {
-      0: 0, // Correct
-      1: 1, // Correct
-      2: 2, // Correct
-      3: 1, // Correct
-      4: 0, // Correct
-      5: 2, // Correct
-      6: 1, // Correct
-      7: 2, // Correct
-      8: 1, // Correct
-      9: 1, // Correct
-      10: 1, // Correct
-      11: 2, // Correct
-      12: 2, // Correct
-      13: 1, // Correct
-      14: 2, // Correct
-      15: 3, // Correct
-      16: 2, // Correct
-      17: 3, // Correct
-      18: 1, // Correct
-      19: 1, // Correct
+      0: 0,
+      1: 1,
+      2: 2,
+      3: 1,
+      4: 0,
+      5: 2,
+      6: 1,
+      7: 2,
+      8: 1,
+      9: 1,
+      10: 1,
+      11: 2,
+      12: 2,
+      13: 1,
+      14: 2,
+      15: 3,
+      16: 2,
+      17: 3,
+      18: 1,
+      19: 1,
     };
   }
 
-  /// Save quiz progress (for resume functionality)
   static void saveQuizProgress(String quizId, Map<String, dynamic> progress) {
-    // In a real app, this would save to database/storage
-    // For now, just print for demonstration
     print('Saving progress for quiz $quizId: $progress');
   }
 
-  /// Get created quizzes (for admin)
   static List<Quiz> getCreatedQuizzes() {
-    // In a real app, this would filter by creator ID
-    // For now, return all quizzes as if admin created them
     return getQuizzes();
   }
 
-  /// Get quiz participants (users who completed a specific quiz)
   static List<QuizParticipant> getQuizParticipants(String quizId) {
-    // Check if the quiz is published or a legacy quiz
     final quiz = getQuizById(quizId);
-    if (quiz != null && !quiz.isPublished) {
-      return []; // Return empty list for unpublished quizzes
-    }
-
-    // Only return mock participants for legacy quizzes to keep data consistent
-    if (!hasRealQuestions(quizId)) {
-      return []; // Return empty list for new quizzes (not taken yet)
-    }
-
-    // Mock participants data
+    if (quiz != null && !quiz.isPublished) return [];
+    if (!hasRealQuestions(quizId)) return [];
     final now = DateTime.now();
     return [
       QuizParticipant(
@@ -862,7 +877,7 @@ class MockData {
         userName: 'John Doe',
         userEmail: 'john@example.com',
         score: 95.0,
-        timeTaken: 720, // 12 minutes
+        timeTaken: 720,
         completedAt: now.subtract(const Duration(days: 1)),
         correctAnswers: 19,
         totalQuestions: 20,
@@ -872,7 +887,7 @@ class MockData {
         userName: 'Jane Smith',
         userEmail: 'jane@example.com',
         score: 85.0,
-        timeTaken: 840, // 14 minutes
+        timeTaken: 840,
         completedAt: now.subtract(const Duration(days: 2)),
         correctAnswers: 17,
         totalQuestions: 20,
@@ -882,7 +897,7 @@ class MockData {
         userName: 'Bob Johnson',
         userEmail: 'bob@example.com',
         score: 75.0,
-        timeTaken: 900, // 15 minutes
+        timeTaken: 900,
         completedAt: now.subtract(const Duration(days: 3)),
         correctAnswers: 15,
         totalQuestions: 20,
@@ -892,7 +907,7 @@ class MockData {
         userName: 'Alice Williams',
         userEmail: 'alice@example.com',
         score: 90.0,
-        timeTaken: 780, // 13 minutes
+        timeTaken: 780,
         completedAt: now.subtract(const Duration(days: 4)),
         correctAnswers: 18,
         totalQuestions: 20,
@@ -902,7 +917,7 @@ class MockData {
         userName: 'Charlie Brown',
         userEmail: 'charlie@example.com',
         score: 70.0,
-        timeTaken: 960, // 16 minutes
+        timeTaken: 960,
         completedAt: now.subtract(const Duration(days: 5)),
         correctAnswers: 14,
         totalQuestions: 20,
@@ -910,10 +925,8 @@ class MockData {
     ];
   }
 
-  /// Get quiz statistics (for admin)
   static Map<String, dynamic> getQuizStatistics(String quizId) {
     final participants = getQuizParticipants(quizId);
-
     if (participants.isEmpty) {
       return {
         'totalParticipants': 0,
@@ -923,16 +936,14 @@ class MockData {
         'lowestScore': 0.0,
       };
     }
-
     final scores = participants.map((p) => p.score).toList();
     final averageScore = scores.reduce((a, b) => a + b) / scores.length;
     final highestScore = scores.reduce((a, b) => a > b ? a : b);
     final lowestScore = scores.reduce((a, b) => a < b ? a : b);
-
     return {
       'totalParticipants': participants.length,
       'averageScore': averageScore,
-      'completionRate': 0.85, // Mock completion rate
+      'completionRate': 0.85,
       'highestScore': highestScore,
       'lowestScore': lowestScore,
     };

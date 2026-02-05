@@ -4,7 +4,6 @@ import 'package:smart_quiz/features/category/repository/category_repository.dart
 
 /// Provider for category state management
 ///
-/// Handles category data, loading states, and category operations
 class CategoryProvider extends ChangeNotifier {
   final CategoryRepository _repository = CategoryRepository();
 

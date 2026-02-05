@@ -51,9 +51,11 @@ class AppStrings {
   static const String onboardingTitle1 = "Learn Smarter with Quizzes";
   static const String onboardingDesc1 = "Practise Knowledge anytime, anywhere";
   static const String onboardingTitle2 = "Choose your Topic";
-  static const String onboardingDesc2 = "General knowledge,\nEnglish,\ntechnology& \nmore";
+  static const String onboardingDesc2 =
+      "General knowledge,\nEnglish,\ntechnology& \nmore";
   static const String onboardingTitle3 = "Track Your Progress";
-  static const String onboardingDesc3 = "Instant feedback and time-based quizzes";
+  static const String onboardingDesc3 =
+      "Instant feedback and time-based quizzes";
 
   // Loading
   static const String loading = "Loading...";
@@ -62,5 +64,5 @@ class AppStrings {
   static const String pleaseInputUsername = "Please input username";
   static const String pleaseInputPassword = "Please input password";
   static const String invalidCredentials = "Invalid username or password";
+  static String? get categories => null;
 }
-
