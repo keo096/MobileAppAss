@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:smart_quiz/core/data/api_config.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
 
 class CreateQuizPage extends StatefulWidget {
   final String categoryTitle;
@@ -78,7 +78,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
       );
 
       try {
-        await ApiConfig.service.createQuiz(newQuiz, []); // Initially empty
+        await ApiConfig.quiz.createQuiz(newQuiz, []); // Initially empty
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

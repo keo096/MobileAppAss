@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/core/models/category_model.dart';
+import 'package:smart_quiz/data/models/category_model.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
 

@@ -1,5 +1,5 @@
-import 'package:smart_quiz/core/data/api_config.dart';
-import 'package:smart_quiz/core/models/user_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
+import 'package:smart_quiz/data/models/user_model.dart';
 
 /// Repository for authentication-related data operations
 ///
@@ -16,7 +16,7 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      return await ApiConfig.service.login(username, password);
+      return await ApiConfig.auth.login(username, password);
     } catch (e) {
       throw Exception('Login failed: $e');
     }
@@ -37,7 +37,7 @@ class AuthRepository {
     String? fullName,
   }) async {
     try {
-      return await ApiConfig.service.register(
+      return await ApiConfig.auth.register(
         username,
         email,
         password,
@@ -69,7 +69,7 @@ class AuthRepository {
   /// Throws [Exception] if fetch fails
   Future<User?> getCurrentUser() async {
     try {
-      return await ApiConfig.service.getCurrentUser();
+      return await ApiConfig.auth.getCurrentUser();
     } catch (e) {
       throw Exception('Failed to get current user: $e');
     }
@@ -81,7 +81,7 @@ class AuthRepository {
   /// Throws [Exception] if logout fails
   Future<bool> logout() async {
     try {
-      await ApiConfig.service.logout();
+      await ApiConfig.auth.logout();
       return true;
     } catch (e) {
       throw Exception('Logout failed: $e');

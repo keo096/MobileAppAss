@@ -1,0 +1,177 @@
+{
+  "auth": {
+    "login": {
+      "endpoint": "POST /auth/login",
+      "sample_request": {
+        "username": "admin",
+        "password": "password"
+      },
+      "sample_response": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "user": {
+          "id": 1,
+          "username": "admin@example.com",
+          "role": "admin",
+          "name": "Admin User"
+        }
+      }
+    }
+  },
+  "categories": {
+    "list": {
+      "endpoint": "GET /categories",
+      "sample_response": [
+        {
+          "title": "Present Simple",
+          "subtitle": "English Tense",
+          "progress": 0.65,
+          "icon_code": 58434,
+          "color_code": 4284513669
+        },
+        {
+          "title": "Khmer History",
+          "subtitle": "History",
+          "progress": 0.50,
+          "icon_code": 58315,
+          "color_code": 4285873408
+        },
+        {
+          "title": "Function Complex",
+          "subtitle": "Math",
+          "progress": 0.30,
+          "icon_code": 57921,
+          "color_code": 4280361243
+        },
+        {
+          "title": "Khmer Culture",
+          "subtitle": "General Knowledge",
+          "progress": 0.80,
+          "icon_code": 57447,
+          "color_code": 4288545914
+        },
+        {
+          "title": "Chemistry Experiment",
+          "subtitle": "Chemistry",
+          "progress": 0.95,
+          "icon_code": 59452,
+          "color_code": 4278235213
+        }
+      ]
+    }
+  },
+  "quizzes": {
+    "list": {
+      "endpoint": "GET /quizzes",
+      "query_params": {
+        "categoryId": "optional_id"
+      },
+      "sample_response": [
+        {
+          "id": "quiz_1",
+          "title": "Intro to Present Simple",
+          "description": "Master the basics of the most common English tense.",
+          "category": "Present Simple",
+          "categoryId": "cat_present_simple",
+          "totalQuestions": 10,
+          "timeLimit": 600,
+          "difficulty": "easy",
+          "topic": "Grammar",
+          "isPublished": true,
+          "averageScore": 75.5
+        },
+        {
+          "id": "quiz_history_1",
+          "title": "Angkor Wat Empire",
+          "description": "Explore the golden age of the Khmer Empire.",
+          "category": "Khmer History",
+          "categoryId": "cat_khmer_history",
+          "totalQuestions": 20,
+          "timeLimit": 1200,
+          "difficulty": "medium",
+          "topic": "History",
+          "isPublished": true
+        }
+      ]
+    },
+    "detail_with_questions": {
+      "endpoint": "GET /quizzes/{quizId}/with-questions",
+      "sample_response": {
+        "quiz": {
+          "id": "quiz_1",
+          "title": "Intro to Present Simple"
+        },
+        "questions": [
+          {
+            "id": "q1_1",
+            "question": "She _____ to school every day.",
+            "options": [
+              "go",
+              "goes",
+              "going",
+              "gone"
+            ],
+            "correctAnswer": 1,
+            "explanation": "Third person singular \"She\" takes \"goes\".",
+            "points": 10
+          },
+          {
+            "id": "q1_2",
+            "question": "They _____ like coffee.",
+            "options": [
+              "dont",
+              "doesnt",
+              "not",
+              "no"
+            ],
+            "correctAnswer": 0,
+            "explanation": "Plural \"They\" takes \"don't\".",
+            "points": 10
+          }
+        ]
+      }
+    }
+  },
+  "history": {
+    "me": {
+      "endpoint": "GET /history/me",
+      "sample_response": [
+        {
+          "id": "history_1",
+          "quizId": "quiz_1",
+          "quizTitle": "Tense",
+          "category": "present simple",
+          "totalQuestions": 10,
+          "correctAnswers": 10,
+          "score": 100.0,
+          "timeTaken": 720,
+          "completedAt": "2024-03-20T10:00:00Z",
+          "difficulty": "easy",
+          "status": "completed"
+        }
+      ]
+    },
+    "statistics": {
+      "endpoint": "GET /history/statistics",
+      "sample_response": {
+        "totalQuizzes": 25,
+        "averageScore": 85.5,
+        "totalTime": 3600
+      }
+    }
+  },
+  "leaderboard": {
+    "list": {
+      "endpoint": "GET /leaderboard",
+      "sample_response": [
+        {
+          "userId": "user_1",
+          "username": "QuizMaster",
+          "totalScore": 2500,
+          "totalQuizzes": 50,
+          "averageScore": 85.2,
+          "rank": 1
+        }
+      ]
+    }
+  }
+}

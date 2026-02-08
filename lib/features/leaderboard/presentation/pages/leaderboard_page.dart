@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/data/api_config.dart';
-import 'package:smart_quiz/core/models/user_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
+import 'package:smart_quiz/data/models/user_model.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 
 class LeaderboardPage extends StatefulWidget {
@@ -25,8 +25,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   Future<void> _loadData() async {
     try {
       final results = await Future.wait([
-        ApiConfig.service.fetchLeaderboard(),
-        ApiConfig.service.getCurrentUser(),
+        ApiConfig.leaderboard.fetchLeaderboard(),
+        ApiConfig.auth.getCurrentUser(),
       ]);
 
       if (mounted) {

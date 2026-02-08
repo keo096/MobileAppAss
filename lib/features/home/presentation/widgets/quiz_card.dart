@@ -32,27 +32,21 @@ class QuizCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: AppTheme.cardTitle,
-                ),
-                Text(
-                  subtitle,
-                  style: AppTheme.cardSubtitle,
-                ),
+                Text(title, style: AppTheme.cardTitle),
+                Text(subtitle, style: AppTheme.cardSubtitle),
                 const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.categoryPurple,
-                  shape: const StadiumBorder(),
-                ),
-                child: Text(
-                  buttonText,
-                  style: AppTheme.bodyLarge.copyWith(
-                    color: AppColors.textWhite,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.categoryPurple,
+                    shape: const StadiumBorder(),
                   ),
-                ),
+                  child: Text(
+                    buttonText,
+                    style: AppTheme.bodyLarge.copyWith(
+                      color: AppColors.textWhite,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -62,4 +56,3 @@ class QuizCard extends StatelessWidget {
     );
   }
 }
-

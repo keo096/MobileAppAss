@@ -1,11 +1,11 @@
-import 'package:smart_quiz/core/data/api_config.dart';
-import 'package:smart_quiz/core/models/category_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
+import 'package:smart_quiz/data/models/category_model.dart';
 
 /// Repository for category-related data operations
 class CategoryRepository {
   Future<List<Category>> getAllCategories() async {
     try {
-      return await ApiConfig.service.fetchCategories();
+      return await ApiConfig.category.fetchCategories();
     } catch (e) {
       throw Exception('Failed to fetch categories: $e');
     }
@@ -26,7 +26,7 @@ class CategoryRepository {
 
   Future<void> addCategory(Category category) async {
     try {
-      await ApiConfig.service.postCategory(category);
+      await ApiConfig.category.postCategory(category);
     } catch (e) {
       throw Exception('Failed to add category: $e');
     }
@@ -43,7 +43,7 @@ class CategoryRepository {
     required double progress,
   }) async {
     try {
-      return await ApiConfig.service.updateCategoryProgress(
+      return await ApiConfig.category.updateCategoryProgress(
         categoryId: categoryId,
         progress: progress,
       );

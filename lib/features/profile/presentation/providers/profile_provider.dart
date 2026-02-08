@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:smart_quiz/core/models/user_model.dart';
+import 'package:smart_quiz/data/models/user_model.dart';
 import 'package:smart_quiz/features/profile/repository/profile_repository.dart';
 
 /// Provider for user profile state management

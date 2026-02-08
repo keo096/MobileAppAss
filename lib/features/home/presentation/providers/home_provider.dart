@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
-import 'package:smart_quiz/core/models/user_model.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
+import 'package:smart_quiz/data/models/user_model.dart';
 import 'package:smart_quiz/features/home/repository/home_repository.dart';
 
 /// Provider for home page state management

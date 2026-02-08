@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/data/api_config.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
 import 'package:smart_quiz/features/quiz/presentation/pages/quiz_page.dart';
 import 'package:smart_quiz/features/quiz/presentation/pages/quiz_resume_page.dart';
 import 'package:smart_quiz/features/quiz/presentation/pages/quiz_review_page.dart';
@@ -32,7 +32,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   }
 
   Future<void> _checkRoleAndLoadQuizzes() async {
-    final isAdmin = await ApiConfig.service.isAdmin();
+    final isAdmin = await ApiConfig.auth.isAdmin();
     if (mounted) {
       setState(() {
         _isAdmin = isAdmin;
@@ -45,7 +45,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
     setState(() => _isLoading = true);
 
     try {
-      final allCategoryQuizzes = await ApiConfig.service.fetchQuizzes(
+      final allCategoryQuizzes = await ApiConfig.quiz.fetchQuizzes(
         categoryId: widget.categoryTitle,
       );
 
@@ -217,7 +217,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
       );
     } else {
       // Logic to check status and navigate to Review, Resume, or Start
-      final history = await ApiConfig.service.fetchUserHistory();
+      final history = await ApiConfig.history.fetchUserHistory('u1');
       final quizHistory = history.where((h) => h.quizId == quiz.id).toList();
 
       if (quizHistory.isNotEmpty) {

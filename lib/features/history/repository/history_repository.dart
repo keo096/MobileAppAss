@@ -1,12 +1,12 @@
-import 'package:smart_quiz/core/data/api_config.dart';
-import 'package:smart_quiz/core/models/history_model.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
+import 'package:smart_quiz/data/models/history_model.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
 
 /// Repository for quiz history-related data operations
 class HistoryRepository {
   Future<List<QuizHistory>> getQuizHistory() async {
     try {
-      return await ApiConfig.service.fetchUserHistory();
+      return await ApiConfig.history.fetchUserHistory('u1');
     } catch (e) {
       throw Exception('Failed to fetch quiz history: $e');
     }
@@ -31,9 +31,9 @@ class HistoryRepository {
     }
   }
 
-  Future<Quiz?> getQuizById(String quizId) async {
+  Future<Quiz?> getQuizById(String quizId, String status, String userId) async {
     try {
-      return await ApiConfig.service.fetchQuizById(quizId);
+      // return await ApiConfig.history.fetchHistoryByStatus(widget.status, widge);
     } catch (e) {
       return null;
     }
@@ -41,7 +41,7 @@ class HistoryRepository {
 
   Future<Map<String, dynamic>> getHistoryStatistics() async {
     try {
-      return await ApiConfig.service.fetchHistoryStatistics();
+      return await ApiConfig.history.fetchHistoryStatistics();
     } catch (e) {
       throw Exception('Failed to fetch history statistics: $e');
     }
@@ -49,7 +49,7 @@ class HistoryRepository {
 
   Future<List<QuizHistory>> getQuizHistoryByStatus(String status) async {
     try {
-      return await ApiConfig.service.fetchHistoryByStatus(status);
+      return await ApiConfig.history.fetchHistoryByStatus(status, 'u1');
     } catch (e) {
       throw Exception('Failed to fetch history by status: $e');
     }

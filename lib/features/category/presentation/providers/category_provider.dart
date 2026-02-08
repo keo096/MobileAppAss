@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart' hide Category;
-import 'package:smart_quiz/core/models/category_model.dart';
+import 'package:smart_quiz/data/models/category_model.dart';
 import 'package:smart_quiz/features/category/repository/category_repository.dart';
 
 /// Provider for category state management

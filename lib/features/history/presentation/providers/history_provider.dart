@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:smart_quiz/core/models/history_model.dart';
+import 'package:smart_quiz/data/models/history_model.dart';
 import 'package:smart_quiz/features/history/repository/history_repository.dart';
 
 /// Provider for quiz history state management

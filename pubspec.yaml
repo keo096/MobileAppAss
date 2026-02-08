@@ -31,6 +31,7 @@ flutter:
   # 🔹 Assets
   assets:
     - assets/images/
+    - assets/config.json
 
   # 🔹 Fonts
   fonts:

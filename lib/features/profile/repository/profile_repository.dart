@@ -1,11 +1,11 @@
-import 'package:smart_quiz/core/data/api_config.dart';
-import 'package:smart_quiz/core/models/user_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
+import 'package:smart_quiz/data/models/user_model.dart';
 
 /// Repository for profile-related data operations
 class ProfileRepository {
   Future<User?> getUserProfile() async {
     try {
-      return await ApiConfig.service.getCurrentUser();
+      return await ApiConfig.auth.getCurrentUser();
     } catch (e) {
       throw Exception('Failed to fetch user profile: $e');
     }
@@ -37,7 +37,7 @@ class ProfileRepository {
 
   Future<Map<String, dynamic>> getProfileStats() async {
     try {
-      return await ApiConfig.service.fetchHistoryStatistics();
+      return await ApiConfig.history.fetchHistoryStatistics();
     } catch (e) {
       throw Exception('Failed to fetch profile statistics: $e');
     }

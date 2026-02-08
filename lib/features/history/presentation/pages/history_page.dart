@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/data/api_config.dart';
-import 'package:smart_quiz/core/models/history_model.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
+import 'package:smart_quiz/data/models/history_model.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 import 'package:smart_quiz/features/history/presentation/widgets/history_header.dart';
 import 'package:smart_quiz/features/history/presentation/widgets/history_tab_bar.dart';
@@ -14,7 +14,8 @@ import 'package:smart_quiz/features/quiz/presentation/pages/admin_quiz_detail_pa
 
 /// History page showing quiz history with tabs and statistics
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key});
+  final String userId;
+  const HistoryPage({super.key, required this.userId});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -46,13 +47,17 @@ class _HistoryPageState extends State<HistoryPage>
   Future<void> _checkRoleAndLoadData() async {
     if (!mounted) return;
 
-    final isAdmin = await ApiConfig.service.isAdmin();
+    try {
+      final isAdmin = await ApiConfig.auth.isAdmin();
 
-    if (mounted) {
-      setState(() {
-        _isAdmin = isAdmin;
-      });
-      _loadData();
+      if (mounted) {
+        setState(() {
+          _isAdmin = isAdmin;
+        });
+        await _loadData();
+      }
+    } catch (e) {
+      debugPrint('Error checking role: $e');
     }
   }
 
@@ -66,11 +71,11 @@ class _HistoryPageState extends State<HistoryPage>
 
     try {
       if (_isAdmin) {
-        _filteredHistory = await ApiConfig.service.fetchCreatedQuizzes();
+        _filteredHistory = await ApiConfig.history.fetchHistory(widget.userId);
       } else {
-        await _filterHistory(); // This will load data based on current tab
+        await _filterHistory(); // Load data based on current tab
       }
-      _statistics = await ApiConfig.service.fetchHistoryStatistics();
+      _statistics = await ApiConfig.history.fetchHistoryStatistics();
     } catch (e) {
       debugPrint('Error loading history: $e');
     }
@@ -91,36 +96,42 @@ class _HistoryPageState extends State<HistoryPage>
 
   /// Filter history based on selected tab
   Future<void> _filterHistory() async {
-    if (_isAdmin) {
-      final quizzes = await ApiConfig.service.fetchCreatedQuizzes();
+    if (!mounted || _isAdmin) return;
+
+    try {
+      List<QuizHistory> history = [];
+
+      switch (_tabController.index) {
+        case 0: // All
+          history = await ApiConfig.history.fetchUserHistory(widget.userId);
+          break;
+        case 1: // Completed
+          history = await ApiConfig.history.fetchHistoryByStatus(
+            'completed',
+            widget.userId,
+          );
+          break;
+        case 2: // In Progress
+          history = await ApiConfig.history.fetchHistoryByStatus(
+            'in_progress',
+            widget.userId,
+          );
+          break;
+        case 3: // Saved
+          history = await ApiConfig.history.fetchHistoryByStatus(
+            'saved',
+            widget.userId,
+          );
+          break;
+      }
+
       if (mounted) {
         setState(() {
-          _filteredHistory = quizzes;
+          _filteredHistory = history;
         });
       }
-      return;
-    }
-
-    List<QuizHistory> history = [];
-    switch (_tabController.index) {
-      case 0: // All
-        history = await ApiConfig.service.fetchUserHistory();
-        break;
-      case 1: // Completed
-        history = await ApiConfig.service.fetchHistoryByStatus('completed');
-        break;
-      case 2: // In Progress
-        history = await ApiConfig.service.fetchHistoryByStatus('in_progress');
-        break;
-      case 3: // Saved
-        history = await ApiConfig.service.fetchHistoryByStatus('saved');
-        break;
-    }
-
-    if (mounted) {
-      setState(() {
-        _filteredHistory = history;
-      });
+    } catch (e) {
+      debugPrint('Error filtering history: $e');
     }
   }
 
@@ -148,7 +159,6 @@ class _HistoryPageState extends State<HistoryPage>
     } else if (item is QuizHistory) {
       // User: Navigate to Review or Resume page based on status
       if (item.status == 'completed') {
-        // Navigate to Quiz Review Page
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -156,7 +166,6 @@ class _HistoryPageState extends State<HistoryPage>
           ),
         );
       } else if (item.status == 'in_progress') {
-        // Navigate to Quiz Resume Page
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -164,7 +173,6 @@ class _HistoryPageState extends State<HistoryPage>
           ),
         );
       } else {
-        // For saved quizzes or other statuses
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${item.quizTitle} - Status: ${item.status}'),
@@ -192,7 +200,7 @@ class _HistoryPageState extends State<HistoryPage>
         child: SafeArea(
           child: Column(
             children: [
-              // Header - Different title based on role
+              // Header
               HistoryHeader(
                 onFilterTap: _onFilterTap,
                 title: _isAdmin ? 'Created Quizzes' : 'Quiz History',
@@ -268,20 +276,17 @@ class _HistoryPageState extends State<HistoryPage>
 
   Widget _buildContent() {
     if (_isAdmin) {
-      // Admin: Show simple list of created quizzes (no tabs, no statistics)
+      // Admin: Show list of created quizzes
       return _buildQuizList();
     } else {
       // User: Show tabbed content with statistics
       return Column(
         children: [
-          // Statistics Card
           HistoryStatisticsCard(
             totalQuizzes: _statistics['totalQuizzes'] ?? 0,
             averageScore: (_statistics['averageScore'] ?? 0.0).toDouble(),
             totalTimeInSeconds: _statistics['totalTime'] ?? 0,
           ),
-
-          // Tab Content
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -305,16 +310,16 @@ class _HistoryPageState extends State<HistoryPage>
         message = 'No quizzes created yet';
       } else {
         switch (_tabController.index) {
-          case 0: // All
+          case 0:
             message = 'No quiz history yet';
             break;
-          case 1: // Completed
+          case 1:
             message = 'No completed quizzes yet';
             break;
-          case 2: // In Progress
+          case 2:
             message = 'No quizzes in progress yet';
             break;
-          case 3: // Saved
+          case 3:
             message = 'No saved quizzes yet';
             break;
           default:

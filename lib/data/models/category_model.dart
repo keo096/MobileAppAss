@@ -17,11 +17,21 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      title: json['title'],
-      subtitle: json['subtitle'],
+      title: json['title'] ?? '',
+      subtitle: json['subtitle'] ?? '',
       progress: (json['progress'] ?? 0.0).toDouble(),
-      icon: IconData(json['iconCode'] ?? 0xe3af, fontFamily: 'MaterialIcons'),
-      color: Color(json['colorValue'] ?? 0xFF4CAF50),
+      icon: IconData(
+        ((json['iconCode'] ?? json['icon_code'] ?? 0xe3af) as num).toInt(),
+        fontFamily: 'MaterialIcons',
+      ),
+      color: Color(
+        ((json['colorValue'] ??
+                    json['color_value'] ??
+                    json['color_code'] ??
+                    0xFF4CAF50)
+                as num)
+            .toInt(),
+      ),
     );
   }
 

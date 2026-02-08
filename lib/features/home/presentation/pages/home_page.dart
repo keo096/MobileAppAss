@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
 import 'package:smart_quiz/core/constants/app_strings.dart';
 import 'package:smart_quiz/core/constants/app_assets.dart';
-import 'package:smart_quiz/core/data/api_config.dart';
+import 'package:smart_quiz/data/api_config.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
 import 'package:smart_quiz/core/utils/formatters.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
@@ -27,7 +27,7 @@ class _UserHomePageState extends State<UserHomePage> {
   }
 
   Future<void> _loadUser() async {
-    final user = await ApiConfig.service.getCurrentUser();
+    final user = await ApiConfig.auth.getCurrentUser();
     if (mounted) {
       setState(() {
         _username = user?.username;
@@ -312,12 +312,12 @@ class _UserHomePageState extends State<UserHomePage> {
   Widget _buildCategoryItem(String title, IconData icon, Color color) {
     return Container(
       margin: const EdgeInsets.only(right: 12),
-      width: 80,
+      width: 74,
       child: Column(
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 72,
+            height: 72,
             decoration: BoxDecoration(
               color: color.withOpacity(0.9),
               shape: BoxShape.circle,
@@ -329,7 +329,7 @@ class _UserHomePageState extends State<UserHomePage> {
                 ),
               ],
             ),
-            child: Icon(icon, color: Colors.white, size: 40),
+            child: Icon(icon, color: Colors.white, size: 36),
           ),
 
           const SizedBox(height: 6),

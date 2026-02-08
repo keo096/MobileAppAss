@@ -1,0 +1,149 @@
+# API Endpoints Reference
+
+This document outlines the expected API structure and sample responses based on the app's current UI requirements and data models.
+
+## Base URL
+The base URL is configured in `assets/config.json`.
+
+---
+
+## 1. Authentication
+
+### Login
+- **Endpoint:** `POST /auth/login`
+- **Request Body:**
+  ```json
+  { "username": "admin", "password": "password" }
+  ```
+- **Response (User):**
+  ```json
+  {
+    "id": "u1",
+    "username": "admin",
+    "email": "admin@example.com",
+    "role": "admin"
+  }
+  ```
+
+### Current User
+- **Endpoint:** `GET /auth/me`
+- **Response (User):** Same as Login response.
+
+---
+
+## 2. Categories
+
+### List Categories
+- **Endpoint:** `GET /categories`
+- **Response:**
+  ```json
+  [
+    {
+      "title": "Present Simple",
+      "subtitle": "English Tense",
+      "progress": 0.65,
+      "icon_code": 58434,
+      "color_code": 4284513669
+    }
+  ]
+  ```
+  *(Note: Icons and colors are mapped via code point and hex values in the model)*
+
+---
+
+## 3. Quizzes
+
+### List Quizzes
+- **Endpoint:** `GET /quizzes`
+- **Query Params:** `categoryId` (optional)
+- **Response:**
+  ```json
+  [
+    {
+      "id": "quiz_1",
+      "title": "Intro to Present Simple",
+      "description": "Master the basics...",
+      "category": "Present Simple",
+      "categoryId": "cat_present_simple",
+      "totalQuestions": 10,
+      "timeLimit": 600,
+      "difficulty": "easy",
+      "topic": "Grammar",
+      "isPublished": true,
+      "averageScore": 75.5
+    }
+  ]
+  ```
+
+### Quiz with Questions
+- **Endpoint:** `GET /quizzes/{quizId}/with-questions`
+- **Response:**
+  ```json
+  {
+    "quiz": { ...quiz_object... },
+    "questions": [
+      {
+        "id": "q1_1",
+        "question": "She _____ to school every day.",
+        "options": ["go", "goes", "going", "gone"],
+        "correctAnswer": 1,
+        "explanation": "Third person singular...",
+        "points": 10
+      }
+    ]
+  }
+  ```
+
+### Submit Quiz
+- **Endpoint:** `POST /quizzes/{quizId}/submit`
+- **Request Body:**
+  ```json
+  {
+    "answers": { "q1_1": 1, "q1_2": 0 },
+    "timeTaken": 720
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "quizId": "quiz_1",
+    "score": 100.0,
+    "correctAnswers": 2,
+    "totalQuestions": 2,
+    "timeTaken": 720
+  }
+  ```
+
+---
+
+## 4. History & Leaderboard
+
+### User History
+- **Endpoint:** `GET /history/me`
+- **Response:**
+  ```json
+  [
+    {
+      "id": "history_1",
+      "quizId": "quiz_1",
+      "quizTitle": "Tense",
+      "score": 100.0,
+      "status": "completed",
+      "completedAt": "2024-03-20T10:00:00Z"
+    }
+  ]
+  ```
+
+### Leaderboard
+- **Endpoint:** `GET /leaderboard`
+- **Response:**
+  ```json
+  [
+    {
+      "userId": "user_1",
+      "username": "QuizMaster",
+      "totalScore": 2500,
+      "rank": 1
+    }
+  ]
+  ```

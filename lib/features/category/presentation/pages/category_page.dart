@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:smart_quiz/core/data/api_config.dart';
+import 'package:smart_quiz/data/api_config.dart';
 import 'package:smart_quiz/features/category/presentation/providers/category_provider.dart';
 import 'package:smart_quiz/features/category/presentation/widgets/category_card.dart';
 import 'package:smart_quiz/features/category/presentation/widgets/create_category_widget.dart';
@@ -26,7 +26,7 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   Future<void> _checkAdmin() async {
-    final isAdmin = await ApiConfig.service.isAdmin();
+    final isAdmin = await ApiConfig.auth.isAdmin();
     if (mounted) {
       setState(() {
         _isAdmin = isAdmin;

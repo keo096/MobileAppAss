@@ -106,7 +106,7 @@ class BottomNavBar extends StatelessWidget {
         page = const UserHomePage();
         break;
       case 1: // History
-        page = const HistoryPage();
+        page = const HistoryPage(userId: 'u1');
         break;
       case 2: // Category
         page = const CategoryPageWrapper();

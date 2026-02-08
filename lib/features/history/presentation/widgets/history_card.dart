@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
-import 'package:smart_quiz/core/models/history_model.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
+import 'package:smart_quiz/data/models/history_model.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
 
 /// Individual history card showing quiz details
 class HistoryCard extends StatelessWidget {

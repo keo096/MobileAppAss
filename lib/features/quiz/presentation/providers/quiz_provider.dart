@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
 import 'package:smart_quiz/features/quiz/repository/quiz_repository.dart';
 
 /// Provider for quiz state management
-/// 
+///
 /// Handles quiz data, loading states, and quiz operations
 class QuizProvider extends ChangeNotifier {
   final QuizRepository _repository = QuizRepository();
@@ -36,7 +36,7 @@ class QuizProvider extends ChangeNotifier {
       notifyListeners();
 
       final data = await _repository.getQuizWithQuestions(quizId);
-      
+
       if (data == null) {
         // Fallback to first quiz if not found
         final fallbackData = await _repository.getQuizWithQuestions('quiz_1');
@@ -134,12 +134,14 @@ class QuizProvider extends ChangeNotifier {
   /// Check if quiz is complete
   bool get isQuizComplete {
     if (_quizData == null) return false;
-    return _currentQuestionIndex >= _quizData!.questions.length - 1 && _isAnswered;
+    return _currentQuestionIndex >= _quizData!.questions.length - 1 &&
+        _isAnswered;
   }
 
   /// Get current question
   Question? get currentQuestion {
-    if (_quizData == null || _currentQuestionIndex >= _quizData!.questions.length) {
+    if (_quizData == null ||
+        _currentQuestionIndex >= _quizData!.questions.length) {
       return null;
     }
     return _quizData!.questions[_currentQuestionIndex];

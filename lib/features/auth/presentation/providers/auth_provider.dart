@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:smart_quiz/core/models/user_model.dart';
+import 'package:smart_quiz/data/models/user_model.dart';
 import 'package:smart_quiz/features/auth/repository/auth_repository.dart';
 
 /// Provider for authentication state management
-/// 
+///
 /// Handles user authentication, login, registration, and user state
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _repository = AuthRepository();

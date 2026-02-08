@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/core/models/history_model.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
-import 'package:smart_quiz/core/data/api_config.dart';
+import 'package:smart_quiz/data/models/history_model.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
 
 /// Quiz Review Page - Shows completed quiz with all questions and answers
 class QuizReviewPage extends StatefulWidget {
@@ -28,7 +28,7 @@ class _QuizReviewPageState extends State<QuizReviewPage> {
     setState(() => _isLoading = true);
 
     try {
-      final quizData = await ApiConfig.service.fetchQuizWithQuestions(
+      final quizData = await ApiConfig.quiz.fetchQuizWithQuestions(
         widget.history.quizId,
       );
       if (mounted && quizData != null) {

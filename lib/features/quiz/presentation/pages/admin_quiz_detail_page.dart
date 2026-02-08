@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
-import 'package:smart_quiz/core/models/quiz_participant_model.dart';
-import 'package:smart_quiz/core/data/api_config.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
+import 'package:smart_quiz/data/models/quiz_participant_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
 import 'package:intl/intl.dart';
 
 /// Admin Quiz Detail Page - Shows quiz questions and participants
@@ -70,11 +70,11 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
 
     try {
       final results = await Future.wait([
-        ApiConfig.service.fetchQuizById(widget.quizId),
-        ApiConfig.service.fetchQuizWithQuestions(widget.quizId),
-        ApiConfig.service.fetchQuizParticipants(widget.quizId),
-        ApiConfig.service.fetchQuizStatistics(widget.quizId),
-        ApiConfig.service.hasRealQuestions(widget.quizId),
+        ApiConfig.quiz.fetchQuizById(widget.quizId),
+        ApiConfig.quiz.fetchQuizWithQuestions(widget.quizId),
+        ApiConfig.quiz.fetchQuizParticipants(widget.quizId),
+        ApiConfig.quiz.fetchQuizStatistics(widget.quizId),
+        ApiConfig.quiz.hasRealQuestions(widget.quizId),
       ]);
 
       if (mounted) {
@@ -239,7 +239,7 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
         isPublished: _quiz!.isPublished,
       );
 
-      await ApiConfig.service.updateQuiz(updatedQuiz);
+      await ApiConfig.quiz.updateQuiz(updatedQuiz);
       setState(() {
         _quiz = updatedQuiz;
       });
@@ -413,7 +413,7 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
       correctAnswer: 0, // Simplified
     );
 
-    await ApiConfig.service.addQuestion(widget.quizId, question);
+    await ApiConfig.quiz.addQuestion(widget.quizId, question);
     Navigator.pop(context);
     _loadData();
   }
@@ -459,7 +459,7 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
                 topic: _quiz!.topic,
                 isPublished: val,
               );
-              await ApiConfig.service.updateQuiz(updatedQuiz);
+              await ApiConfig.quiz.updateQuiz(updatedQuiz);
               setState(() => _quiz = updatedQuiz);
             },
           ),

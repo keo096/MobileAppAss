@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:smart_quiz/core/models/history_model.dart';
-import 'package:smart_quiz/core/models/quiz_model.dart';
-import 'package:smart_quiz/core/data/api_config.dart';
+import 'package:smart_quiz/data/models/history_model.dart';
+import 'package:smart_quiz/data/models/quiz_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
 
 /// Quiz Resume Page - Continue an in-progress quiz
 class QuizResumePage extends StatefulWidget {
@@ -29,7 +29,7 @@ class _QuizResumePageState extends State<QuizResumePage> {
     setState(() => _isLoading = true);
 
     try {
-      final quizData = await ApiConfig.service.fetchQuizWithQuestions(
+      final quizData = await ApiConfig.quiz.fetchQuizWithQuestions(
         widget.history.quizId,
       );
       if (mounted && quizData != null) {
@@ -71,7 +71,7 @@ class _QuizResumePageState extends State<QuizResumePage> {
     );
 
     try {
-      await ApiConfig.service.submitQuizResults(
+      await ApiConfig.quiz.submitQuizResults(
         quizId: widget.history.quizId,
         answers: answerMap,
         timeTaken: 0, // Simplified
