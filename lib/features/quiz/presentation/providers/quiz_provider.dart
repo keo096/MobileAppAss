@@ -38,15 +38,9 @@ class QuizProvider extends ChangeNotifier {
       final data = await _repository.getQuizWithQuestions(quizId);
 
       if (data == null) {
-        // Fallback to first quiz if not found
-        final fallbackData = await _repository.getQuizWithQuestions('quiz_1');
-        if (fallbackData == null) {
-          throw Exception('No quiz data available');
-        }
-        _quizData = fallbackData;
-      } else {
-        _quizData = data;
+        throw Exception('Quiz not found: $quizId');
       }
+      _quizData = data;
 
       _timeRemaining = _quizData!.quiz.timeLimit;
       _currentQuestionIndex = 0;

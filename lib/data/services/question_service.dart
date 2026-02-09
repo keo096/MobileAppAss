@@ -14,8 +14,13 @@ class RemoteQuestionService implements QuestionService {
 
   @override
   Future<List<Question>> fetchQuestionsByQuizId(String quizId) async {
+    final path = '/quizzes/$quizId/questions';
+    print('DEBUG: Requesting questions from: ${_dio.options.baseUrl}$path');
     try {
-      final response = await _dio.get('/quizzes/$quizId/questions');
+      final response = await _dio.get(path);
+      print('DEBUG: Response status: ${response.statusCode}');
+      print('DEBUG: Response data: ${response.data}');
+
       final dynamic data = _extractData(response.data);
       List<dynamic> questionList = [];
       if (data is List) {
@@ -25,8 +30,17 @@ class RemoteQuestionService implements QuestionService {
       }
 
       return questionList.map((q) => Question.fromJson(q)).toList();
+    } on DioException catch (e) {
+      print(
+        'ERROR: DioException fetching questions for quiz $quizId: ${e.type} - ${e.message}',
+      );
+      if (e.response != null) {
+        print('ERROR: Response data: ${e.response?.data}');
+        print('ERROR: Response status: ${e.response?.statusCode}');
+      }
+      return [];
     } catch (e) {
-      print('Error fetching questions for quiz $quizId: $e');
+      print('ERROR: Unexpected error fetching questions for quiz $quizId: $e');
       return [];
     }
   }

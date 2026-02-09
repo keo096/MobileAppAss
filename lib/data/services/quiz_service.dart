@@ -62,15 +62,48 @@ class RemoteQuizService implements QuizService {
 
   @override
   Future<QuizWithQuestions?> fetchQuizWithQuestions(String quizId) async {
+    final path = '/quizzes/$quizId/questions';
+    print('DEBUG: Requesting quiz data from: ${_dio.options.baseUrl}$path');
     try {
-      final response = await _dio.get('/quizzes/$quizId/questions');
-      final dynamic data = _extractData(response.data);
-      if (data != null && data is Map<String, dynamic>) {
-        return QuizWithQuestions.fromJson(data);
+      final response = await _dio.get(path);
+      print('DEBUG: Response status: ${response.statusCode}');
+      print('DEBUG: Response data: ${response.data}');
+
+      final dynamic extracted = _extractData(response.data);
+
+      if (extracted is Map<String, dynamic>) {
+        return QuizWithQuestions.fromJson(extracted);
+      } else if (extracted is List) {
+        print(
+          'DEBUG: Extracted data is a List. Fetching quiz info separately.',
+        );
+        final quiz = await fetchQuizById(quizId);
+        if (quiz != null) {
+          final List<Question> questions = extracted
+              .map((q) => Question.fromJson(q as Map<String, dynamic>))
+              .toList();
+          return QuizWithQuestions(quiz: quiz, questions: questions);
+        } else {
+          print('DEBUG: Failed to fetch quiz info for fallback Quiz object.');
+          // If we can't get the quiz, we might still want to show questions if UI allows
+          // but QuizWithQuestions requires a Quiz object.
+        }
+      }
+      print(
+        'DEBUG: Failed to parse QuizWithQuestions. Data type: ${extracted.runtimeType}',
+      );
+      return null;
+    } on DioException catch (e) {
+      print(
+        'ERROR: DioException fetching quiz $quizId: ${e.type} - ${e.message}',
+      );
+      if (e.response != null) {
+        print('ERROR: Response data: ${e.response?.data}');
+        print('ERROR: Response status: ${e.response?.statusCode}');
       }
       return null;
     } catch (e) {
-      print('Error fetching quiz with questions $quizId: $e');
+      print('ERROR: Unexpected error fetching quiz $quizId: $e');
       return null;
     }
   }

@@ -55,12 +55,11 @@ class Quiz {
     description: (json['description'] ?? '').toString(),
     category: (json['category'] ?? json['categoryName'] ?? '').toString(),
     categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
-    totalQuestions:
-        (json['totalQuestions'] ?? json['questionCount'] ?? 0) as int,
-    timeLimit: (json['timeLimit'] ?? 0) as int,
+    totalQuestions: _parseInt(json['totalQuestions'] ?? json['questionCount']),
+    timeLimit: _parseInt(json['timeLimit']),
     difficulty: (json['difficulty'] ?? 'easy').toString(),
     imageUrl: json['imageUrl'] as String?,
-    totalAttempts: (json['totalAttempts'] as num?)?.toInt(),
+    totalAttempts: _parseInt(json['totalAttempts']),
     averageScore: (json['averageScore'] as num?)?.toDouble(),
     topic: (json['topic'] ?? json['subject']) as String?,
     deadline: json['deadline'] != null
@@ -70,6 +69,14 @@ class Quiz {
         json['isPublished'] as bool? ??
         true, // Default to true if not specified
   );
+
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    if (value is num) return value.toInt();
+    return 0;
+  }
 }
 
 /// Question model for quiz questions
@@ -103,11 +110,18 @@ class Question {
     id: (json['id'] ?? '').toString(),
     question: (json['question'] ?? json['questionText'] ?? '').toString(),
     options: List<String>.from(json['options'] ?? []),
-    correctAnswer:
-        (json['correctAnswer'] ?? json['correct_answer'] ?? 0) as int,
+    correctAnswer: _parseInt(json['correctAnswer'] ?? json['correct_answer']),
     explanation: json['explanation'] as String?,
-    points: (json['points'] ?? 0) as int?,
+    points: _parseInt(json['points']),
   );
+
+  static int _parseInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    if (value is num) return value.toInt();
+    return 0;
+  }
 }
 
 /// Quiz with questions
