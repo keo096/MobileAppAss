@@ -15,15 +15,13 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
 
-    // ⏳ Delay splash screen for 5 seconds
-    Future.delayed(const Duration(seconds: 20), () {
+    // ⏳ Delay splash screen
+    Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const OnboardingPage(),
-        ),
+        MaterialPageRoute(builder: (context) => const OnboardingPage()),
       );
     });
   }
@@ -32,19 +30,14 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: AppTheme.splashGradient,
-        ),
+        decoration: BoxDecoration(gradient: AppTheme.splashGradient),
         child: const Center(
           child: Padding(
             padding: EdgeInsets.all(25.0),
-            child: Image(
-              image: AssetImage(AppAssets.logo),
-            ),
+            child: Image(image: AssetImage(AppAssets.logo)),
           ),
         ),
       ),
     );
   }
 }
-
