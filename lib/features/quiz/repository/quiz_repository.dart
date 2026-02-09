@@ -58,4 +58,22 @@ class QuizRepository {
       throw Exception('Failed to submit quiz: $e');
     }
   }
+
+  /// Get questions for a quiz
+  Future<List<Question>> getQuestionsByQuizId(String quizId) async {
+    try {
+      return await ApiConfig.question.fetchQuestionsByQuizId(quizId);
+    } catch (e) {
+      throw Exception('Failed to fetch questions: $e');
+    }
+  }
+
+  /// Add a question to a quiz
+  Future<void> addQuestion(Question question) async {
+    try {
+      await ApiConfig.question.createQuestion(question);
+    } catch (e) {
+      throw Exception('Failed to add question: $e');
+    }
+  }
 }

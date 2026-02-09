@@ -15,7 +15,9 @@ class CategoryRepository {
     try {
       final categories = await getAllCategories();
       try {
-        return categories.firstWhere((cat) => cat.title == categoryId);
+        return categories.firstWhere(
+          (cat) => cat.id == categoryId || cat.title == categoryId,
+        );
       } catch (e) {
         return null;
       }

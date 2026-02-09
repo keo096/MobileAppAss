@@ -19,31 +19,16 @@ class RemoteCategoryService implements CategoryService {
   Future<List<Category>> fetchCategories() async {
     try {
       final response = await _dio.get('/categories');
-      final dynamic data = _decodeResponse(response.data);
+      final dynamic data = _extractData(response.data);
 
       if (data is List) {
         return data.map((c) => Category.fromJson(c)).toList();
-      } else if (data is Map<String, dynamic>) {
-        final List<dynamic> list = data['categories'] ?? data['data'] ?? [];
-        return list.map((c) => Category.fromJson(c)).toList();
       }
       return [];
     } catch (e) {
       print('Error fetching categories: $e');
       return [];
     }
-  }
-
-  dynamic _decodeResponse(dynamic data) {
-    if (data is String) {
-      try {
-        return json.decode(data);
-      } catch (e) {
-        print('Error decoding response string: $e');
-        return data;
-      }
-    }
-    return data;
   }
 
   @override
@@ -70,5 +55,25 @@ class RemoteCategoryService implements CategoryService {
       print('Error updating category progress: $e');
       return false;
     }
+  }
+
+  dynamic _extractData(dynamic data) {
+    final decoded = _decodeResponse(data);
+    if (decoded is Map<String, dynamic> && decoded.containsKey('data')) {
+      return decoded['data'];
+    }
+    return decoded;
+  }
+
+  dynamic _decodeResponse(dynamic data) {
+    if (data is String) {
+      try {
+        return json.decode(data);
+      } catch (e) {
+        print('Error decoding response string: $e');
+        return data;
+      }
+    }
+    return data;
   }
 }

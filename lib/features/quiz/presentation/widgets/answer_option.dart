@@ -5,6 +5,7 @@ import 'package:smart_quiz/core/theme/app_theme.dart';
 /// Answer option widget for quiz questions
 class AnswerOption extends StatelessWidget {
   final String option;
+  final int index; // Added index
   final bool isSelected;
   final bool isCorrect;
   final bool isAnswered;
@@ -13,6 +14,7 @@ class AnswerOption extends StatelessWidget {
   const AnswerOption({
     super.key,
     required this.option,
+    required this.index, // Required index
     required this.isSelected,
     required this.isCorrect,
     required this.isAnswered,
@@ -54,10 +56,7 @@ class AnswerOption extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: borderColor,
-            width: 2,
-          ),
+          border: Border.all(color: borderColor, width: 2),
         ),
         child: Row(
           children: [
@@ -73,13 +72,9 @@ class AnswerOption extends StatelessWidget {
               ),
               child: Center(
                 child: icon != null
-                    ? Icon(
-                        icon,
-                        color: AppColors.textWhite,
-                        size: 20,
-                      )
+                    ? Icon(icon, color: AppColors.textWhite, size: 20)
                     : Text(
-                        String.fromCharCode(65 + option.codeUnitAt(0) % 26),
+                        String.fromCharCode(65 + index),
                         style: AppTheme.bodySmall.copyWith(
                           fontWeight: FontWeight.bold,
                           color: isSelected || (isAnswered && isCorrect)

@@ -78,7 +78,7 @@ class CategoryProvider extends ChangeNotifier {
 
       if (success) {
         // Update local state
-        final index = _categories.indexWhere((cat) => cat.title == categoryId);
+        final index = _categories.indexWhere((cat) => cat.id == categoryId);
         if (index != -1) {
           // Note: Category is immutable, so we'd need to create a new list
           // For now, just reload categories

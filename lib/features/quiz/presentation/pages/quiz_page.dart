@@ -75,7 +75,7 @@ class _QuizPageState extends State<QuizPage> {
   Future<void> _finishQuiz() async {
     // Use provider method - it will handle submission
     final result = await _provider.submitQuiz();
-    
+
     if (result != null && mounted) {
       // TODO: Navigate to result page with result data
       // Navigator.pushReplacement(
@@ -89,12 +89,14 @@ class _QuizPageState extends State<QuizPage> {
       //     ),
       //   ),
       // );
-      
+
       // For now, just go back
       Navigator.pop(context);
     } else if (mounted && _provider.errorMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to submit quiz: ${_provider.errorMessage}')),
+        SnackBar(
+          content: Text('Failed to submit quiz: ${_provider.errorMessage}'),
+        ),
       );
     }
   }
@@ -110,9 +112,7 @@ class _QuizPageState extends State<QuizPage> {
             style: AppTheme.headingSmall,
           ),
         ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -155,17 +155,13 @@ class _QuizPageState extends State<QuizPage> {
             style: AppTheme.headingMedium,
           ),
         ),
-        body: const Center(
-          child: Text('No questions available'),
-        ),
+        body: const Center(child: Text('No questions available')),
       );
     }
 
     final currentQuestion = _provider.currentQuestion;
     if (currentQuestion == null) {
-      return const Scaffold(
-        body: Center(child: Text('No question available')),
-      );
+      return const Scaffold(body: Center(child: Text('No question available')));
     }
 
     final progress = _provider.progress;
@@ -286,6 +282,7 @@ class _QuizPageState extends State<QuizPage> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: AnswerOption(
                         option: currentQuestion.options[index],
+                        index: index,
                         isSelected: _provider.selectedAnswerIndex == index,
                         isCorrect: currentQuestion.correctAnswer == index,
                         isAnswered: _provider.isAnswered,
@@ -313,7 +310,8 @@ class _QuizPageState extends State<QuizPage> {
                   ),
                 ),
                 child: Text(
-                  _provider.currentQuestionIndex < _provider.quizData!.questions.length - 1
+                  _provider.currentQuestionIndex <
+                          _provider.quizData!.questions.length - 1
                       ? AppStrings.next
                       : 'Finish Quiz',
                   style: AppTheme.bodyLarge.copyWith(

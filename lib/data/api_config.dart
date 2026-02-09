@@ -6,6 +6,7 @@ import 'package:smart_quiz/data/services/category_service.dart';
 import 'package:smart_quiz/data/services/history_service.dart';
 import 'package:smart_quiz/data/services/leaderboard_service.dart';
 import 'package:smart_quiz/data/services/quiz_service.dart';
+import 'package:smart_quiz/data/services/question_service.dart';
 
 /// Service locator for Remote APIs
 class ApiConfig {
@@ -20,6 +21,7 @@ class ApiConfig {
   static QuizService? _quizService;
   static HistoryService? _historyService;
   static LeaderboardService? _leaderboardService;
+  static QuestionService? _questionService;
 
   static String get postmanBaseUrl => _baseUrl;
 
@@ -45,4 +47,6 @@ class ApiConfig {
       _historyService ??= RemoteHistoryService(_dio!);
   static LeaderboardService get leaderboard =>
       _leaderboardService ??= RemoteLeaderboardService(_dio!);
+  static QuestionService get question =>
+      _questionService ??= RemoteQuestionService(_dio!);
 }

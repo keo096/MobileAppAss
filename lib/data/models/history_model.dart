@@ -44,17 +44,21 @@ class QuizHistory {
   };
 
   factory QuizHistory.fromJson(Map<String, dynamic> json) => QuizHistory(
-    id: json['id'] as String,
-    quizId: json['quizId'] as String,
-    quizTitle: json['quizTitle'] as String,
-    category: json['category'] as String,
-    totalQuestions: json['totalQuestions'] as int,
-    correctAnswers: json['correctAnswers'] as int,
-    score: json['score'] as double,
-    timeTaken: json['timeTaken'] as int,
-    completedAt: DateTime.parse(json['completedAt'] as String),
-    difficulty: json['difficulty'] as String,
-    status: json['status'] as String? ?? 'completed',
+    id: (json['id'] ?? '').toString(),
+    quizId: (json['quizId'] ?? json['quiz_id'] ?? '').toString(),
+    quizTitle: (json['quizTitle'] ?? json['quiz_title'] ?? '').toString(),
+    category: (json['category'] ?? json['category_name'] ?? '').toString(),
+    totalQuestions:
+        (json['totalQuestions'] ?? json['question_count'] ?? 0) as int,
+    correctAnswers:
+        (json['correctAnswers'] ?? json['correct_answers'] ?? 0) as int,
+    score: (json['score'] as num? ?? 0.0).toDouble(),
+    timeTaken: (json['timeTaken'] ?? json['time_taken'] ?? 0) as int,
+    completedAt: json['completedAt'] != null
+        ? DateTime.parse(json['completedAt'] as String)
+        : DateTime.now(),
+    difficulty: (json['difficulty'] ?? 'easy').toString(),
+    status: (json['status'] ?? 'completed').toString(),
     resumeData: json['resumeData'] as Map<String, dynamic>?,
   );
 }

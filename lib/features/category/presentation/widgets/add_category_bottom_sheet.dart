@@ -157,6 +157,7 @@ class _AddCategoryBottomSheetState extends State<AddCategoryBottomSheet> {
               onPressed: () {
                 if (_titleController.text.isNotEmpty) {
                   final newCategory = Category(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
                     title: _titleController.text,
                     subtitle: _subtitleController.text.isEmpty
                         ? 'General'

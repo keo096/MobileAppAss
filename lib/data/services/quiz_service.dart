@@ -34,7 +34,7 @@ class RemoteQuizService implements QuizService {
         '/quizzes',
         queryParameters: {if (categoryId != null) 'categoryId': categoryId},
       );
-      final dynamic data = _decodeResponse(response.data);
+      final dynamic data = _extractData(response.data);
       if (data is List) {
         return data.map((q) => Quiz.fromJson(q)).toList();
       }
@@ -49,8 +49,8 @@ class RemoteQuizService implements QuizService {
   Future<Quiz?> fetchQuizById(String quizId) async {
     try {
       final response = await _dio.get('/quizzes/$quizId');
-      final dynamic data = _decodeResponse(response.data);
-      if (data != null) {
+      final dynamic data = _extractData(response.data);
+      if (data != null && data is Map<String, dynamic>) {
         return Quiz.fromJson(data);
       }
       return null;
@@ -63,9 +63,9 @@ class RemoteQuizService implements QuizService {
   @override
   Future<QuizWithQuestions?> fetchQuizWithQuestions(String quizId) async {
     try {
-      final response = await _dio.get('/quizzes/$quizId/with-questions');
-      final dynamic data = _decodeResponse(response.data);
-      if (data != null) {
+      final response = await _dio.get('/quizzes/$quizId/questions');
+      final dynamic data = _extractData(response.data);
+      if (data != null && data is Map<String, dynamic>) {
         return QuizWithQuestions.fromJson(data);
       }
       return null;
@@ -86,7 +86,7 @@ class RemoteQuizService implements QuizService {
         '/quizzes/$quizId/submit',
         data: {'answers': answers, 'timeTaken': timeTaken},
       );
-      final dynamic data = _decodeResponse(response.data);
+      final dynamic data = _extractData(response.data);
       return data as Map<String, dynamic>;
     } catch (e) {
       print('Error submitting quiz results: $e');
@@ -98,7 +98,7 @@ class RemoteQuizService implements QuizService {
   Future<List<Quiz>> fetchCreatedQuizzes() async {
     try {
       final response = await _dio.get('/quizzes/created');
-      final dynamic data = _decodeResponse(response.data);
+      final dynamic data = _extractData(response.data);
       if (data is List) {
         return data.map((q) => Quiz.fromJson(q)).toList();
       }
@@ -113,7 +113,7 @@ class RemoteQuizService implements QuizService {
   Future<List<QuizParticipant>> fetchQuizParticipants(String quizId) async {
     try {
       final response = await _dio.get('/quizzes/$quizId/participants');
-      final dynamic data = _decodeResponse(response.data);
+      final dynamic data = _extractData(response.data);
       if (data is List) {
         return data.map((p) => QuizParticipant.fromJson(p)).toList();
       }
@@ -128,7 +128,7 @@ class RemoteQuizService implements QuizService {
   Future<Map<String, dynamic>> fetchQuizStatistics(String quizId) async {
     try {
       final response = await _dio.get('/quizzes/$quizId/statistics');
-      final dynamic data = _decodeResponse(response.data);
+      final dynamic data = _extractData(response.data);
       return (data as Map<String, dynamic>?) ?? {};
     } catch (e) {
       print('Error fetching statistics: $e');
@@ -140,8 +140,11 @@ class RemoteQuizService implements QuizService {
   Future<bool> hasRealQuestions(String quizId) async {
     try {
       final response = await _dio.get('/quizzes/$quizId/has-questions');
-      final dynamic data = _decodeResponse(response.data);
-      return data['hasQuestions'] ?? false;
+      final dynamic data = _extractData(response.data);
+      if (data is Map<String, dynamic>) {
+        return data['hasQuestions'] ?? false;
+      }
+      return false;
     } catch (e) {
       return false;
     }
@@ -181,6 +184,14 @@ class RemoteQuizService implements QuizService {
       print('Error adding question: $e');
       rethrow;
     }
+  }
+
+  dynamic _extractData(dynamic data) {
+    final decoded = _decodeResponse(data);
+    if (decoded is Map<String, dynamic> && decoded.containsKey('data')) {
+      return decoded['data'];
+    }
+    return decoded;
   }
 
   dynamic _decodeResponse(dynamic data) {

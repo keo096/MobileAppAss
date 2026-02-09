@@ -89,12 +89,13 @@ class LeaderboardEntry {
 
   factory LeaderboardEntry.fromJson(Map<String, dynamic> json) =>
       LeaderboardEntry(
-        userId: json['userId'] as String,
-        username: json['username'] as String,
+        userId: (json['userId'] ?? json['user_id'] ?? '').toString(),
+        username: (json['username'] ?? json['name'] ?? '').toString(),
         avatarUrl: json['avatarUrl'] as String?,
-        totalScore: json['totalScore'] as int,
-        totalQuizzes: json['totalQuizzes'] as int,
-        averageScore: (json['averageScore'] as num).toDouble(),
-        rank: json['rank'] as int,
+        totalScore: (json['totalScore'] ?? json['total_score'] ?? 0) as int,
+        totalQuizzes:
+            (json['totalQuizzes'] ?? json['total_quizzes'] ?? 0) as int,
+        averageScore: (json['averageScore'] as num? ?? 0.0).toDouble(),
+        rank: (json['rank'] ?? 0) as int,
       );
 }

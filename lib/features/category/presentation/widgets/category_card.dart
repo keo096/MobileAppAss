@@ -40,7 +40,16 @@ class CategoryCard extends StatelessWidget {
                 color: category.color,
                 shape: BoxShape.circle,
               ),
-              child: Icon(category.icon, color: Colors.white, size: 32),
+              child: category.icon is IconData
+                  ? Icon(
+                      category.icon as IconData,
+                      color: Colors.white,
+                      size: 32,
+                    )
+                  : Text(
+                      category.icon.toString(),
+                      style: const TextStyle(fontSize: 32),
+                    ),
             ),
             const SizedBox(height: 12),
             Padding(

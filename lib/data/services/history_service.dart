@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:smart_quiz/data/models/history_model.dart';
 
@@ -19,9 +20,11 @@ class RemoteHistoryService implements HistoryService {
         '/history',
         queryParameters: {'userId': userId},
       );
-      return (response.data as List)
-          .map((h) => QuizHistory.fromJson(h))
-          .toList();
+      final dynamic data = _extractData(response.data);
+      if (data is List) {
+        return data.map((h) => QuizHistory.fromJson(h)).toList();
+      }
+      return [];
     } catch (e) {
       print('Error fetching history: $e');
       return [];
@@ -32,9 +35,11 @@ class RemoteHistoryService implements HistoryService {
   Future<List<QuizHistory>> fetchUserHistory(String userId) async {
     try {
       final response = await _dio.get('/history/me');
-      return (response.data as List)
-          .map((h) => QuizHistory.fromJson(h))
-          .toList();
+      final dynamic data = _extractData(response.data);
+      if (data is List) {
+        return data.map((h) => QuizHistory.fromJson(h)).toList();
+      }
+      return [];
     } catch (e) {
       print('Error fetching user history: $e');
       return [];
@@ -51,9 +56,11 @@ class RemoteHistoryService implements HistoryService {
         '/history/me',
         queryParameters: {'status': status},
       );
-      return (response.data as List)
-          .map((h) => QuizHistory.fromJson(h))
-          .toList();
+      final dynamic data = _extractData(response.data);
+      if (data is List) {
+        return data.map((h) => QuizHistory.fromJson(h)).toList();
+      }
+      return [];
     } catch (e) {
       print('Error fetching history by status: $e');
       return [];
@@ -64,10 +71,31 @@ class RemoteHistoryService implements HistoryService {
   Future<Map<String, dynamic>> fetchHistoryStatistics() async {
     try {
       final response = await _dio.get('/history/statistics');
-      return response.data;
+      final dynamic data = _extractData(response.data);
+      return (data as Map<String, dynamic>?) ?? {};
     } catch (e) {
       print('Error fetching history statistics: $e');
       return {};
     }
+  }
+
+  dynamic _extractData(dynamic data) {
+    final decoded = _decodeResponse(data);
+    if (decoded is Map<String, dynamic> && decoded.containsKey('data')) {
+      return decoded['data'];
+    }
+    return decoded;
+  }
+
+  dynamic _decodeResponse(dynamic data) {
+    if (data is String) {
+      try {
+        return json.decode(data);
+      } catch (e) {
+        print('Error decoding response string: $e');
+        return data;
+      }
+    }
+    return data;
   }
 }
