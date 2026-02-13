@@ -132,6 +132,15 @@ class EmptyState extends StatelessWidget {
           actionIcon: Icons.quiz,
           buttonColor: AppColors.primaryPurple,
         );
+      case EmptyStateType.noNotification:
+        return const EmptyStateConfig(
+          icon: Icons.history,
+          iconColor: AppColors.primaryPurple,
+          title: 'No Notification',
+          message: "You don’t have any notification",
+          actionIcon: Icons.quiz,
+          buttonColor: AppColors.primaryPurple,
+        );
 
       case EmptyStateType.noResults:
         return const EmptyStateConfig(
@@ -216,6 +225,10 @@ enum EmptyStateType {
 
   /// No search results
   noResults,
+
+  // No Notification
+
+  noNotification,
 
   /// Generic error
   error,
