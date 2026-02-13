@@ -5,6 +5,7 @@ import 'package:smart_quiz/data/services/auth_service.dart';
 import 'package:smart_quiz/data/services/category_service.dart';
 import 'package:smart_quiz/data/services/history_service.dart';
 import 'package:smart_quiz/data/services/leaderboard_service.dart';
+import 'package:smart_quiz/data/services/notification_service.dart';
 import 'package:smart_quiz/data/services/quiz_service.dart';
 import 'package:smart_quiz/data/services/question_service.dart';
 
@@ -22,6 +23,7 @@ class ApiConfig {
   static HistoryService? _historyService;
   static LeaderboardService? _leaderboardService;
   static QuestionService? _questionService;
+  static NotificationService? _notificationService;
 
   static String get postmanBaseUrl => _baseUrl;
 
@@ -49,4 +51,6 @@ class ApiConfig {
       _leaderboardService ??= RemoteLeaderboardService(_dio!);
   static QuestionService get question =>
       _questionService ??= RemoteQuestionService(_dio!);
+  static NotificationService get notification =>
+      _notificationService ??= RemoteNotificationService(_dio!);
 }

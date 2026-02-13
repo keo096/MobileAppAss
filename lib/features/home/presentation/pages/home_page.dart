@@ -9,6 +9,9 @@ import 'package:smart_quiz/core/utils/formatters.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 import 'package:smart_quiz/features/home/presentation/widgets/quiz_card.dart';
 import 'package:smart_quiz/features/category/presentation/pages/category_page.dart';
+import 'package:provider/provider.dart';
+import 'package:smart_quiz/features/notification/presentation/pages/notification_page.dart';
+import 'package:smart_quiz/features/notification/presentation/providers/notification_provider.dart';
 
 class UserHomePage extends StatefulWidget {
   const UserHomePage({super.key});
@@ -70,10 +73,23 @@ class _UserHomePageState extends State<UserHomePage> {
                         ],
                       ),
                       const Spacer(),
-                      _buildHeaderIcon(
-                        Icons.notifications_none,
-
-                        hasBadge: true,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) =>
+                                    NotificationProvider()..loadNotification(),
+                                child: const NotificationPage(),
+                              ),
+                            ),
+                          );
+                        },
+                        child: _buildHeaderIcon(
+                          Icons.notifications_none,
+                          hasBadge: true,
+                        ),
                       ),
                       const SizedBox(width: 10),
                       _buildHeaderIcon(Icons.settings_sharp),
