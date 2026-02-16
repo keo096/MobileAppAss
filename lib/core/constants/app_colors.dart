@@ -23,6 +23,8 @@ class AppColors {
   static const Color backgroundWhite = Colors.white;
   static const Color backgroundGrey = Color(0xFFE0E0E0);
   static const Color backgroundLightGrey = Color.fromARGB(120, 255, 255, 255);
+  static const Color secondBackground  = Color.fromARGB(255, 239, 233, 248);
+  static const Color primaryPurpleBackground = Color.fromARGB(255, 106, 44, 160);
 
   // Text Colors
   static const Color textWhite = Colors.white;

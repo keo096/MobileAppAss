@@ -69,6 +69,7 @@ class NotificationCard extends StatelessWidget {
                           child: Text(
                             title,
                             style: const TextStyle(
+                              color: AppColors.primaryPurpleLogo,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
@@ -85,35 +86,46 @@ class NotificationCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      description,
-// +                     style: const TextStyle(
-//                             fontSize: 12,
-//                             color: AppColors.textBlack87,
-//                           ),
-                    ),
-                    if (hasAction) ...[
-                      const SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          onPressed: onActionPressed,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryPurple,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            elevation: 0,
-                          ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
                           child: Text(
-                            actionLabel,
-                            style: const TextStyle(fontSize: 13),
+                            description,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Color.fromARGB(255, 144, 142, 142),
+                            ),
                           ),
                         ),
-                      ),
-                    ]
+                        if (hasAction) ...[
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: onActionPressed,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryPurple,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              actionLabel,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ]
+                      ],
+                    ),
                   ],
                 ),
               ),

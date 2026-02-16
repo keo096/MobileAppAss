@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:smart_quiz/data/models/user_model.dart';
+import 'package:smart_quiz/data/models/leaderboard_model.dart';
 
 abstract class LeaderboardService {
   Future<List<LeaderboardEntry>> fetchLeaderboard();
@@ -13,15 +13,26 @@ class RemoteLeaderboardService implements LeaderboardService {
   @override
   Future<List<LeaderboardEntry>> fetchLeaderboard() async {
     try {
-      final response = await _dio.get('/leaderboard');
+      final response = await _dio.get('/leaderboards');
       final dynamic data = _extractData(response.data);
       if (data is List) {
-        return data.map((l) => LeaderboardEntry.fromJson(l)).toList();
+        return data
+            .where((e) => e is Map)
+            .map((e) => LeaderboardEntry.fromJson(Map<String, dynamic>.from(e as Map)))
+            .toList();
       }
-      return [];
+      return <LeaderboardEntry>[];
     } catch (e) {
-      print('Error fetching leaderboard: $e');
-      return [];
+      if (e is DioError) {
+        print('DioError fetching leaderboard: ${e.message}');
+        if (e.response != null) {
+          print('Dio response status: ${e.response?.statusCode}');
+          print('Dio response data: ${e.response?.data}');
+        }
+      } else {
+        print('Error fetching leaderboard: $e');
+      }
+      return <LeaderboardEntry>[];
     }
   }
 

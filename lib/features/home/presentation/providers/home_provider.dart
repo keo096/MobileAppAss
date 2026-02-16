@@ -12,7 +12,7 @@ class HomeProvider extends ChangeNotifier {
   Quiz? _dailyQuiz;
   Map<String, dynamic>? _learningProgress;
   List<Map<String, dynamic>> _recentActivity = [];
-  List<LeaderboardEntry> _leaderboardPreview = [];
+  // List<LeaderboardEntry> _leaderboardPreview = [];
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -22,8 +22,8 @@ class HomeProvider extends ChangeNotifier {
   Map<String, dynamic>? get learningProgress => _learningProgress;
   List<Map<String, dynamic>> get recentActivity =>
       List.unmodifiable(_recentActivity);
-  List<LeaderboardEntry> get leaderboardPreview =>
-      List.unmodifiable(_leaderboardPreview);
+  // List<LeaderboardEntry> get leaderboardPreview =>
+      // List.unmodifiable(_leaderboardPreview);
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -68,7 +68,7 @@ class HomeProvider extends ChangeNotifier {
   }
 
   Future<void> _loadLeaderboard() async {
-    _leaderboardPreview = await _repository.getLeaderboardPreview();
+    // _leaderboardPreview = await _repository.getLeaderboardPreview();
   }
 
   /// Refresh all home data

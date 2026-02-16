@@ -51,14 +51,14 @@ class HomeRepository {
     }
   }
 
-  Future<List<LeaderboardEntry>> getLeaderboardPreview({int limit = 3}) async {
-    try {
-      final leaderboard = await ApiConfig.leaderboard.fetchLeaderboard();
-      return leaderboard.take(limit).toList();
-    } catch (e) {
-      return [];
-    }
-  }
+  // Future<List<LeaderboardEntry>> getLeaderboardPreview({int limit = 3}) async {
+  //   try {
+  //     final leaderboard = await ApiConfig.leaderboard.fetchLeaderboard();
+  //     return leaderboard.take(limit).toList();
+  //   } catch (e) {
+  //     return [];
+  //   }
+  // }
 
   Future<User?> getCurrentUser() async {
     return await ApiConfig.auth.getCurrentUser();
