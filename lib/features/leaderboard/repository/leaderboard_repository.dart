@@ -1,5 +1,5 @@
 import 'package:smart_quiz/data/api_config.dart';
-import 'package:smart_quiz/data/models/user_model.dart';
+import 'package:smart_quiz/data/models/leaderboard_model.dart';
 
 /// Repository for leaderboard-related data operations
 class LeaderboardRepository {

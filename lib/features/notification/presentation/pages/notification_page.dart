@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
+import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 import 'package:smart_quiz/features/notification/presentation/widgets/notification_widget.dart';
 import 'package:smart_quiz/features/notification/presentation/providers/notification_provider.dart';
 import 'package:smart_quiz/data/models/notification_model.dart';
@@ -103,156 +104,185 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
-      appBar: AppBar(
-        backgroundColor: AppColors.backgroundWhite,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textBlack87),
-          onPressed: () => Navigator.pop(context),
-        ),
-        centerTitle: true,
-        title: const Text(
-          'Notifications',
-          style: AppTheme.headingMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Provider.of<NotificationProvider>(context, listen: false)
-                  .clearAll();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('All notifications cleared')),
-              );
-            },
-            child: const Text(
-              'Clear All',
-              style: TextStyle(
-                color: AppColors.primaryPurple,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Consumer<NotificationProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primaryPurple,
-              ),
-            );
-          }
-
-          if (provider.errorMessage != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: const Color(0xFF6A2CA0), // Primary Purple
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            // Header with back icon and centered title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              child: Row(
                 children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: AppColors.textBlack87,
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error Loading Notifications',
-                    style: AppTheme.headingSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(
-                      provider.errorMessage ?? '',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textBlack87,
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        'Notifications',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () => provider.loadNotification(),
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryPurple,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                    ),
-                  ),
+                  const SizedBox(width: 48),
                 ],
               ),
-            );
-          }
+            ),
 
-          if (provider.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.notifications_none,
-                    size: 64,
-                    color: AppColors.textBlack87,
+            // Content area
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.secondBackground, // Light background color
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No Notifications',
-                    style: AppTheme.headingSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'You\'re all caught up!',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textBlack87,
-                    ),
-                  ),
-                ],
+                ),
+                child: Consumer<NotificationProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.isLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryPurple,
+                        ),
+                      );
+                    }
+
+                    if (provider.errorMessage != null) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              size: 64,
+                              color: AppColors.textBlack87,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Error Loading Notifications',
+                              style: AppTheme.headingSmall,
+                            ),
+                            const SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 32),
+                              child: Text(
+                                provider.errorMessage ?? '',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textBlack87,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: () => provider.loadNotification(),
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Retry'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryPurple,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    if (provider.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.notifications_none,
+                              size: 64,
+                              color: AppColors.textBlack87,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'No Notifications',
+                              style: AppTheme.headingSmall,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'You\'re all caught up!',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textBlack87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    final grouped = _groupNotifications(provider.notification);
+
+                    return CustomScrollView(
+                      slivers: [
+                        if (grouped['Today']!.isNotEmpty) ...[
+                          _buildSectionHeader('Today', provider),
+                          _buildNotificationList(grouped['Today']!, provider),
+                        ],
+                        if (grouped['Yesterday']!.isNotEmpty) ...[
+                          _buildSectionHeader('Yesterday', provider),
+                          _buildNotificationList(grouped['Yesterday']!, provider),
+                        ],
+                        if (grouped['Older']!.isNotEmpty) ...[
+                          _buildSectionHeader('Older', provider),
+                          _buildNotificationList(grouped['Older']!, provider),
+                        ],
+                        const SliverToBoxAdapter(
+                          child: SizedBox(height: 20),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
-            );
-          }
-
-          final grouped = _groupNotifications(provider.notification);
-
-          return CustomScrollView(
-            slivers: [
-              if (grouped['Today']!.isNotEmpty) ...[
-                _buildSectionHeader('Today'),
-                _buildNotificationList(grouped['Today']!, provider),
-              ],
-              if (grouped['Yesterday']!.isNotEmpty) ...[
-                _buildSectionHeader('Yesterday'),
-                _buildNotificationList(grouped['Yesterday']!, provider),
-              ],
-              if (grouped['Older']!.isNotEmpty) ...[
-                _buildSectionHeader('Older'),
-                _buildNotificationList(grouped['Older']!, provider),
-              ],
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 20),
-              ),
-            ],
-          );
-        },
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, NotificationProvider provider) {
+    final showClear = title == 'Today' || title == 'Yesterday';
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-        child: Text(
-          title,
-          style: AppTheme.bodyLarge.copyWith(
-            color: AppColors.textBlack87,
-            fontWeight: FontWeight.w600,
-          ),
+        child: Row(
+          children: [
+            Text(
+              title,
+              style: AppTheme.bodyLarge.copyWith(
+                color: AppColors.textBlack87,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            if (showClear)
+              TextButton(
+                onPressed: () {
+                  provider.clearAll();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Notifications cleared')),
+                  );
+                },
+                child: const Text('Clear'),
+              ),
+          ],
         ),
       ),
     );

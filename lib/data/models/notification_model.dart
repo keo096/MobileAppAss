@@ -1,41 +1,3 @@
-// // AppNotification model
-
-// class AppNotification{
-//    final String id;
-//   final String title;
-//   final String message;
-//   final String type;
-//   final bool isRead;
-//   final DateTime createdAt;
-//   final String userId;
-
-//   AppNotification({
-//     required this.id,
-//     required this.title,
-//     required this.message,
-//     required this.type,
-//     required this.isRead,
-//     required this.createdAt,
-//     required this.userId
-//   });
-
-//   Map<String, dynamic> toJson() =>{
-//     "id": id,
-//     "quizId": quizId,
-//     "title": title,
-//     "subtitle": subtitle,
-//     "icon": icon,
-//     "userId": userId,
-//   };
-//   factory AppNotification.fromJson(Map<String, dynamic> json) => AppNotification(
-//     id: (json["id"] ?? '').toString(),
-//     title:  (json["title"] ?? '').toString(),
-//     subtitle: (json["subtitle"] ?? '').toString(),
-//     icon: (json["icon"]).toString(),
-//     quizId: (json["quizId"] ?? '').toString(),
-//     userId: (json["userId"] ?? '').toString(), 
-//     );
-// }
 
 enum NotificationType {
   dailyQuiz,
@@ -116,7 +78,7 @@ class AppNotification {
           : DateTime.now(),
       type: notificationTypeFromString(json["type"]),
     );
-  }
+  } 
 
   
   Map<String, dynamic> toJson() => {

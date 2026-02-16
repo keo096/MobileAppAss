@@ -24,7 +24,6 @@ class ApiConfig {
   static LeaderboardService? _leaderboardService;
   static QuestionService? _questionService;
   static NotificationService? _notificationService;
-
   static String get postmanBaseUrl => _baseUrl;
 
   /// Load configuration from assets/config.json

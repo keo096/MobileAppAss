@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
 import 'package:smart_quiz/data/api_config.dart';
 import 'package:smart_quiz/data/models/user_model.dart';
+import 'package:smart_quiz/data/models/leaderboard_model.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
+import 'package:smart_quiz/features/leaderboard/presentation/widgets/podium_item.dart';
+import 'package:smart_quiz/features/leaderboard/presentation/widgets/leaderboard_tile.dart';
 
 class LeaderboardPage extends StatefulWidget {
   const LeaderboardPage({super.key});
@@ -59,128 +62,218 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
+            // Purple header
             Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     'Leaderboard',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 28,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  // Top 3 Podium
-                  if (_leaderboard.isNotEmpty)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (_leaderboard.length > 1)
-                          _buildPodiumItem(_leaderboard[1], 2, 70), // Rank 2
-                        _buildPodiumItem(_leaderboard[0], 1, 90), // Rank 1
-                        if (_leaderboard.length > 2)
-                          _buildPodiumItem(_leaderboard[2], 3, 60), // Rank 3
-                      ],
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                    child: const Icon(Icons.filter_list, color: Colors.white),
+                  ),
                 ],
               ),
             ),
 
-            // List
+            // White rounded content
             Expanded(
               child: Container(
+                width: double.infinity,
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  color: Color.fromARGB(255, 247, 246, 246),
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
+                    topLeft: Radius.circular(28),
+                    topRight: Radius.circular(28),
                   ),
                 ),
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(20),
-                  itemCount: _leaderboard.length > 3
-                      ? _leaderboard.length - 3
-                      : 0,
-                  itemBuilder: (context, index) {
-                    final entry = _leaderboard[index + 3];
-                    final isCurrentUser =
-                        _currentUser != null &&
-                        entry.username == _currentUser!.username;
+                child: Column(
+                  children: [
+                    const SizedBox(height: 44),
 
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 15),
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: isCurrentUser
-                            ? AppColors.primaryPurple.withOpacity(0.05)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isCurrentUser
-                              ? AppColors.primaryPurple
-                              : Colors.grey.shade200,
-                          width: isCurrentUser ? 2 : 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            entry.rank.toString(),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.grey,
-                            ),
+                    // Start New Quiz (large pill with gradient)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                        height: 85,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                          const SizedBox(width: 15),
-                          CircleAvatar(
-                            backgroundColor: AppColors.primaryPurple
-                                .withOpacity(0.1),
-                            child: Text(
-                              entry.username[0].toUpperCase(),
-                              style: const TextStyle(
-                                color: AppColors.primaryPurple,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 10,
+                              offset: const Offset(0, 6),
+                            )
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(16),
+                            onTap: () {
+                              // TODO: navigate to start quiz
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(Icons.add, color: Colors.white, size: 22),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    'Start New Quiz',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  entry.username,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  '${entry.totalQuizzes} Quizzes',
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    // Section title
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: const [
                           Text(
-                            '${entry.totalScore} XP',
-                            style: const TextStyle(
+                            'Top Quizz Masters',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primaryPurple,
-                              fontSize: 16,
                             ),
                           ),
+                          SizedBox(width: 8),
+                          Text('🏆', style: TextStyle(fontSize: 18)),
                         ],
                       ),
-                    );
-                  },
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Leaderboard list
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        itemCount: _leaderboard.length,
+                        itemBuilder: (context, index) {
+                          final entry = _leaderboard[index];
+                          final isCurrentUser = _currentUser != null && entry.user.name == _currentUser!.username;
+
+                          // styling for top 3
+                          Color pointsColor = const Color(0xFF6B46C1); // purple
+                          if (index == 0) pointsColor = const Color(0xFFFFA726); // gold/orange
+                          if (index == 1) pointsColor = Colors.grey.shade700;
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: isCurrentUser ? AppColors.primaryPurple.withOpacity(0.06) : Colors.white,
+                                border: Border.all(
+                                  color: isCurrentUser ? AppColors.primaryPurple : AppColors.primaryPurple.withOpacity(0.12),
+                                  width: isCurrentUser ? 1.8 : 1.0,
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 22,
+                                    backgroundColor: Colors.grey.shade100,
+                                    backgroundImage: entry.user.avatarUrl != null && entry.user.avatarUrl!.isNotEmpty
+                                        ? NetworkImage(entry.user.avatarUrl!)
+                                        : null,
+                                    child: (entry.user.avatarUrl == null || entry.user.avatarUrl!.isEmpty)
+                                        ? Text(
+                                            entry.user.name.isNotEmpty ? entry.user.name[0].toUpperCase() : '?',
+                                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                          )
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                entry.user.name,
+                                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              '${entry.stats.accuracy}% correct',
+                                              style: const TextStyle(color: Color(0xFF4CAF50), fontSize: 13, fontWeight: FontWeight.w600),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            const Text('•', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              entry.stats.playedAt?.toString().split(' ')[0] ?? '',
+                                              style: const TextStyle(color: Colors.grey, fontSize: 13),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '${entry.stats.points}',
+                                        style: TextStyle(color: pointsColor, fontSize: 20, fontWeight: FontWeight.bold),
+                                      ),
+                                      const Text('points', style: TextStyle(color: Colors.grey, fontSize: 11)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -188,78 +281,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         ),
       ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 3),
-    );
-  }
-
-  Widget _buildPodiumItem(LeaderboardEntry entry, int rank, double avatarSize) {
-    return Column(
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: avatarSize + 10,
-              height: avatarSize + 10,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: rank == 1
-                      ? Colors.amber
-                      : (rank == 2
-                            ? Colors.grey.shade300
-                            : Colors.brown.shade300),
-                  width: 4,
-                ),
-              ),
-            ),
-            CircleAvatar(
-              radius: avatarSize / 2,
-              backgroundColor: Colors.white24,
-              child: Text(
-                entry.username[0].toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: rank == 1
-                      ? Colors.amber
-                      : (rank == 2
-                            ? Colors.grey.shade300
-                            : Colors.brown.shade300),
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  rank.toString(),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Text(
-          entry.username,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          '${entry.totalScore} XP',
-          style: const TextStyle(color: Colors.white70, fontSize: 12),
-        ),
-      ],
     );
   }
 }
