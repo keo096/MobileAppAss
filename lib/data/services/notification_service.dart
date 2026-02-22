@@ -16,7 +16,7 @@ class RemoteNotificationService implements NotificationService{
     try{
       final response = await _dio.get(
         "/notifications",
-        // queryParameters: {'userId': userId},
+       
       );
       final dynamic data = _extractData(response.data);
       if (data is List)

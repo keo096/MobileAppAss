@@ -165,135 +165,149 @@ class _LoginState extends State<Login> {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 140),
-              Text(AppStrings.login, style: AppTheme.headingLarge),
-              const SizedBox(height: 30),
-              _buildInputField(
-                AppStrings.username,
-                AppStrings.enterUsername,
-                controller: _usernameController,
-                icon: Icons.person,
-                errorText: _usernameError,
-              ),
-              const SizedBox(height: 20),
-              _buildInputField(
-                AppStrings.password,
-                AppStrings.enterPassword,
-                controller: _passwordController,
-                isPassword: true,
-                icon: Icons.lock,
-                errorText: _passwordError,
-              ),
-              const SizedBox(height: 40),
-
-              // Divider
-              Row(
-                children: [
-                  const Expanded(
-                    child: Divider(color: Colors.black38, thickness: 1),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      AppStrings.orLoginWith,
-                      style: AppTheme.caption.copyWith(
-                        color: AppColors.textBlack87,
-                        fontWeight: FontWeight.w500,
-                      ),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 140),
+                    Text(AppStrings.login, style: AppTheme.headingLarge),
+                    const SizedBox(height: 30),
+                    _buildInputField(
+                      AppStrings.username,
+                      AppStrings.enterUsername,
+                      controller: _usernameController,
+                      icon: Icons.person,
+                      errorText: _usernameError,
                     ),
-                  ),
-                  const Expanded(
-                    child: Divider(color: Colors.black38, thickness: 1),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 25),
-
-              // Perfected Social Icons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: const Color.fromARGB(159, 255, 255, 255),
+                    const SizedBox(height: 20),
+                    _buildInputField(
+                      AppStrings.password,
+                      AppStrings.enterPassword,
+                      controller: _passwordController,
+                      isPassword: true,
+                      icon: Icons.lock,
+                      errorText: _passwordError,
                     ),
-                    child: Image.asset(AppAssets.googleIcon),
-                  ),
-                  SizedBox(width: 20),
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: const Color.fromARGB(159, 255, 255, 255),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(7.0),
-                      child: Image.asset(AppAssets.facebookIcon),
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: const Color.fromARGB(159, 255, 255, 255),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(AppAssets.appleIcon),
-                    ),
-                  ),
-                  // Container(width: 50, height: 50, color: Colors.amber),
-                ],
-              ),
-              SizedBox(height: 170),
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _login,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.backgroundGrey,
-                    foregroundColor: AppColors.textBlack,
-                    disabledBackgroundColor: AppColors.backgroundGrey
-                        .withOpacity(0.6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.textBlack,
-                            ),
-                          ),
-                        )
-                      : Text(
-                          AppStrings.login,
-                          style: AppTheme.bodyMedium.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 30),
-            ],
-          ),
+            ),
+            // Fixed bottom section - never scrolls
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+
+                  // Divider
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Divider(color: Colors.black38, thickness: 1),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          AppStrings.orLoginWith,
+                          style: AppTheme.caption.copyWith(
+                            color: AppColors.textBlack87,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const Expanded(
+                        child: Divider(color: Colors.black38, thickness: 1),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 25),
+
+                  // Perfected Social Icons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: const Color.fromARGB(159, 255, 255, 255),
+                        ),
+                        child: Image.asset(AppAssets.googleIcon),
+                      ),
+                      SizedBox(width: 20),
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: const Color.fromARGB(159, 255, 255, 255),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(7.0),
+                          child: Image.asset(AppAssets.facebookIcon),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: const Color.fromARGB(159, 255, 255, 255),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(AppAssets.appleIcon),
+                        ),
+                      ),
+                      // Container(width: 50, height: 50, color: Colors.amber),
+                    ],
+                  ),
+                  const SizedBox(height: 130),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.backgroundGrey,
+                        foregroundColor: AppColors.textBlack,
+                        disabledBackgroundColor: AppColors.backgroundGrey
+                            .withOpacity(0.6),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.textBlack,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              AppStrings.login,
+                              style: AppTheme.bodyMedium.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 70),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

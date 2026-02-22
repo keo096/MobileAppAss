@@ -48,6 +48,11 @@ class _CategoryPageState extends State<CategoryPage> {
 
               final categories = provider.categories;
               final isAdmin = _isAdmin;
+              
+              // Limit categories when not scrollable to prevent overflow
+              final displayCategories = widget.isScrollable 
+                ? categories 
+                : categories.take(6).toList(); // Show max 6 categories (2 rows)
 
               return CustomScrollView(
                 shrinkWrap: !widget.isScrollable,
@@ -60,19 +65,19 @@ class _CategoryPageState extends State<CategoryPage> {
                     sliver: SliverGrid(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         return CategoryCard(
-                          category: categories[index],
+                          category: displayCategories[index],
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => CategoryDetailPage(
-                                  categoryTitle: categories[index].title,
+                                  categoryTitle: displayCategories[index].title,
                                 ),
                               ),
                             );
                           },
                         );
-                      }, childCount: categories.length),
+                      }, childCount: displayCategories.length),
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 3,

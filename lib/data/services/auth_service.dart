@@ -28,6 +28,7 @@ class RemoteAuthService implements AuthService {
         '/auth/login',
         data: {'username': username, 'password': password},
       );
+      
       final dynamic data = _decodeResponse(response.data);
       // Handle nested user object
       final userData = data['user'] ?? data;

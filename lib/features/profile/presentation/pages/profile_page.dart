@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/constants/app_strings.dart';
 import 'package:smart_quiz/core/constants/app_assets.dart';
-import 'package:smart_quiz/core/theme/app_theme.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -20,131 +18,297 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Top Profile Header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 25),
-              child: Column(
+            // ── Purple Header ───────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CircleAvatar(
-                    radius: 45,
-                    backgroundColor: Colors.white,
-                    child: CircleAvatar(
-                      radius: 42,
-                      backgroundImage: AssetImage(AppAssets.profileImage),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Chheangly Hok",
-                    style: TextStyle(
-                      fontSize: 22,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  const Text(
-                    "chheanglyhok@gmail.com",
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.edit, size: 18),
-                    label: Text(AppStrings.editProfile),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.25),
-                      shape: const StadiumBorder(),
-                    ),
-                  ),
+                  _iconBtn(Icons.close, () {}),
+                  _iconBtn(Icons.settings_outlined, () {}),
                 ],
               ),
             ),
 
-            // Performance Summary Card
+            // Avatar + Name
+            Column(
+              children: [
+                // Avatar with white ring
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 4),
+                  ),
+                  child: CircleAvatar(
+                    radius: 48,
+                    backgroundImage: AssetImage(AppAssets.profileImage),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Davin C. Resolve',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'chheanglyok@gmail.com',
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+                const SizedBox(height: 14),
+                OutlinedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.edit, size: 16, color: Colors.white),
+                  label: const Text(
+                    'Edit Profile',
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.white54),
+                    shape: const StadiumBorder(),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+
+            // ── White Card ──────────────────────────────────────
             Expanded(
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  color: Color(0xFFFAFAFA), // ream/off-white
                   borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
                 child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 22, 16, 20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20),
-
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            AppStrings.performanceSummary,
-                            style: AppTheme.headingSmall,
-                          ),
+                      // Section: Performance Summary
+                      const Text(
+                        'Performance Summary',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
                       ),
+                      const SizedBox(height: 12),
 
-                      const SizedBox(height: 15),
+                      // Row 1
+                      Row(
+                        children: [
+                          _statCard(
+                              
+                            icon: Icons.star_rounded,
+                            iconColor: Colors.amber,
+                            title: 'XP / Level',
+                            child: RichText(
+                              text: const TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '2,300 ',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'XP',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: '  |  Level 5',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          _statCard(
+                            icon: Icons.timer_outlined,
+                            iconColor: AppColors.primaryPurpleAccent,
+                            title: 'Time Spent',
+                            child: const Text(
+                              '1h 30mn',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
 
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Column(
-                          children: [
-                            Row(
+                      const SizedBox(height: 10),
+
+                      // Row 2
+                      Row(
+                        children: [
+                          _statCard(
+                            icon: Icons.check_circle,
+                            iconColor: Colors.green,
+                            title: 'Completed Quizzes',
+                            child: RichText(
+                              text: const TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '105 ',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Quizzes',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          _statCard(
+                            icon: Icons.bar_chart_rounded,
+                            iconColor: Colors.orange,
+                            title: 'Overall Grade',
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                _summaryBox(
-                                  icon: Icons.star,
-                                  title: "XP / Level",
-                                  value: "2,300 XP",
-                                  subtitle: "Level 5",
-                                  color: Colors.amber,
+                                const Text(
+                                  '82%',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
                                 ),
-                                const SizedBox(width: 10),
-                                _summaryBox(
-                                  icon: Icons.timer,
-                                  title: "Time Spent",
-                                  value: "1h 30m",
-                                  subtitle: "",
-                                  color: Colors.purple,
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange.shade100,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: const [
+                                      Icon(Icons.bar_chart_rounded,
+                                          size: 14, color: Colors.orange),
+                                      SizedBox(width: 3),
+                                      Text(
+                                        'B',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.orange,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                _summaryBox(
-                                  icon: Icons.check_circle,
-                                  title: "Completed Quizzes",
-                                  value: "105 Quizzes",
-                                  subtitle: "",
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 10),
-                                _summaryBox(
-                                  icon: Icons.bar_chart,
-                                  title: "Overall Grade",
-                                  value: "82%",
-                                  subtitle: "B",
-                                  color: Colors.orange,
-                                ),
-                              ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Section: More
+                      const Text(
+                        'More',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Menu card
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          children: [
+                            _menuItem(
+                              icon: Icons.emoji_events_outlined,
+                              title: 'My Achievements',
+                            ),
+                            _divider(),
+                            _menuItem(
+                              icon: Icons.bookmark_outline,
+                              title: 'Saved Quizzes',
+                            ),
+                            _divider(),
+                            _menuItem(
+                              icon: Icons.settings_outlined,
+                              title: 'App Settings',
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Text(
+                                    'English',
+                                    style: TextStyle(
+                                        color: Colors.black45, fontSize: 13),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Icon(Icons.keyboard_arrow_down_rounded,
+                                      color: Colors.black45, size: 20),
+                                ],
+                              ),
+                            ),
+                            _divider(),
+                            _menuItem(
+                              icon: Icons.help_outline,
+                              title: 'Help & Support',
                             ),
                           ],
                         ),
                       ),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 12),
 
-                      // More Section
-                      _menuItem(Icons.emoji_events, AppStrings.myAchievements),
-                      _menuItem(Icons.save_alt, AppStrings.savedQuizzes),
-                      _menuItem(Icons.settings, AppStrings.appSettings),
-                      _menuItem(Icons.help, AppStrings.helpSupport),
-                      _menuItem(Icons.logout, AppStrings.logout),
-
-                      const SizedBox(height: 20),
+                      // Logout (separate card, no chevron)
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: ListTile(
+                          leading: const Icon(Icons.logout,
+                              color: Colors.black54, size: 22),
+                          title: const Text(
+                            'Logout',
+                            style: TextStyle(
+                                fontSize: 15, color: Colors.black87),
+                          ),
+                          onTap: () {},
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -153,59 +317,93 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-
-      // Bottom Navigation Bar
       bottomNavigationBar: const BottomNavBar(currentIndex: 4),
     );
   }
 
-  // Summary Box Widget
-  Widget _summaryBox({
+  // ── Helpers ─────────────────────────────────────────────────
+
+  Widget _iconBtn(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.20),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 20),
+      ),
+    );
+  }
+
+  Widget _statCard({
     required IconData icon,
+    required Color iconColor,
     required String title,
-    required String value,
-    required String subtitle,
-    required Color color,
+    required Widget child,
   }) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
-        height: 90,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: Colors.grey.shade200),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
-                Icon(icon, color: color),
+                Icon(icon, color: iconColor, size: 18),
                 const SizedBox(width: 6),
-                Text(title, style: const TextStyle(fontSize: 12)),
+                Expanded(
+                  child: Text(
+                    title,
+                    style:
+                        const TextStyle(fontSize: 12, color: Colors.black54),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            if (subtitle.isNotEmpty)
-              Text(subtitle, style: const TextStyle(color: Colors.grey)),
+            child,
+            const SizedBox(height: 2),
           ],
         ),
       ),
     );
   }
 
-  // Menu Item Widget
-  Widget _menuItem(IconData icon, String title) {
+  Widget _menuItem({
+    required IconData icon,
+    required String title,
+    Widget? trailing,
+  }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.black54),
-      title: Text(title),
-      trailing: const Icon(Icons.chevron_right),
+      leading: Icon(icon, color: Colors.black54, size: 22),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 15, color: Colors.black87),
+      ),
+      trailing: trailing ??
+          const Icon(Icons.keyboard_arrow_down_rounded,
+              color: Colors.black45, size: 22),
       onTap: () {},
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
     );
   }
+
+  Widget _divider() => Divider(
+        height: 1,
+        indent: 52,
+        endIndent: 16,
+        color: Colors.grey.shade100,
+      );
 }

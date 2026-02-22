@@ -59,20 +59,26 @@ class _UserHomePageState extends State<UserHomePage> {
                         backgroundImage: AssetImage(AppAssets.profileImage),
                       ),
                       const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            Formatters.formatGreeting(username),
-                            style: AppTheme.greetingText,
-                          ),
-                          Text(
-                            AppStrings.readyToLearn,
-                            style: AppTheme.subtitleText,
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              Formatters.formatGreeting(username),
+                              style: AppTheme.greetingText,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                            Text(
+                              AppStrings.readyToLearn,
+                              style: AppTheme.subtitleText,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: 4),
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -91,7 +97,7 @@ class _UserHomePageState extends State<UserHomePage> {
                           hasBadge: true,
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 4),
                       _buildHeaderIcon(Icons.settings_sharp),
                     ],
                   ),
@@ -154,36 +160,44 @@ class _UserHomePageState extends State<UserHomePage> {
               // Categories
               _buildSectionTitle(AppStrings.selectCategory),
               SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 120,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal, // ✅ left-right scroll
-                    physics: const BouncingScrollPhysics(), // smooth iOS feel
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    children: [
-                      _buildCategoryItem(
-                        "English",
-                        Icons.menu_book_outlined,
-                        Colors.indigo,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final screenHeight = MediaQuery.of(context).size.height;
+                    final isSmallScreen = screenHeight < 600;
+                    final categoryHeight = isSmallScreen ? 100.0 : 120.0;
+
+                    return SizedBox(
+                      height: categoryHeight,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal, // ✅ left-right scroll
+                        physics: const BouncingScrollPhysics(), // smooth iOS feel
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        children: [
+                          _buildCategoryItem(
+                            "English",
+                            Icons.menu_book_outlined,
+                            Colors.indigo,
+                          ),
+                          _buildCategoryItem("Math", Icons.calculate, Colors.blue),
+                          _buildCategoryItem(
+                            "Chemistry",
+                            Icons.biotech,
+                            Colors.teal,
+                          ),
+                          _buildCategoryItem(
+                            "History",
+                            Icons.assignment,
+                            Colors.brown,
+                          ),
+                          _buildCategoryItem(
+                            "General-knowlege",
+                            Icons.psychology,
+                            Colors.deepPurple,
+                          ),
+                        ],
                       ),
-                      _buildCategoryItem("Math", Icons.calculate, Colors.blue),
-                      _buildCategoryItem(
-                        "Chemistry",
-                        Icons.biotech,
-                        Colors.teal,
-                      ),
-                      _buildCategoryItem(
-                        "History",
-                        Icons.assignment,
-                        Colors.brown,
-                      ),
-                      _buildCategoryItem(
-                        "General-knowlege",
-                        Icons.psychology,
-                        Colors.deepPurple,
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
 
@@ -192,36 +206,45 @@ class _UserHomePageState extends State<UserHomePage> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: CarouselSlider(
-                    options: CarouselOptions(
-                      height: 160,
-                      autoPlay: true,
-                      enlargeCenterPage: true,
-                      viewportFraction: 1.0,
-                      autoPlayInterval: const Duration(seconds: 4),
-                    ),
-                    items: [
-                      QuizCard(
-                        title: AppStrings.dailyQuizChallenge,
-                        subtitle: "15 Questions • 7-10mins",
-                        imagePath: AppAssets.dailyQuizImage,
-                        buttonText: AppStrings.startNow,
-                      ),
-                      QuizCard(
-                        title: AppStrings.learningGoals,
-                        subtitle:
-                            "Choose how many quizzes you want to finish each week",
-                        imagePath: AppAssets.goalsImage,
-                        buttonText: AppStrings.setGoal,
-                      ),
-                      QuizCard(
-                        title: AppStrings.completeWithFriends,
-                        subtitle:
-                            "See how your rank compares on the leaderboard",
-                        imagePath: AppAssets.progressImage,
-                        buttonText: AppStrings.viewLeaderboard,
-                      ),
-                    ],
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final screenHeight = MediaQuery.of(context).size.height;
+                      final screenWidth = MediaQuery.of(context).size.width;
+                      final isSmallScreen = screenWidth < 360 || screenHeight < 600;
+                      final carouselHeight = isSmallScreen ? 116.0 : 146.0; // Match QuizCard height + small padding
+
+                      return CarouselSlider(
+                        options: CarouselOptions(
+                          height: carouselHeight,
+                          autoPlay: true,
+                          enlargeCenterPage: true,
+                          viewportFraction: 1.0,
+                          autoPlayInterval: const Duration(seconds: 4),
+                        ),
+                        items: [
+                          QuizCard(
+                            title: AppStrings.dailyQuizChallenge,
+                            subtitle: "15 Questions • 7-10mins",
+                            imagePath: AppAssets.dailyQuizImage,
+                            buttonText: AppStrings.startNow,
+                          ),
+                          QuizCard(
+                            title: AppStrings.learningGoals,
+                            subtitle:
+                                "Choose how many quizzes you want to finish each week",
+                            imagePath: AppAssets.goalsImage,
+                            buttonText: AppStrings.setGoal,
+                          ),
+                          QuizCard(
+                            title: AppStrings.completeWithFriends,
+                            subtitle:
+                                "See how your rank compares on the leaderboard",
+                            imagePath: AppAssets.progressImage,
+                            buttonText: AppStrings.viewLeaderboard,
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -230,7 +253,9 @@ class _UserHomePageState extends State<UserHomePage> {
               SliverToBoxAdapter(
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 10),
-                  // padding: const EdgeInsets.all(1),
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.35, // Further reduced
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.backgroundLightGrey,
                     borderRadius: BorderRadius.circular(24),
@@ -242,11 +267,15 @@ class _UserHomePageState extends State<UserHomePage> {
                       ),
                     ],
                   ),
-                  child: const CategoryPage(isScrollable: false),
+                  child: ClipRRect( // Add clipping to prevent overflow
+                    borderRadius: BorderRadius.circular(24),
+                    child: const CategoryPage(isScrollable: false),
+                  ),
                 ),
               ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 40)),
+              // Add bottom padding to account for bottom navigation bar
+              const SliverToBoxAdapter(child: SizedBox(height: 90)), // Increased padding
             ],
           ),
         ),
@@ -326,42 +355,67 @@ class _UserHomePageState extends State<UserHomePage> {
   }
 
   Widget _buildCategoryItem(String title, IconData icon, Color color) {
-    return Container(
-      margin: const EdgeInsets.only(right: 12),
-      width: 74,
-      child: Column(
-        children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.9),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 6,
-                  offset: const Offset(0, 4),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final isVerySmallScreen = screenWidth < 360;
+
+        final itemWidth = isVerySmallScreen ? 65.0 : 74.0;
+        final iconSize = isVerySmallScreen ? 28.0 : 34.0;
+        final containerSize = isVerySmallScreen ? 60.0 : 70.0;
+        final textHeight = isVerySmallScreen ? 28.0 : 32.0;
+
+        return Container(
+          margin: const EdgeInsets.only(right: 12),
+          width: itemWidth,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 🔵 Icon Circle
+              Container(
+                width: containerSize,
+                height: containerSize,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.9),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Icon(icon, color: Colors.white, size: 36),
-          ),
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                  size: iconSize,
+                ),
+              ),
 
-          const SizedBox(height: 6),
+              const SizedBox(height: 4),
 
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppTheme.caption.copyWith(
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1,
-            ),
+              // 📝 Title (FIXED HEIGHT → prevents overflow)
+              SizedBox(
+                height: textHeight,
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.caption.copyWith(
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                    fontSize: isVerySmallScreen ? 10 : 12,
+                    height: 1.2, // 🔥 control line spacing
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

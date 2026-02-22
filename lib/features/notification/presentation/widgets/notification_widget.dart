@@ -9,6 +9,8 @@ class NotificationCard extends StatelessWidget {
   final bool hasAction;
   final String actionLabel;
   final Color backgroundColor;
+  final IconData iconData;
+  final Color iconColor;
   final VoidCallback? onActionPressed;
 
   const NotificationCard({
@@ -20,6 +22,8 @@ class NotificationCard extends StatelessWidget {
     this.hasAction = false,
     this.actionLabel = '',
     this.backgroundColor = const Color(0xFFFFE5CC),
+    this.iconData = Icons.notifications_rounded,
+    this.iconColor = Colors.orange,
     this.onActionPressed,
   }) : super(key: key);
 
@@ -28,108 +32,110 @@ class NotificationCard extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        decoration: BoxDecoration(
+      decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
+        boxShadow: [
+          BoxShadow(
               color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Padding(
+          ),
+        ],
+      ),
+      child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Row(
+        child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: backgroundColor,
+          children: [
+            // Colored icon box
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: backgroundColor,
                   borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
+              ),
+              child: Center(
                   child: Text(
                     emoji,
                     style: const TextStyle(fontSize: 22),
                   ),
-                ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: const TextStyle(
-                              color: AppColors.primaryPurpleLogo,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            color: AppColors.primaryPurpleLogo,
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
-                            ),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          time,
-                          style: const TextStyle(
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        time,
+                        style: const TextStyle(
                             fontSize: 12,
                             color: AppColors.textBlack87,
-                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                     const SizedBox(height: 6),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            description,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 13,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Color.fromARGB(255, 144, 142, 142),
-                            ),
                           ),
                         ),
-                        if (hasAction) ...[
+                      ),
+                      if (hasAction) ...[
                           const SizedBox(width: 8),
-                          ElevatedButton(
-                            onPressed: onActionPressed,
-                            style: ElevatedButton.styleFrom(
+                        ElevatedButton(
+                          onPressed: onActionPressed,
+                          style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primaryPurple,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              padding: const EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 8),
-                              elevation: 0,
-                            ),
-                            child: Text(
-                              actionLabel,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.white,
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            actionLabel,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.white,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
                         ]
-                      ],
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
-            ],
+            ),
+          ],
           ),
         ),
       ),
