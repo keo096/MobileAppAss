@@ -10,8 +10,13 @@ import 'package:smart_quiz/features/quiz/presentation/pages/create_quiz_page.dar
 
 class CategoryDetailPage extends StatefulWidget {
   final String categoryTitle;
+  final String categoryId;
 
-  const CategoryDetailPage({super.key, required this.categoryTitle});
+  const CategoryDetailPage({
+    super.key,
+    required this.categoryTitle,
+    required this.categoryId,
+  });
 
   @override
   State<CategoryDetailPage> createState() => _CategoryDetailPageState();
@@ -46,13 +51,18 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
 
     try {
       final allCategoryQuizzes = await ApiConfig.quiz.fetchQuizzes(
-        categoryId: widget.categoryTitle,
+        categoryId: widget.categoryId,
       );
 
-      if (_isAdmin) {
-        _allQuizzes = allCategoryQuizzes;
-      } else {
-        _allQuizzes = allCategoryQuizzes.where((q) => q.isPublished).toList();
+      // Local filtering as a safeguard to ensure only this category's quizzes are shown
+      _allQuizzes = allCategoryQuizzes.where((q) {
+        // Match by either categoryId or category name
+        return q.categoryId == widget.categoryId ||
+            q.category == widget.categoryTitle;
+      }).toList();
+
+      if (!_isAdmin) {
+        _allQuizzes = _allQuizzes.where((q) => q.isShared).toList();
       }
 
       _topics = [
@@ -84,71 +94,273 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black87,
-            size: 20,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          widget.categoryTitle,
-          style: const TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.qr_code_scanner,
-              color: AppColors.primaryPurple,
+      backgroundColor: AppColors.primaryPurple,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            // Header Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      widget.categoryTitle,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 48,
+                  ), // Spacer to balance the back button
+                ],
+              ),
             ),
-            onPressed: _showJoinQuizDialog,
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                _buildTopicFilters(),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: _filteredQuizzes.length,
-                    itemBuilder: (context, index) {
-                      final quiz = _filteredQuizzes[index];
-                      return _buildQuizItemCard(quiz);
-                    },
+
+            // Content Section
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF1EFF1),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
                   ),
                 ),
-              ],
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          if (_topics.length > 1) _buildTopicFilters(),
+                          Expanded(
+                            child: ListView.separated(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
+                              ),
+                              itemCount: _filteredQuizzes.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 15),
+                              itemBuilder: (context, index) {
+                                return _buildQuizItemCard(
+                                  _filteredQuizzes[index],
+                                  index,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
             ),
+          ],
+        ),
+      ),
       floatingActionButton: _isAdmin
-          ? FloatingActionButton.extended(
+          ? FloatingActionButton(
               onPressed: _showCreateQuizDialog,
               backgroundColor: AppColors.primaryPurple,
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text(
-                'New Quiz',
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Icon(Icons.add, color: Colors.white),
             )
           : null,
     );
   }
 
-  void _showJoinQuizDialog() {
-    // Join quiz dialog implementation
+  Widget _buildTopicFilters() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Row(
+          children: _topics.map((topic) {
+            final isSelected = _selectedTopic == topic;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: FilterChip(
+                label: Text(topic),
+                selected: isSelected,
+                onSelected: (selected) {
+                  setState(() {
+                    _selectedTopic = topic;
+                    _filterQuizzes();
+                  });
+                },
+                selectedColor: AppColors.primaryPurple,
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(
+                    color: isSelected
+                        ? Colors.transparent
+                        : Colors.grey.shade300,
+                  ),
+                ),
+                labelStyle: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black87,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuizItemCard(Quiz quiz, int index) {
+    // Generate a unique color based on index for the circle
+    final List<Color> circleColors = [
+      const Color(0xFF4FC3F7), // Light Blue
+      const Color(0xFF4FC3F7), // Light Blue
+      const Color(0xFF81C784), // Green
+      const Color(0xFFFFD54F), // Amber
+      const Color(0xFFFF8A65), // Coral
+      const Color(0xFFBA68C8), // Purple
+    ];
+    final color = circleColors[index % circleColors.length];
+
+    // Get status text (placeholder for now)
+    String statusText = 'Not Started';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Circle Icon (A1, A2, etc.)
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Center(
+              child: Text(
+                _getShortName(quiz.title),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Quiz Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  quiz.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  quiz.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Status and Button
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (_isAdmin)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: quiz.isShared
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    quiz.isShared ? 'Shared' : 'Private',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: quiz.isShared ? Colors.green : Colors.red,
+                    ),
+                  ),
+                ),
+              if (!_isAdmin)
+                Text(
+                  statusText,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 32,
+                child: ElevatedButton(
+                  onPressed: () => _onQuizAction(quiz),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryPurple,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    _isAdmin ? 'Manage' : 'Start now',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getShortName(String title) {
+    if (title.isEmpty) return '';
+    final words = title.split(' ');
+    if (words.length >= 2) {
+      if (words[0].length == 1 && words[1].length <= 2) {
+        return '${words[0]}${words[1]}';
+      }
+    }
+    return title[0].toUpperCase();
   }
 
   void _showCreateQuizDialog() {
@@ -161,49 +373,6 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
     ).then((result) {
       if (result == true) _loadQuizzes();
     });
-  }
-
-  Widget _buildTopicFilters() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: Row(
-        children: _topics.map((topic) {
-          final isSelected = _selectedTopic == topic;
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: FilterChip(
-              label: Text(topic),
-              selected: isSelected,
-              onSelected: (selected) {
-                setState(() {
-                  _selectedTopic = topic;
-                  _filterQuizzes();
-                });
-              },
-              selectedColor: AppColors.primaryPurple,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : Colors.black87,
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildQuizItemCard(Quiz quiz) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 20),
-      child: ListTile(
-        title: Text(quiz.title),
-        subtitle: Text(quiz.description),
-        trailing: ElevatedButton(
-          onPressed: () => _onQuizAction(quiz),
-          child: Text(_isAdmin ? 'Manage' : 'Start'),
-        ),
-      ),
-    );
   }
 
   Future<void> _onQuizAction(Quiz quiz) async {

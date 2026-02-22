@@ -33,13 +33,15 @@ class QuizParticipant {
 
   factory QuizParticipant.fromJson(Map<String, dynamic> json) =>
       QuizParticipant(
-        userId: json['userId'] as String,
-        userName: json['userName'] as String,
-        userEmail: json['userEmail'] as String,
-        score: json['score'] as double,
-        timeTaken: json['timeTaken'] as int,
-        completedAt: DateTime.parse(json['completedAt'] as String),
-        correctAnswers: json['correctAnswers'] as int,
-        totalQuestions: json['totalQuestions'] as int,
+        userId: (json['userId'] ?? '').toString(),
+        userName: (json['userName'] ?? json['displayName'] ?? '').toString(),
+        userEmail: (json['userEmail'] ?? '').toString(),
+        score: (json['score'] as num? ?? 0.0).toDouble(),
+        timeTaken: (json['timeTaken'] as int? ?? 0),
+        completedAt: json['completedAt'] != null
+            ? DateTime.parse(json['completedAt'] as String)
+            : DateTime.now(),
+        correctAnswers: (json['correctAnswers'] as int? ?? 0),
+        totalQuestions: (json['totalQuestions'] as int? ?? 0),
       );
 }

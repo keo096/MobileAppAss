@@ -74,7 +74,7 @@ class _CreateQuizPageState extends State<CreateQuizPage> {
         difficulty: _difficulty,
         topic: _topicController.text,
         deadline: _deadline,
-        isPublished: false,
+        isShared: false,
       );
 
       try {

@@ -78,12 +78,23 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
       ]);
 
       if (mounted) {
+        final quiz = results[0] as Quiz?;
+        final quizWithQuestions = results[1] as QuizWithQuestions?;
+        final directParticipants = results[2] as List<QuizParticipant>;
+        final dynamic stats = results[3];
+        final hasRealQ = results[4] as bool;
+
         setState(() {
-          _quiz = results[0] as Quiz?;
-          _questions = (results[1] as QuizWithQuestions?)?.questions ?? [];
-          _participants = results[2] as List<QuizParticipant>;
-          _statistics = results[3] as Map<String, dynamic>;
-          _hasRealQuestions = results[4] as bool;
+          _quiz = quiz;
+          _questions = quizWithQuestions?.questions ?? [];
+
+          // Fallback logic for participants: Use direct list if not empty, otherwise use from QuizWithQuestions
+          _participants = directParticipants.isNotEmpty
+              ? directParticipants
+              : (quizWithQuestions?.participants ?? []);
+
+          _statistics = stats is Map<String, dynamic> ? stats : _statistics;
+          _hasRealQuestions = hasRealQ;
           _isLoading = false;
         });
       }
@@ -118,19 +129,19 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (_quiz != null && !_quiz!.isPublished) ...[
+            if (_quiz != null && !_quiz!.isShared) ...[
               const SizedBox(width: 10),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.3),
+                  color: Colors.red.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                  border: Border.all(color: Colors.red.withOpacity(0.5)),
                 ),
                 child: const Text(
-                  'DRAFT',
+                  'PRIVATE',
                   style: TextStyle(
-                    color: Colors.orange,
+                    color: Colors.white,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
@@ -190,17 +201,17 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
         children: [
           _buildStatItem(
             Icons.people_alt,
-            '${_statistics['totalParticipants']}',
+            '${_quiz?.totalAttempts ?? _statistics['totalParticipants'] ?? 0}',
             'Participants',
           ),
           _buildStatItem(
             Icons.help_center_outlined,
-            '${_questions.length}',
+            '${_quiz?.totalQuestions ?? _questions.length}',
             'Questions',
           ),
           _buildStatItem(
             Icons.auto_graph_rounded,
-            '${(_statistics['averageScore'] as num).toStringAsFixed(1)}%',
+            '${(_quiz?.averageScore ?? (_statistics['averageScore'] as num? ?? 0.0)).toStringAsFixed(1)}%',
             'Avg Score',
           ),
           if (_quiz?.deadline != null)
@@ -236,7 +247,7 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
         difficulty: _quiz!.difficulty,
         deadline: picked,
         topic: _quiz!.topic,
-        isPublished: _quiz!.isPublished,
+        isShared: _quiz!.isShared,
       );
 
       await ApiConfig.quiz.updateQuiz(updatedQuiz);
@@ -442,9 +453,10 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
       padding: const EdgeInsets.all(20),
       children: [
         ListTile(
-          title: const Text('Published'),
+          title: const Text('Shared'),
+          subtitle: const Text('Allow others to see and join this quiz'),
           trailing: Switch(
-            value: _quiz!.isPublished,
+            value: _quiz!.isShared,
             onChanged: (val) async {
               final updatedQuiz = Quiz(
                 id: _quiz!.id,
@@ -457,7 +469,7 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
                 difficulty: _quiz!.difficulty,
                 deadline: _quiz!.deadline,
                 topic: _quiz!.topic,
-                isPublished: val,
+                isShared: val,
               );
               await ApiConfig.quiz.updateQuiz(updatedQuiz);
               setState(() => _quiz = updatedQuiz);

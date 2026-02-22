@@ -48,11 +48,13 @@ class _CategoryPageState extends State<CategoryPage> {
 
               final categories = provider.categories;
               final isAdmin = _isAdmin;
-              
+
               // Limit categories when not scrollable to prevent overflow
-              final displayCategories = widget.isScrollable 
-                ? categories 
-                : categories.take(6).toList(); // Show max 6 categories (2 rows)
+              final displayCategories = widget.isScrollable
+                  ? categories
+                  : categories
+                        .take(6)
+                        .toList(); // Show max 6 categories (2 rows)
 
               return CustomScrollView(
                 shrinkWrap: !widget.isScrollable,
@@ -60,40 +62,14 @@ class _CategoryPageState extends State<CategoryPage> {
                     ? const BouncingScrollPhysics()
                     : const NeverScrollableScrollPhysics(),
                 slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.all(16),
-                    sliver: SliverGrid(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        return CategoryCard(
-                          category: displayCategories[index],
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CategoryDetailPage(
-                                  categoryTitle: displayCategories[index].title,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      }, childCount: displayCategories.length),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 16,
-                            childAspectRatio: 0.8,
-                          ),
-                    ),
-                  ),
                   if (isAdmin)
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.only(
                           left: 16,
                           right: 16,
-                          bottom: 30,
+                          top: 10,
+                          bottom: 0,
                         ),
                         child: CreateCategoryWidget(
                           onPressed: () {
@@ -110,6 +86,34 @@ class _CategoryPageState extends State<CategoryPage> {
                         ),
                       ),
                     ),
+                  SliverPadding(
+                    padding: const EdgeInsets.all(16),
+                    sliver: SliverGrid(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return CategoryCard(
+                          category: displayCategories[index],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CategoryDetailPage(
+                                  categoryTitle: displayCategories[index].title,
+                                  categoryId: displayCategories[index].id,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }, childCount: displayCategories.length),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 16,
+                            childAspectRatio: 0.8,
+                          ),
+                    ),
+                  ),
                 ],
               );
             },

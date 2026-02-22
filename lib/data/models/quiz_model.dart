@@ -1,3 +1,5 @@
+import 'package:smart_quiz/data/models/quiz_participant_model.dart';
+
 /// Quiz model representing a quiz
 class Quiz {
   final String id;
@@ -13,7 +15,7 @@ class Quiz {
   final double? averageScore;
   final String? topic; // e.g., 'Grammar', 'Vocabulary'
   final DateTime? deadline;
-  final bool isPublished;
+  final bool isShared;
 
   Quiz({
     required this.id,
@@ -29,7 +31,7 @@ class Quiz {
     this.averageScore,
     this.topic,
     this.deadline,
-    this.isPublished = false,
+    this.isShared = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -46,29 +48,43 @@ class Quiz {
     'averageScore': averageScore,
     'topic': topic,
     'deadline': deadline?.toIso8601String(),
-    'isPublished': isPublished,
+    'isShared': isShared,
   };
 
-  factory Quiz.fromJson(Map<String, dynamic> json) => Quiz(
-    id: (json['id'] ?? json['quizId'] ?? '').toString(),
-    title: (json['title'] ?? json['quizTitle'] ?? '').toString(),
-    description: (json['description'] ?? '').toString(),
-    category: (json['category'] ?? json['categoryName'] ?? '').toString(),
-    categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
-    totalQuestions: _parseInt(json['totalQuestions'] ?? json['questionCount']),
-    timeLimit: _parseInt(json['timeLimit']),
-    difficulty: (json['difficulty'] ?? 'easy').toString(),
-    imageUrl: json['imageUrl'] as String?,
-    totalAttempts: _parseInt(json['totalAttempts']),
-    averageScore: (json['averageScore'] as num?)?.toDouble(),
-    topic: (json['topic'] ?? json['subject']) as String?,
-    deadline: json['deadline'] != null
-        ? DateTime.parse(json['deadline'] as String)
-        : null,
-    isPublished:
-        json['isPublished'] as bool? ??
-        true, // Default to true if not specified
-  );
+  factory Quiz.fromJson(Map<String, dynamic> json) {
+    final settings = json['settings'] as Map<String, dynamic>?;
+    final bool isShared =
+        json['isShared'] as bool? ??
+        (settings != null
+            ? (settings['shared'] as bool? ??
+                  settings['share'] as bool? ??
+                  settings['published'] as bool? ??
+                  true)
+            : (json['published'] as bool? ?? true));
+
+    return Quiz(
+      id: (json['id'] ?? json['quizId'] ?? '').toString(),
+      title: (json['title'] ?? json['quizTitle'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
+      category: (json['category'] ?? json['categoryName'] ?? '').toString(),
+      categoryId: (json['categoryId'] ?? json['category_id'] ?? '').toString(),
+      totalQuestions: _parseInt(
+        json['totalQuestions'] ?? json['questionCount'],
+      ),
+      timeLimit: _parseInt(json['timeLimit'] ?? json['duration']),
+      difficulty: (json['difficulty'] ?? 'easy').toString(),
+      imageUrl: json['imageUrl'] as String?,
+      totalAttempts: _parseInt(
+        json['totalAttempts'] ?? json['participantCount'],
+      ),
+      averageScore: (json['averageScore'] as num?)?.toDouble(),
+      topic: (json['topic'] ?? json['subject']) as String?,
+      deadline: json['deadline'] != null
+          ? DateTime.parse(json['deadline'] as String)
+          : null,
+      isShared: isShared,
+    );
+  }
 
   static int _parseInt(dynamic value) {
     if (value == null) return 0;
@@ -106,14 +122,32 @@ class Question {
     'points': points,
   };
 
-  factory Question.fromJson(Map<String, dynamic> json) => Question(
-    id: (json['id'] ?? '').toString(),
-    question: (json['question'] ?? json['questionText'] ?? '').toString(),
-    options: List<String>.from(json['options'] ?? []),
-    correctAnswer: _parseInt(json['correctAnswer'] ?? json['correct_answer']),
-    explanation: json['explanation'] as String?,
-    points: _parseInt(json['points']),
-  );
+  factory Question.fromJson(Map<String, dynamic> json) {
+    final List<String> options = List<String>.from(json['options'] ?? []);
+    int correctAnswer = 0;
+
+    final dynamic rawAnswer =
+        json['correctAnswer'] ?? json['correct_answer'] ?? json['answer'];
+    if (rawAnswer is String) {
+      // Find the index of the string answer in the options list
+      correctAnswer = options.indexWhere(
+        (o) => o.toLowerCase() == rawAnswer.toLowerCase(),
+      );
+      if (correctAnswer == -1)
+        correctAnswer = 0; // Default to first if not found
+    } else {
+      correctAnswer = _parseInt(rawAnswer);
+    }
+
+    return Question(
+      id: (json['id'] ?? '').toString(),
+      question: (json['question'] ?? json['questionText'] ?? '').toString(),
+      options: options,
+      correctAnswer: correctAnswer,
+      explanation: json['explanation'] as String?,
+      points: _parseInt(json['points']),
+    );
+  }
 
   static int _parseInt(dynamic value) {
     if (value == null) return 0;
@@ -128,8 +162,13 @@ class Question {
 class QuizWithQuestions {
   final Quiz quiz;
   final List<Question> questions;
+  final List<QuizParticipant>? participants;
 
-  QuizWithQuestions({required this.quiz, required this.questions});
+  QuizWithQuestions({
+    required this.quiz,
+    required this.questions,
+    this.participants,
+  });
 
   factory QuizWithQuestions.fromJson(Map<String, dynamic> json) {
     final quiz =
@@ -142,13 +181,24 @@ class QuizWithQuestions {
         ? questionsData.map((q) => Question.fromJson(q)).toList()
         : [];
 
-    return QuizWithQuestions(quiz: quiz, questions: questions);
+    final participantsData = json['participants'];
+    final List<QuizParticipant>? participants = (participantsData is List)
+        ? participantsData.map((p) => QuizParticipant.fromJson(p)).toList()
+        : null;
+
+    return QuizWithQuestions(
+      quiz: quiz,
+      questions: questions,
+      participants: participants,
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'quiz': quiz.toJson(),
       'questions': questions.map((q) => q.toJson()).toList(),
+      if (participants != null)
+        'participants': participants!.map((p) => p.toJson()).toList(),
     };
   }
 }
