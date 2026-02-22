@@ -1,10 +1,16 @@
 import 'package:smart_quiz/data/api_config.dart';
+import 'package:smart_quiz/data/services/auth_service.dart';
 import 'package:smart_quiz/data/models/user_model.dart';
 
 /// Repository for authentication-related data operations
 ///
 /// Currently uses mock data, but structured to easily replace with API calls
 class AuthRepository {
+  final AuthService _authService;
+
+  AuthRepository({AuthService? authService})
+    : _authService = authService ?? ApiConfig.auth;
+
   /// Login user
   ///
   /// [username] - User's username
@@ -16,7 +22,7 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      return await ApiConfig.auth.login(username, password);
+      return await _authService.login(username, password);
     } catch (e) {
       throw Exception('Login failed: $e');
     }
@@ -37,7 +43,7 @@ class AuthRepository {
     String? fullName,
   }) async {
     try {
-      return await ApiConfig.auth.register(
+      return await _authService.register(
         username,
         email,
         password,
@@ -69,7 +75,7 @@ class AuthRepository {
   /// Throws [Exception] if fetch fails
   Future<User?> getCurrentUser() async {
     try {
-      return await ApiConfig.auth.getCurrentUser();
+      return await _authService.getCurrentUser();
     } catch (e) {
       throw Exception('Failed to get current user: $e');
     }
@@ -81,7 +87,7 @@ class AuthRepository {
   /// Throws [Exception] if logout fails
   Future<bool> logout() async {
     try {
-      await ApiConfig.auth.logout();
+      await _authService.logout();
       return true;
     } catch (e) {
       throw Exception('Logout failed: $e');

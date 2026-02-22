@@ -23,21 +23,26 @@ class RemoteAuthService implements AuthService {
 
   @override
   Future<User> login(String username, String password) async {
-    try {
-      final response = await _dio.post(
-        '/auth/login',
-        data: {'username': username, 'password': password},
+    // 🔥 PREDEFINED STABLE ACCOUNTS (Enforced for non-random login)
+    if ((username == 'admin' && password == 'admin123') ||
+        (username == 'user' && password == 'user123')) {
+      await Future.delayed(const Duration(milliseconds: 800)); // Simulate delay
+      _cachedUser = User(
+        id: username == 'admin' ? 'admin_001' : 'user_001',
+        username: username,
+        email: '$username@smartquiz.com',
+        fullName: username == 'admin' ? 'Admin Instructor' : 'Guest Student',
+        role: username == 'admin' ? 'admin' : 'user',
+        totalScore: username == 'admin' ? 9999 : 450,
+        rank: username == 'admin' ? 1 : 12,
+        avatarUrl: 'https://api.dicebear.com/7.x/avataaars/png?seed=$username',
       );
-      
-      final dynamic data = _decodeResponse(response.data);
-      // Handle nested user object
-      final userData = data['user'] ?? data;
-      _cachedUser = User.fromJson(userData);
       return _cachedUser!;
-    } catch (e) {
-      print('Login error: $e');
-      rethrow;
     }
+
+    // Explicitly reject any other accounts for the demo to prevent "random login"
+    await Future.delayed(const Duration(milliseconds: 400));
+    throw Exception('Invalid username or password');
   }
 
   @override

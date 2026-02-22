@@ -42,7 +42,6 @@ class _UserHomePageState extends State<UserHomePage> {
   Widget build(BuildContext context) {
     final username = _username ?? "User";
     return Scaffold(
-      extendBody: true,
       body: Container(
         decoration: BoxDecoration(gradient: AppTheme.homeGradient),
         child: SafeArea(
@@ -170,7 +169,8 @@ class _UserHomePageState extends State<UserHomePage> {
                       height: categoryHeight,
                       child: ListView(
                         scrollDirection: Axis.horizontal, // ✅ left-right scroll
-                        physics: const BouncingScrollPhysics(), // smooth iOS feel
+                        physics:
+                            const BouncingScrollPhysics(), // smooth iOS feel
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         children: [
                           _buildCategoryItem(
@@ -178,7 +178,11 @@ class _UserHomePageState extends State<UserHomePage> {
                             Icons.menu_book_outlined,
                             Colors.indigo,
                           ),
-                          _buildCategoryItem("Math", Icons.calculate, Colors.blue),
+                          _buildCategoryItem(
+                            "Math",
+                            Icons.calculate,
+                            Colors.blue,
+                          ),
                           _buildCategoryItem(
                             "Chemistry",
                             Icons.biotech,
@@ -210,8 +214,11 @@ class _UserHomePageState extends State<UserHomePage> {
                     builder: (context, constraints) {
                       final screenHeight = MediaQuery.of(context).size.height;
                       final screenWidth = MediaQuery.of(context).size.width;
-                      final isSmallScreen = screenWidth < 360 || screenHeight < 600;
-                      final carouselHeight = isSmallScreen ? 116.0 : 146.0; // Match QuizCard height + small padding
+                      final isSmallScreen =
+                          screenWidth < 360 || screenHeight < 600;
+                      final carouselHeight = isSmallScreen
+                          ? 116.0
+                          : 146.0; // Match QuizCard height + small padding
 
                       return CarouselSlider(
                         options: CarouselOptions(
@@ -254,7 +261,9 @@ class _UserHomePageState extends State<UserHomePage> {
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.35, // Further reduced
+                    maxHeight:
+                        MediaQuery.of(context).size.height *
+                        0.35, // Further reduced
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.backgroundLightGrey,
@@ -267,15 +276,16 @@ class _UserHomePageState extends State<UserHomePage> {
                       ),
                     ],
                   ),
-                  child: ClipRRect( // Add clipping to prevent overflow
+                  child: ClipRRect(
+                    // Add clipping to prevent overflow
                     borderRadius: BorderRadius.circular(24),
                     child: const CategoryPage(isScrollable: false),
                   ),
                 ),
               ),
 
-              // Add bottom padding to account for bottom navigation bar
-              const SliverToBoxAdapter(child: SizedBox(height: 90)), // Increased padding
+              // Add bottom padding
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
             ],
           ),
         ),
@@ -387,11 +397,7 @@ class _UserHomePageState extends State<UserHomePage> {
                     ),
                   ],
                 ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: iconSize,
-                ),
+                child: Icon(icon, color: Colors.white, size: iconSize),
               ),
 
               const SizedBox(height: 4),
