@@ -182,7 +182,9 @@ class _UserHomePageState extends State<UserHomePage> {
                           if (provider.isLoading) {
                             return SizedBox(
                               height: categoryHeight,
-                              child: const Center(child: CircularProgressIndicator()),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
                             );
                           }
                           if (provider.categories.isEmpty) {
@@ -197,7 +199,9 @@ class _UserHomePageState extends State<UserHomePage> {
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               physics: const BouncingScrollPhysics(),
-                              padding: const EdgeInsets.symmetric(horizontal: 15),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                              ),
                               itemCount: provider.categories.length,
                               itemBuilder: (context, index) {
                                 final category = provider.categories[index];
@@ -219,7 +223,7 @@ class _UserHomePageState extends State<UserHomePage> {
               // Action Buttons Grid
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     children: [
                       // Join Quiz (user) / Create New Quiz (admin)
@@ -275,7 +279,8 @@ class _UserHomePageState extends State<UserHomePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const HistoryPage(userId: 'user_001'),
+                                builder: (_) =>
+                                    const HistoryPage(userId: 'user_001'),
                               ),
                             );
                           },
@@ -285,12 +290,11 @@ class _UserHomePageState extends State<UserHomePage> {
                   ),
                 ),
               ),
-              
+
               const SliverToBoxAdapter(child: SizedBox(height: 24)),
               // Bottom Section - Continue Learning (User) / My Quizzes (Admin)
               if (!_isAdmin) _buildContinueLearningSection(),
               if (_isAdmin) _buildAdminQuizSection(),
-              
             ],
           ),
         ),
@@ -361,9 +365,7 @@ class _UserHomePageState extends State<UserHomePage> {
           decoration: InputDecoration(
             hintText: 'Enter quiz code',
             prefixIcon: const Icon(Icons.vpn_key_outlined),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           textCapitalization: TextCapitalization.characters,
         ),
@@ -388,10 +390,7 @@ class _UserHomePageState extends State<UserHomePage> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text(
-              'Join',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: const Text('Join', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -452,7 +451,12 @@ class _UserHomePageState extends State<UserHomePage> {
     );
   }
 
-  Widget _buildCategoryItem(String id, String title, dynamic icon, Color color) {
+  Widget _buildCategoryItem(
+    String id,
+    String title,
+    dynamic icon,
+    Color color,
+  ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = MediaQuery.of(context).size.width;
@@ -489,7 +493,11 @@ class _UserHomePageState extends State<UserHomePage> {
             );
           }
         } else {
-          iconWidget = Icon(Icons.category, color: Colors.white, size: iconSize);
+          iconWidget = Icon(
+            Icons.category,
+            color: Colors.white,
+            size: iconSize,
+          );
         }
 
         return GestureDetector(
@@ -497,10 +505,8 @@ class _UserHomePageState extends State<UserHomePage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => CategoryDetailPage(
-                  categoryTitle: title,
-                  categoryId: id,
-                ),
+                builder: (_) =>
+                    CategoryDetailPage(categoryTitle: title, categoryId: id),
               ),
             );
           },
@@ -555,8 +561,6 @@ class _UserHomePageState extends State<UserHomePage> {
     );
   }
 
-  
-
   Widget _buildContinueLearningSection() {
     return SliverToBoxAdapter(
       child: Padding(
@@ -592,11 +596,19 @@ class _UserHomePageState extends State<UserHomePage> {
               height: 150, // Fixed height for scrolling
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: const Color.fromARGB(255, 243, 243, 243),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
                 ),
+
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -682,7 +694,7 @@ class _UserHomePageState extends State<UserHomePage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  
+
                   Icon(Icons.keyboard_arrow_up, color: Colors.white),
                 ],
               ),
@@ -692,11 +704,18 @@ class _UserHomePageState extends State<UserHomePage> {
               height: 150, // Fixed height for scrolling
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: const Color.fromARGB(255, 243, 243, 243),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -777,10 +796,7 @@ class _UserHomePageState extends State<UserHomePage> {
                     ),
                     Text(
                       subtitle,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
                     ),
                   ],
                 ),
@@ -891,10 +907,7 @@ class _UserHomePageState extends State<UserHomePage> {
                     ),
                     Text(
                       'Created on $date',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
                     ),
                   ],
                 ),
@@ -928,7 +941,7 @@ class _UserHomePageState extends State<UserHomePage> {
           ),
           const SizedBox(height: 12),
           Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildStat('Participants', participants.toString()),
               _buildStat('Avg. Score', avgScore),
@@ -939,7 +952,7 @@ class _UserHomePageState extends State<UserHomePage> {
     );
   }
 
-    Widget _buildStat(String label, String value) {
+  Widget _buildStat(String label, String value) {
     return Column(
       children: [
         Text(
@@ -950,13 +963,7 @@ class _UserHomePageState extends State<UserHomePage> {
             color: Color(0xFF673AB7),
           ),
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
       ],
     );
   }
