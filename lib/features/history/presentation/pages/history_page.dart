@@ -135,25 +135,22 @@ class _HistoryPageState extends State<HistoryPage>
     }
   }
 
-  /// Handle filter button tap
-  void _onFilterTap() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Filter functionality coming soon!'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
   /// Handle history card tap - Navigate based on role
   void _onHistoryCardTap(dynamic item) {
-    if (_isAdmin && item is Quiz) {
+    if (_isAdmin) {
       // Admin: Navigate to Quiz Detail Page (shows questions + participants)
+      final String quizId = item is Quiz
+          ? item.id
+          : (item as QuizHistory).quizId;
+      final String title = item is Quiz
+          ? item.title
+          : (item as QuizHistory).quizTitle;
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) =>
-              AdminQuizDetailPage(quizId: item.id, quizTitle: item.title),
+              AdminQuizDetailPage(quizId: quizId, quizTitle: title),
         ),
       );
     } else if (item is QuizHistory) {
@@ -202,7 +199,6 @@ class _HistoryPageState extends State<HistoryPage>
             children: [
               // Header
               HistoryHeader(
-                onFilterTap: _onFilterTap,
                 title: _isAdmin ? 'Created Quizzes' : 'Quiz History',
               ),
 

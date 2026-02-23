@@ -12,12 +12,34 @@ class CategoryProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   bool _isExpanded = true;
+  String _searchQuery = '';
 
   // Getters
-  List<Category> get categories => List.unmodifiable(_categories);
+  List<Category> get categories {
+    if (_searchQuery.isEmpty) {
+      return List.unmodifiable(_categories);
+    }
+    return List.unmodifiable(
+      _categories.where(
+        (category) =>
+            category.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            category.subtitle.toLowerCase().contains(
+              _searchQuery.toLowerCase(),
+            ),
+      ),
+    );
+  }
+
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isExpanded => _isExpanded;
+  String get searchQuery => _searchQuery;
+
+  /// Set search query and notify listeners
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
 
   /// Load all categories
   Future<void> loadCategories() async {

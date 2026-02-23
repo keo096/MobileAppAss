@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 
 /// Header widget for history page
 class HistoryHeader extends StatelessWidget {
-  final VoidCallback? onFilterTap;
   final String title;
 
-  const HistoryHeader({
-    super.key,
-    this.onFilterTap,
-    this.title = 'Quiz History',
-  });
+  const HistoryHeader({super.key, this.title = 'Quiz History'});
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +20,6 @@ class HistoryHeader extends StatelessWidget {
               fontSize: 30,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
-            ),
-          ),
-          GestureDetector(
-            onTap: onFilterTap,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(Icons.tune, color: Colors.white, size: 26),
             ),
           ),
         ],

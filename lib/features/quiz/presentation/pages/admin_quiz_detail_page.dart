@@ -327,13 +327,113 @@ class _AdminQuizDetailPageState extends State<AdminQuizDetailPage>
           itemCount: _questions.length,
           itemBuilder: (context, index) {
             final question = _questions[index];
-            return Card(
-              margin: const EdgeInsets.only(bottom: 15),
-              child: ListTile(
-                title: Text('Q${index + 1}: ${question.question}'),
-                subtitle: Text(
-                  'Answer: ${question.options[question.correctAnswer]}',
-                ),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryPurple.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${index + 1}',
+                            style: const TextStyle(
+                              color: AppColors.primaryPurple,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            question.question,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textBlack87,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Column(
+                      children: List.generate(question.options.length, (
+                        optIdx,
+                      ) {
+                        final isCorrect = optIdx == question.correctAnswer;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isCorrect
+                                ? Colors.green.withOpacity(0.1)
+                                : Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isCorrect
+                                  ? Colors.green.withOpacity(0.3)
+                                  : Colors.grey.shade200,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isCorrect
+                                    ? Icons.check_circle
+                                    : Icons.circle_outlined,
+                                color: isCorrect ? Colors.green : Colors.grey,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  question.options[optIdx],
+                                  style: TextStyle(
+                                    color: isCorrect
+                                        ? Colors.green.shade700
+                                        : AppColors.textBlack87,
+                                    fontWeight: isCorrect
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                ],
               ),
             );
           },

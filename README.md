@@ -1,8 +1,8 @@
-# Smart Quiz - Learning Platform
+# Smart Quiz - Quizing & Learning Platform
 
 A modern, high-performance Flutter mobile application for interactive learning. This app allows students to take quizzes, track their progress, and compete on leaderboards, while admins can manage quiz content and monitor participation.
 
-## 🚀 Features
+## Features
 
 ### For Students
 - **Interactive Quizzes**: Take quizzes across multiple categories (Math, English, Science, etc.).
@@ -16,24 +16,23 @@ A modern, high-performance Flutter mobile application for interactive learning. 
 - **Access Control**: Mark quizzes as "Shared" (Public) or "Private" (Internal).
 - **Analytics**: View participation count and average scores for each quiz.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 - **Framework**: Flutter (Dart)
 - **State Management**: Provider
 - **Networking**: Dio (with centralized `ApiConfig`)
 - **Architecture**: Clean Architecture (Presentation, Repository, Service layers)
 - **Design**: Modern UI with custom gradients and SF Pro typography.
 
-## 🔑 Demo Credentials
+##  Demo Credentials
 To ensure a stable experience while testing, use the following predefined accounts:
 
-| Role | Username | Password | Access |
-| :--- | :--- | :--- | :--- |
-| **Admin** | `admin` | `admin123` | Full access + Manage options |
-| **User** | `user` | `user123` | Student dashboard & Quiz flows |
+| Role      | Username | Password   | Access                         |
+|-----------|----------|----------  |--------------------------------|
+| **Admin** | `admin`  | `admin123` | Full access + Manage options   |
+| **User**  | `user`   | `user123`  | Student dashboard & Quiz flows |
 
-*Note: You can also use other accounts provided by the remote mock API if available.*
 
-## 📦 Installation & Setup
+##  Installation & Setup
 
 1. **Clone the repository**
    ```bash
@@ -53,11 +52,14 @@ To ensure a stable experience while testing, use the following predefined accoun
    flutter run
    ```
 
-## 🧪 Testing
-Run the following command to execute unit tests:
-```bash
-flutter test test/auth_unit_test.dart
-```
+
 
 ---
 *Created for Mobile App Development Assignment*
+
+##  Note
+- For data we use mock API from Postman that we created.
+- So if when testing or check it have any error, it may be from the API.
+- We will submit with collection of mock API in case have error with it.
+- The place for change is at assets/config.json
+

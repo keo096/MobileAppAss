@@ -10,6 +10,7 @@ import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 import 'package:smart_quiz/features/home/presentation/widgets/quiz_card.dart';
 import 'package:smart_quiz/features/category/presentation/pages/category_page.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_quiz/features/category/presentation/providers/category_provider.dart';
 import 'package:smart_quiz/features/notification/presentation/pages/notification_page.dart';
 import 'package:smart_quiz/features/notification/presentation/providers/notification_provider.dart';
 
@@ -279,7 +280,10 @@ class _UserHomePageState extends State<UserHomePage> {
                   child: ClipRRect(
                     // Add clipping to prevent overflow
                     borderRadius: BorderRadius.circular(24),
-                    child: const CategoryPage(isScrollable: false),
+                    child: ChangeNotifierProvider(
+                      create: (context) => CategoryProvider()..loadCategories(),
+                      child: const CategoryPage(isScrollable: false),
+                    ),
                   ),
                 ),
               ),
