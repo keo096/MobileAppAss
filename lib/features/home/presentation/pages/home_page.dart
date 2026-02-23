@@ -7,6 +7,7 @@ import 'package:smart_quiz/data/api_config.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
 import 'package:smart_quiz/core/utils/formatters.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
+import 'package:smart_quiz/features/category/presentation/providers/category_provider.dart';
 import 'package:smart_quiz/features/history/presentation/pages/history_page.dart';
 import 'package:smart_quiz/features/home/presentation/widgets/quiz_card.dart';
 import 'package:smart_quiz/features/category/presentation/pages/category_page.dart';
@@ -174,46 +175,47 @@ class _UserHomePageState extends State<UserHomePage> {
                     final isSmallScreen = screenHeight < 600;
                     final categoryHeight = isSmallScreen ? 100.0 : 120.0;
 
-                    return SizedBox(
-                      height: categoryHeight,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal, // ✅ left-right scroll
-                        physics:
-                            const BouncingScrollPhysics(), // smooth iOS feel
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        children: [
-                          _buildCategoryItem(
-                            "English Grammar",
-                            Icons.menu_book_outlined,
-                            Colors.indigo,
-                          ),
-                          _buildCategoryItem(
-                            "Mathematics",
-                            Icons.calculate,
-                            Colors.blue,
-                          ),
-                          _buildCategoryItem(
-                            "Chemistry",
-                            Icons.biotech,
-                            Colors.teal,
-                          ),
-                          _buildCategoryItem(
-                            "Khmer History",
-                            Icons.assignment,
-                            Colors.brown,
-                          ),
-                          _buildCategoryItem(
-                            "Science",
-                            Icons.psychology,
-                            Colors.deepPurple,
-                          ),
-                        ],
+                    return ChangeNotifierProvider(
+                      create: (_) => CategoryProvider()..loadCategories(),
+                      child: Consumer<CategoryProvider>(
+                        builder: (context, provider, child) {
+                          if (provider.isLoading) {
+                            return SizedBox(
+                              height: categoryHeight,
+                              child: const Center(child: CircularProgressIndicator()),
+                            );
+                          }
+                          if (provider.categories.isEmpty) {
+                            return SizedBox(
+                              height: categoryHeight,
+                              child: const Center(child: Text('No categories')),
+                            );
+                          }
+
+                          return SizedBox(
+                            height: categoryHeight,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              physics: const BouncingScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(horizontal: 15),
+                              itemCount: provider.categories.length,
+                              itemBuilder: (context, index) {
+                                final category = provider.categories[index];
+                                return _buildCategoryItem(
+                                  category.id,
+                                  category.title,
+                                  category.icon,
+                                  category.color,
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
                 ),
               ),
-             const SizedBox(height: 16),
               // Action Buttons Grid
               SliverToBoxAdapter(
                 child: Padding(
@@ -450,7 +452,7 @@ class _UserHomePageState extends State<UserHomePage> {
     );
   }
 
-  Widget _buildCategoryItem(String title, IconData icon, Color color) {
+  Widget _buildCategoryItem(String id, String title, dynamic icon, Color color) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = MediaQuery.of(context).size.width;
@@ -461,6 +463,35 @@ class _UserHomePageState extends State<UserHomePage> {
         final containerSize = isVerySmallScreen ? 60.0 : 70.0;
         final textHeight = isVerySmallScreen ? 28.0 : 32.0;
 
+        Widget iconWidget;
+        if (icon is IconData) {
+          iconWidget = Icon(icon, color: Colors.white, size: iconSize);
+        } else if (icon is String) {
+          // If it's a URL, show network image; otherwise treat as emoji/text
+          if (icon.startsWith('http') || icon.startsWith('https')) {
+            iconWidget = ClipOval(
+              child: Image.network(
+                icon,
+                width: containerSize - 12,
+                height: containerSize - 12,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Center(
+                  child: Text(icon, style: TextStyle(fontSize: iconSize - 6)),
+                ),
+              ),
+            );
+          } else {
+            iconWidget = Center(
+              child: Text(
+                icon,
+                style: TextStyle(fontSize: iconSize - 6, color: Colors.white),
+              ),
+            );
+          }
+        } else {
+          iconWidget = Icon(Icons.category, color: Colors.white, size: iconSize);
+        }
+
         return GestureDetector(
           onTap: () {
             Navigator.push(
@@ -468,7 +499,7 @@ class _UserHomePageState extends State<UserHomePage> {
               MaterialPageRoute(
                 builder: (_) => CategoryDetailPage(
                   categoryTitle: title,
-                  categoryId: title.toLowerCase(), // Using lowercase title as id
+                  categoryId: id,
                 ),
               ),
             );
@@ -495,7 +526,7 @@ class _UserHomePageState extends State<UserHomePage> {
                       ),
                     ],
                   ),
-                  child: Icon(icon, color: Colors.white, size: iconSize),
+                  child: iconWidget,
                 ),
 
                 const SizedBox(height: 4),
