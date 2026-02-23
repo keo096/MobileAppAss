@@ -27,17 +27,7 @@ class HistoryHeader extends StatelessWidget {
               letterSpacing: 0.5,
             ),
           ),
-          GestureDetector(
-            onTap: onFilterTap,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(Icons.tune, color: Colors.white, size: 26),
-            ),
-          ),
+          
         ],
       ),
     );

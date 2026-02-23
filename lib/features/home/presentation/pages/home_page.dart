@@ -7,10 +7,13 @@ import 'package:smart_quiz/data/api_config.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
 import 'package:smart_quiz/core/utils/formatters.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
+import 'package:smart_quiz/features/history/presentation/pages/history_page.dart';
 import 'package:smart_quiz/features/home/presentation/widgets/quiz_card.dart';
 import 'package:smart_quiz/features/category/presentation/pages/category_page.dart';
 import 'package:smart_quiz/features/quiz/presentation/pages/create_quiz_page.dart';
 import 'package:smart_quiz/features/leaderboard/presentation/pages/leaderboard_page.dart';
+import 'package:smart_quiz/features/result/presentation/pages/result_page.dart';
+import 'package:smart_quiz/features/quiz/presentation/pages/category_detail_page.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_quiz/features/notification/presentation/pages/notification_page.dart';
 import 'package:smart_quiz/features/notification/presentation/providers/notification_provider.dart';
@@ -47,8 +50,8 @@ class _UserHomePageState extends State<UserHomePage> {
   Widget build(BuildContext context) {
     final username = _username ?? "User";
     return Scaffold(
-      extendBody: true,
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(gradient: AppTheme.homeGradient),
         child: SafeArea(
           child: CustomScrollView(
@@ -175,27 +178,32 @@ class _UserHomePageState extends State<UserHomePage> {
                       height: categoryHeight,
                       child: ListView(
                         scrollDirection: Axis.horizontal, // ✅ left-right scroll
-                        physics: const BouncingScrollPhysics(), // smooth iOS feel
+                        physics:
+                            const BouncingScrollPhysics(), // smooth iOS feel
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         children: [
                           _buildCategoryItem(
-                            "English",
+                            "English Grammar",
                             Icons.menu_book_outlined,
                             Colors.indigo,
                           ),
-                          _buildCategoryItem("Math", Icons.calculate, Colors.blue),
+                          _buildCategoryItem(
+                            "Mathematics",
+                            Icons.calculate,
+                            Colors.blue,
+                          ),
                           _buildCategoryItem(
                             "Chemistry",
                             Icons.biotech,
                             Colors.teal,
                           ),
                           _buildCategoryItem(
-                            "History",
+                            "Khmer History",
                             Icons.assignment,
                             Colors.brown,
                           ),
                           _buildCategoryItem(
-                            "General-knowlege",
+                            "Science",
                             Icons.psychology,
                             Colors.deepPurple,
                           ),
@@ -205,11 +213,11 @@ class _UserHomePageState extends State<UserHomePage> {
                   },
                 ),
               ),
-
+             const SizedBox(height: 16),
               // Action Buttons Grid
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, ),
                   child: Row(
                     children: [
                       // Join Quiz (user) / Create New Quiz (admin)
@@ -262,9 +270,10 @@ class _UserHomePageState extends State<UserHomePage> {
                           label: 'Achievements',
                           color: const Color(0xFFFF6D00),
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Achievements coming soon!'),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const HistoryPage(userId: 'user_001'),
                               ),
                             );
                           },
@@ -274,12 +283,12 @@ class _UserHomePageState extends State<UserHomePage> {
                   ),
                 ),
               ),
-
+              
+              const SliverToBoxAdapter(child: SizedBox(height: 24)),
               // Bottom Section - Continue Learning (User) / My Quizzes (Admin)
               if (!_isAdmin) _buildContinueLearningSection(),
               if (_isAdmin) _buildAdminQuizSection(),
               
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           ),
         ),
@@ -452,54 +461,63 @@ class _UserHomePageState extends State<UserHomePage> {
         final containerSize = isVerySmallScreen ? 60.0 : 70.0;
         final textHeight = isVerySmallScreen ? 28.0 : 32.0;
 
-        return Container(
-          margin: const EdgeInsets.only(right: 12),
-          width: itemWidth,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 🔵 Icon Circle
-              Container(
-                width: containerSize,
-                height: containerSize,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.9),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: iconSize,
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CategoryDetailPage(
+                  categoryTitle: title,
+                  categoryId: title.toLowerCase(), // Using lowercase title as id
                 ),
               ),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(right: 12),
+            width: itemWidth,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // 🔵 Icon Circle
+                Container(
+                  width: containerSize,
+                  height: containerSize,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.9),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Icon(icon, color: Colors.white, size: iconSize),
+                ),
 
-              const SizedBox(height: 4),
+                const SizedBox(height: 4),
 
-              // 📝 Title (FIXED HEIGHT → prevents overflow)
-              SizedBox(
-                height: textHeight,
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTheme.caption.copyWith(
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                    fontSize: isVerySmallScreen ? 10 : 12,
-                    height: 1.2, // 🔥 control line spacing
+                // 📝 Title (FIXED HEIGHT → prevents overflow)
+                SizedBox(
+                  height: textHeight,
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTheme.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                      fontSize: isVerySmallScreen ? 10 : 12,
+                      height: 1.2, // 🔥 control line spacing
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -511,7 +529,7 @@ class _UserHomePageState extends State<UserHomePage> {
   Widget _buildContinueLearningSection() {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             Container(
@@ -540,6 +558,7 @@ class _UserHomePageState extends State<UserHomePage> {
             ),
             Container(
               width: double.infinity,
+              height: 150, // Fixed height for scrolling
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.1),
@@ -548,30 +567,55 @@ class _UserHomePageState extends State<UserHomePage> {
                   bottomRight: Radius.circular(20),
                 ),
               ),
-              child: Column(
-                children: [
-                  _buildContinueCard(
-                    title: 'Preposition',
-                    subtitle: 'time, place, movement',
-                    letter: 'P',
-                    color: Colors.green,
-                    progress: 0.75,
-                    time: '12 min',
-                    percent: '75%',
-                    date: '24 Jan, 2026',
-                  ),
-                  const SizedBox(height: 16),
-                  _buildContinueCard(
-                    title: 'Passive Voice',
-                    subtitle: 'present, past',
-                    letter: 'P',
-                    color: Colors.blue,
-                    progress: 0.5,
-                    time: '12 min',
-                    percent: '50%',
-                    date: '24 Jan, 2026',
-                  ),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildContinueCard(
+                      title: 'Preposition',
+                      subtitle: 'time, place, movement',
+                      letter: 'P',
+                      color: Colors.green,
+                      progress: 0.75,
+                      time: '12 min',
+                      percent: '75%',
+                      date: '24 Jan, 2026',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildContinueCard(
+                      title: 'Passive Voice',
+                      subtitle: 'present, past',
+                      letter: 'P',
+                      color: Colors.blue,
+                      progress: 0.5,
+                      time: '12 min',
+                      percent: '50%',
+                      date: '24 Jan, 2026',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildContinueCard(
+                      title: 'Passive Voice',
+                      subtitle: 'present, past',
+                      letter: 'P',
+                      color: Colors.blue,
+                      progress: 0.5,
+                      time: '12 min',
+                      percent: '50%',
+                      date: '24 Jan, 2026',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildContinueCard(
+                      title: 'Passive Voice',
+                      subtitle: 'present, past',
+                      letter: 'P',
+                      color: Colors.blue,
+                      progress: 0.5,
+                      time: '12 min',
+                      percent: '50%',
+                      date: '24 Jan, 2026',
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
             ),
           ],
@@ -583,10 +627,11 @@ class _UserHomePageState extends State<UserHomePage> {
   Widget _buildAdminQuizSection() {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             Container(
+              // color: Color.fromARGB(255, 247, 247, 247),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: const BoxDecoration(
                 color: Color(0xFF673AB7), // Different color for admin
@@ -613,6 +658,7 @@ class _UserHomePageState extends State<UserHomePage> {
             ),
             Container(
               width: double.infinity,
+              height: 150, // Fixed height for scrolling
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.1),
@@ -621,22 +667,24 @@ class _UserHomePageState extends State<UserHomePage> {
                   bottomRight: Radius.circular(20),
                 ),
               ),
-              child: Column(
-                children: [
-                  _buildAdminQuizCard(
-                    title: 'Mathematics Advanced',
-                    participants: 45,
-                    avgScore: '82%',
-                    date: '22 Jan, 2026',
-                  ),
-                  const SizedBox(height: 16),
-                  _buildAdminQuizCard(
-                    title: 'Science Quiz',
-                    participants: 12,
-                    avgScore: '65%',
-                    date: '20 Jan, 2026',
-                  ),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildAdminQuizCard(
+                      title: 'Mathematics Advanced',
+                      participants: 45,
+                      avgScore: '82%',
+                      date: '22 Jan, 2026',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildAdminQuizCard(
+                      title: 'Science Quiz',
+                      participants: 12,
+                      avgScore: '65%',
+                      date: '20 Jan, 2026',
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -707,7 +755,19 @@ class _UserHomePageState extends State<UserHomePage> {
                 ),
               ),
               OutlinedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ResultPage(
+                        quizTitle: title,
+                        totalQuestions: 10,
+                        correctAnswers: 8,
+                        timeTaken: 300,
+                      ),
+                    ),
+                  );
+                },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFFFFC107)),
                   shape: RoundedRectangleBorder(
@@ -809,7 +869,19 @@ class _UserHomePageState extends State<UserHomePage> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ResultPage(
+                        quizTitle: title,
+                        totalQuestions: 10,
+                        correctAnswers: 8,
+                        timeTaken: 300,
+                      ),
+                    ),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF673AB7),
                   shape: RoundedRectangleBorder(

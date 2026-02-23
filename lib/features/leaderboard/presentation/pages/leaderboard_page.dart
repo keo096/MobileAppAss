@@ -188,18 +188,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _sortAscending = !_sortAscending;
-                      });
-                      _fetchLeaderboard();
-                    },
-                    icon: Icon(
-                      _sortAscending ? Icons.tune_rounded : Icons.tune_rounded,
-                      color: Colors.white,
-                    ),
-                  ),
+                 
                 ],
               ),
             ),

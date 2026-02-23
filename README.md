@@ -1,16 +1,63 @@
-# quiz_sphere
+# Smart Quiz - Learning Platform
 
-A new Flutter project.
+A modern, high-performance Flutter mobile application for interactive learning. This app allows students to take quizzes, track their progress, and compete on leaderboards, while admins can manage quiz content and monitor participation.
 
-## Getting Started
+## 🚀 Features
 
-This project is a starting point for a Flutter application.
+### For Students
+- **Interactive Quizzes**: Take quizzes across multiple categories (Math, English, Science, etc.).
+- **Topic Filtering**: Easily find relevant content with smart filtering.
+- **Dynamic Stats**: Track XP, Rank, and time spent on learning.
+- **Leaderboards**: Compare your performance with peers.
+- **Detailed History**: Review your previous scores and correct answers.
 
-A few resources to get you started if this is your first Flutter project:
+### For Administrators
+- **Content Management**: Create and manage quizzes and questions.
+- **Access Control**: Mark quizzes as "Shared" (Public) or "Private" (Internal).
+- **Analytics**: View participation count and average scores for each quiz.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🛠️ Tech Stack
+- **Framework**: Flutter (Dart)
+- **State Management**: Provider
+- **Networking**: Dio (with centralized `ApiConfig`)
+- **Architecture**: Clean Architecture (Presentation, Repository, Service layers)
+- **Design**: Modern UI with custom gradients and SF Pro typography.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🔑 Demo Credentials
+To ensure a stable experience while testing, use the following predefined accounts:
+
+| Role | Username | Password | Access |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin` | `admin123` | Full access + Manage options |
+| **User** | `user` | `user123` | Student dashboard & Quiz flows |
+
+*Note: You can also use other accounts provided by the remote mock API if available.*
+
+## 📦 Installation & Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone [repository-url]
+   ```
+
+2. **Install dependencies**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Check assets**
+   Ensure fonts and images are correctly placed in the `assets/` directory.
+
+4. **Run the app**
+   ```bash
+   flutter run
+   ```
+
+## 🧪 Testing
+Run the following command to execute unit tests:
+```bash
+flutter test test/auth_unit_test.dart
+```
+
+---
+*Created for Mobile App Development Assignment*

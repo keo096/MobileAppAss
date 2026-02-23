@@ -20,46 +20,52 @@ class BottomNavBar extends StatelessWidget {
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
       notchMargin: 10,
-      child: Container(
-        height: 70,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavIcon(
-              context,
-              icon: Icons.home,
-              label: AppStrings.home,
-              index: 0,
-            ),
-            const SizedBox(width: 4),
-            _buildNavIcon(
-              context,
-              icon: Icons.history,
-              label: AppStrings.history,
-              index: 1,
-            ),
-            const SizedBox(width: 4),
-            _buildNavIcon(
-              context,
-              icon: Icons.category_outlined,
-              label: AppStrings.category,
-              index: 2,
-            ),
-            const SizedBox(width: 4),
-            _buildNavIcon(
-              context,
-              icon: Icons.emoji_events,
-              label: AppStrings.leaderboard,
-              index: 3,
-            ),
-            const SizedBox(width: 4),
-            _buildNavIcon(
-              context,
-              icon: Icons.person,
-              label: AppStrings.profile,
-              index: 4,
-            ),
-          ],
+      padding: EdgeInsets.zero,
+      height: 80,
+      elevation: 0,
+      child: Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavIcon(
+                context,
+                icon: Icons.home,
+                label: AppStrings.home,
+                index: 0,
+              ),
+              const SizedBox(width: 4),
+              _buildNavIcon(
+                context,
+                icon: Icons.history,
+                label: AppStrings.history,
+                index: 1,
+              ),
+              const SizedBox(width: 4),
+              _buildNavIcon(
+                context,
+                icon: Icons.category_outlined,
+                label: AppStrings.category,
+                index: 2,
+              ),
+              const SizedBox(width: 4),
+              _buildNavIcon(
+                context,
+                icon: Icons.emoji_events,
+                label: AppStrings.leaderboard,
+                index: 3,
+              ),
+              const SizedBox(width: 4),
+              _buildNavIcon(
+                context,
+                icon: Icons.person,
+                label: AppStrings.profile,
+                index: 4,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -85,7 +91,10 @@ class BottomNavBar extends StatelessWidget {
           ),
           Text(
             label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTheme.caption.copyWith(
+              fontSize: 12,
               color: isSelected
                   ? AppColors.categoryPurple
                   : AppColors.textBlack,
