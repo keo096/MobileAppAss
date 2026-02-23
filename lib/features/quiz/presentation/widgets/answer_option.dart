@@ -23,80 +23,65 @@ class AnswerOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor = AppColors.backgroundWhite;
-    Color borderColor = AppColors.backgroundGrey;
+    Color backgroundColor = AppColors.quizOptionDefaultBg;
+    Color borderColor = Colors.transparent;
     Color textColor = AppColors.textBlack87;
     IconData? icon;
+    Color iconColor = Colors.transparent;
 
     if (isAnswered) {
       if (isSelected) {
-        backgroundColor = isCorrect
-            ? AppColors.success.withOpacity(0.2)
-            : AppColors.error.withOpacity(0.2);
-        borderColor = isCorrect ? AppColors.success : AppColors.error;
-        textColor = isCorrect ? AppColors.success : AppColors.error;
-        icon = isCorrect ? Icons.check_circle : Icons.cancel;
+        if (isCorrect) {
+          backgroundColor = AppColors.quizOptionCorrectBg;
+          borderColor = AppColors.quizOptionCorrect;
+          textColor = AppColors.quizOptionCorrect;
+          icon = Icons.check_circle;
+          iconColor = AppColors.quizOptionCorrect;
+        } else {
+          backgroundColor = AppColors.quizOptionIncorrectBg;
+          borderColor = AppColors.quizOptionIncorrect;
+          textColor = AppColors.quizOptionIncorrect;
+          icon = Icons.cancel;
+          iconColor = AppColors.quizOptionIncorrect;
+        }
       } else if (isCorrect) {
-        backgroundColor = AppColors.success.withOpacity(0.2);
-        borderColor = AppColors.success;
-        textColor = AppColors.success;
+        backgroundColor = AppColors.quizOptionCorrectBg;
+        borderColor = AppColors.quizOptionCorrect;
+        textColor = AppColors.quizOptionCorrect;
         icon = Icons.check_circle;
+        iconColor = AppColors.quizOptionCorrect;
       }
     } else if (isSelected) {
-      backgroundColor = AppColors.primaryPurple.withOpacity(0.1);
-      borderColor = AppColors.primaryPurple;
-      textColor = AppColors.primaryPurple;
+      backgroundColor = AppColors.quizOptionDefaultBg;
+      borderColor = AppColors.quizOptionSelected;
+      textColor = AppColors.quizOptionSelected;
     }
+
+    final String prefix = String.fromCharCode(65 + index);
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(15),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: borderColor, width: 2),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: borderColor, width: 1.5),
         ),
         child: Row(
           children: [
-            // Option Letter/Number
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: isSelected || (isAnswered && isCorrect)
-                    ? borderColor
-                    : AppColors.backgroundGrey,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: icon != null
-                    ? Icon(icon, color: AppColors.textWhite, size: 20)
-                    : Text(
-                        String.fromCharCode(65 + index),
-                        style: AppTheme.bodySmall.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isSelected || (isAnswered && isCorrect)
-                              ? AppColors.textWhite
-                              : AppColors.textBlack87,
-                        ),
-                      ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            // Option Text
             Expanded(
               child: Text(
-                option,
+                '$prefix: $option',
                 style: AppTheme.bodyMedium.copyWith(
-                  fontWeight: isSelected || (isAnswered && isCorrect)
-                      ? FontWeight.bold
-                      : FontWeight.normal,
+                  fontWeight: FontWeight.w600,
                   color: textColor,
                 ),
               ),
             ),
+            if (icon != null) Icon(icon, color: iconColor, size: 24),
           ],
         ),
       ),

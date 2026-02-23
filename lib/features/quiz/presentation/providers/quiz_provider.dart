@@ -28,6 +28,20 @@ class QuizProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   Map<String, int> get userAnswers => Map.unmodifiable(_userAnswers);
 
+  /// Get current score (10 points per correct answer)
+  int get currentScore {
+    if (_quizData == null) return 0;
+    int score = 0;
+    for (int i = 0; i <= _currentQuestionIndex; i++) {
+      final question = _quizData!.questions[i];
+      final answer = _userAnswers[question.id];
+      if (answer != null && answer == question.correctAnswer) {
+        score += 10;
+      }
+    }
+    return score;
+  }
+
   /// Load quiz with questions
   Future<void> loadQuiz(String quizId) async {
     try {
@@ -94,6 +108,7 @@ class QuizProvider extends ChangeNotifier {
 
     try {
       _isLoading = true;
+      _errorMessage = null;
       notifyListeners();
 
       final result = await _repository.submitQuiz(
@@ -106,10 +121,25 @@ class QuizProvider extends ChangeNotifier {
       notifyListeners();
       return result;
     } catch (e) {
-      _errorMessage = e.toString();
+      debugPrint('Quiz submission failed: $e. Falling back to local results.');
       _isLoading = false;
+      // We don't set _errorMessage here to keep the UI "clean" for result transition
       notifyListeners();
-      return null;
+
+      // Calculate local results as fallback
+      int correct = 0;
+      for (var q in _quizData!.questions) {
+        if (_userAnswers[q.id] == q.correctAnswer) {
+          correct++;
+        }
+      }
+
+      return {
+        'totalQuestions': _quizData!.questions.length,
+        'correctAnswers': correct,
+        'timeTaken': _quizData!.quiz.timeLimit - _timeRemaining,
+        'isLocalResult': true,
+      };
     }
   }
 

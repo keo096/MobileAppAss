@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:smart_quiz/core/constants/app_colors.dart';
-import 'package:smart_quiz/core/constants/app_strings.dart';
 import 'package:smart_quiz/core/theme/app_theme.dart';
 import 'package:smart_quiz/features/quiz/presentation/providers/quiz_provider.dart';
 import 'package:smart_quiz/features/quiz/presentation/widgets/answer_option.dart';
+import 'package:smart_quiz/features/result/presentation/pages/result_page.dart';
 
 /// Quiz page displaying questions and answer options
 class QuizPage extends StatefulWidget {
@@ -53,13 +53,6 @@ class _QuizPageState extends State<QuizPage> {
   void _selectAnswer(int index) {
     // Use provider method - it will notify listeners automatically
     _provider.selectAnswer(index);
-
-    // Auto move to next question after 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted && _provider.isAnswered) {
-        _nextQuestion();
-      }
-    });
   }
 
   void _nextQuestion() {
@@ -77,21 +70,23 @@ class _QuizPageState extends State<QuizPage> {
     final result = await _provider.submitQuiz();
 
     if (result != null && mounted) {
-      // TODO: Navigate to result page with result data
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => ResultPage(
-      //       quizTitle: _provider.quizData!.quiz.title,
-      //       totalQuestions: result['totalQuestions'] as int,
-      //       correctAnswers: result['correctAnswers'] as int,
-      //       timeTaken: result['timeTaken'] as int,
-      //     ),
-      //   ),
-      // );
-
-      // For now, just go back
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultPage(
+            quizTitle: _provider.quizData!.quiz.title,
+            totalQuestions:
+                result['totalQuestions'] as int? ??
+                _provider.quizData!.questions.length,
+            correctAnswers:
+                result['correctAnswers'] as int? ??
+                _provider.currentScore ~/ 10,
+            timeTaken:
+                result['timeTaken'] as int? ??
+                (_provider.quizData!.quiz.timeLimit - _provider.timeRemaining),
+          ),
+        ),
+      );
     } else if (mounted && _provider.errorMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -167,159 +162,219 @@ class _QuizPageState extends State<QuizPage> {
     final progress = _provider.progress;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite,
+      backgroundColor: AppColors.quizBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.textBlack),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          widget.quizTitle ?? _provider.quizData!.quiz.title,
-          style: AppTheme.headingSmall,
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.primaryPurple.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.timer,
-                  size: 18,
-                  color: AppColors.primaryPurple,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '${_provider.timeRemaining}',
-                  style: AppTheme.bodySmall.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryPurple,
-                  ),
-                ),
-              ],
-            ),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        title: const Text(
+          'SmartQuiz',
+          style: TextStyle(
+            color: AppColors.textBlack,
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
           ),
-        ],
+        ),
       ),
       body: Column(
         children: [
-          // Progress Bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
+          // Header: Question count and Score
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Question ${_provider.currentQuestionIndex + 1} of ${_provider.quizData!.questions.length}',
-                      style: AppTheme.caption.copyWith(
-                        color: AppColors.textGrey600,
-                      ),
-                    ),
-                    Text(
-                      '${(progress * 100).toInt()}%',
-                      style: AppTheme.caption.copyWith(
-                        color: AppColors.textGrey600,
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Questions ${_provider.currentQuestionIndex + 1} of ${_provider.quizData!.questions.length}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textBlack,
+                  ),
                 ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: AppColors.backgroundGrey,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.primaryPurple,
-                    ),
-                    minHeight: 8,
+                Text(
+                  'Score: ${_provider.currentScore}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textBlack,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          // Progress Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: AppColors.quizProgressBackground,
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppColors.primaryPurple,
+                ),
+                minHeight: 12,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           // Question
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppColors.quizCardBackground,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: AppColors.primaryPurple.withOpacity(0.1),
+                  width: 1,
+                ),
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Question Text
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryPurpleLight.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppColors.primaryPurpleLight.withOpacity(0.3),
+                  // Category Chip
+                  if (widget.category != null ||
+                      _provider.quizData?.quiz.category != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryPurple,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        widget.category ?? _provider.quizData!.quiz.category,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    child: Text(
-                      currentQuestion.question,
-                      style: AppTheme.bodyLarge.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textBlack87,
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 24),
-                  // Answer Options
-                  ...List.generate(
-                    currentQuestion.options.length,
-                    (index) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: AnswerOption(
-                        option: currentQuestion.options[index],
-                        index: index,
-                        isSelected: _provider.selectedAnswerIndex == index,
-                        isCorrect: currentQuestion.correctAnswer == index,
-                        isAnswered: _provider.isAnswered,
-                        onTap: () => _selectAnswer(index),
-                      ),
+                  // Question Text
+                  Text(
+                    currentQuestion.question,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textBlack,
                     ),
                   ),
+                  const SizedBox(height: 32),
+                  // Answer Options
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: currentQuestion.options.length,
+                      itemBuilder: (context, index) {
+                        return AnswerOption(
+                          option: currentQuestion.options[index],
+                          index: index,
+                          isSelected: _provider.selectedAnswerIndex == index,
+                          isCorrect: currentQuestion.correctAnswer == index,
+                          isAnswered: _provider.isAnswered,
+                          onTap: () => _selectAnswer(index),
+                        );
+                      },
+                    ),
+                  ),
+                  // Feedback for incorrect answer
+                  if (_provider.isAnswered &&
+                      _provider.selectedAnswerIndex !=
+                          currentQuestion.correctAnswer)
+                    Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.quizOptionIncorrectBg,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: AppColors.quizOptionIncorrect,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.close,
+                            color: AppColors.quizOptionIncorrect,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Incorrect The correct answer is :\n(${String.fromCharCode(65 + currentQuestion.correctAnswer)}: ${currentQuestion.options[currentQuestion.correctAnswer]})',
+                              style: const TextStyle(
+                                color: AppColors.quizOptionIncorrect,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
           ),
-          // Next Button
-          if (_provider.isAnswered)
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: _nextQuestion,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryPurple,
-                  foregroundColor: AppColors.textWhite,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  minimumSize: const Size(double.infinity, 56),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+          // Bottom Buttons
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFCDCDD7),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: const Text(
+                      'Exit',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
-                child: Text(
-                  _provider.currentQuestionIndex <
-                          _provider.quizData!.questions.length - 1
-                      ? AppStrings.next
-                      : 'Finish Quiz',
-                  style: AppTheme.bodyLarge.copyWith(
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _provider.isAnswered ? _nextQuestion : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryPurple,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      _provider.currentQuestionIndex <
+                              _provider.quizData!.questions.length - 1
+                          ? 'Next'
+                          : 'Finish',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
+          ),
         ],
       ),
     );

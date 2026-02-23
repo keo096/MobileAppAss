@@ -23,8 +23,13 @@ class AppColors {
   static const Color backgroundWhite = Colors.white;
   static const Color backgroundGrey = Color(0xFFE0E0E0);
   static const Color backgroundLightGrey = Color.fromARGB(120, 255, 255, 255);
-  static const Color secondBackground  = Color.fromARGB(255, 239, 233, 248);
-  static const Color primaryPurpleBackground = Color.fromARGB(255, 106, 44, 160);
+  static const Color secondBackground = Color.fromARGB(255, 239, 233, 248);
+  static const Color primaryPurpleBackground = Color.fromARGB(
+    255,
+    106,
+    44,
+    160,
+  );
 
   // Text Colors
   static const Color textWhite = Colors.white;
@@ -41,10 +46,20 @@ class AppColors {
   static const Color warning = Colors.orange;
   static const Color info = Colors.blue;
 
+  // Redesign Colors
+  static const Color quizBackground = Color(0xFFEFEFF7);
+  static const Color quizCardBackground = Colors.white;
+  static const Color quizProgressBackground = Color(0xFFEADDFF);
+  static const Color quizOptionCorrect = Color(0xFF1CB059);
+  static const Color quizOptionIncorrect = Color(0xFFF04438);
+  static const Color quizOptionCorrectBg = Color(0xFFE8F6EE);
+  static const Color quizOptionIncorrectBg = Color(0xFFFEEEEB);
+  static const Color quizOptionSelected = Color(0xFF6A2CA0);
+  static const Color quizOptionDefaultBg = Color(0xFFF3F4F9);
+
   // Category Colors
   static const Color categoryPurple = Colors.deepPurple;
   static const Color categoryBrown = Colors.brown;
   static const Color categoryBlue = Colors.blue;
   static const Color categoryTeal = Colors.teal;
 }
-
