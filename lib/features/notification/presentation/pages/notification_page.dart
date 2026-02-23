@@ -6,6 +6,7 @@ import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 import 'package:smart_quiz/features/notification/presentation/widgets/notification_widget.dart';
 import 'package:smart_quiz/features/notification/presentation/providers/notification_provider.dart';
 import 'package:smart_quiz/data/models/notification_model.dart';
+import 'package:smart_quiz/data/api_config.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -15,13 +16,33 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
+  String? _username;
+  bool _isAdmin = false;
+  bool _isLoggedIn = false;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<NotificationProvider>(context, listen: false)
-          .loadNotification();
-    });
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await ApiConfig.auth.getCurrentUser();
+    final isAdmin = await ApiConfig.auth.isAdmin();
+    if (mounted) {
+      setState(() {
+        _username = user?.username;
+        _isAdmin = isAdmin;
+        _isLoggedIn = user != null;
+      });
+    }
+    // Load notifications only if user is logged in
+    if (_isLoggedIn && user != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<NotificationProvider>(context, listen: false)
+            .loadNotification(userId: user.id);
+      });
+    }
   }
 
   String _getEmojiForType(NotificationType type) {
@@ -147,6 +168,35 @@ class _NotificationPageState extends State<NotificationPage> {
                 ),
                 child: Consumer<NotificationProvider>(
                   builder: (context, provider, child) {
+                    if (!_isLoggedIn) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.login,
+                              size: 64,
+                              color: AppColors.textBlack87,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Please Login to View Notifications',
+                              style: AppTheme.headingSmall,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'You need to be logged in to access your notifications.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.textBlack87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
                     if (provider.isLoading) {
                       return const Center(
                         child: CircularProgressIndicator(

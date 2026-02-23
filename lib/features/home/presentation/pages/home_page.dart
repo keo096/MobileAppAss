@@ -9,6 +9,8 @@ import 'package:smart_quiz/core/utils/formatters.dart';
 import 'package:smart_quiz/core/widgets/bottom_nav_bar.dart';
 import 'package:smart_quiz/features/home/presentation/widgets/quiz_card.dart';
 import 'package:smart_quiz/features/category/presentation/pages/category_page.dart';
+import 'package:smart_quiz/features/quiz/presentation/pages/create_quiz_page.dart';
+import 'package:smart_quiz/features/leaderboard/presentation/pages/leaderboard_page.dart';
 import 'package:provider/provider.dart';
 import 'package:smart_quiz/features/notification/presentation/pages/notification_page.dart';
 import 'package:smart_quiz/features/notification/presentation/providers/notification_provider.dart';
@@ -22,6 +24,7 @@ class UserHomePage extends StatefulWidget {
 
 class _UserHomePageState extends State<UserHomePage> {
   String? _username;
+  bool _isAdmin = false;
 
   @override
   void initState() {
@@ -31,9 +34,11 @@ class _UserHomePageState extends State<UserHomePage> {
 
   Future<void> _loadUser() async {
     final user = await ApiConfig.auth.getCurrentUser();
+    final isAdmin = await ApiConfig.auth.isAdmin();
     if (mounted) {
       setState(() {
         _username = user?.username;
+        _isAdmin = isAdmin;
       });
     }
   }
@@ -98,7 +103,7 @@ class _UserHomePageState extends State<UserHomePage> {
                         ),
                       ),
                       const SizedBox(width: 4),
-                      _buildHeaderIcon(Icons.settings_sharp),
+                      // _buildHeaderIcon(Icons.settings_sharp),
                     ],
                   ),
                 ),
@@ -201,103 +206,186 @@ class _UserHomePageState extends State<UserHomePage> {
                 ),
               ),
 
-              // Daily Quiz Card
-              // 🔥 Daily Quiz Card
+              // Action Buttons Grid
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final screenHeight = MediaQuery.of(context).size.height;
-                      final screenWidth = MediaQuery.of(context).size.width;
-                      final isSmallScreen = screenWidth < 360 || screenHeight < 600;
-                      final carouselHeight = isSmallScreen ? 116.0 : 146.0; // Match QuizCard height + small padding
-
-                      return CarouselSlider(
-                        options: CarouselOptions(
-                          height: carouselHeight,
-                          autoPlay: true,
-                          enlargeCenterPage: true,
-                          viewportFraction: 1.0,
-                          autoPlayInterval: const Duration(seconds: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: [
+                      // Join Quiz (user) / Create New Quiz (admin)
+                      Expanded(
+                        child: _buildActionButton(
+                          height: 140,
+                          icon: _isAdmin ? Icons.add_circle_outline : Icons.add,
+                          label: _isAdmin ? 'Create Quiz' : 'Join Quiz',
+                          color: const Color(0xFF7C4DFF),
+                          onTap: () {
+                            if (_isAdmin) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const CreateQuizPage(
+                                    categoryTitle: 'General',
+                                  ),
+                                ),
+                              );
+                            } else {
+                              _showJoinQuizDialog();
+                            }
+                          },
                         ),
-                        items: [
-                          QuizCard(
-                            title: AppStrings.dailyQuizChallenge,
-                            subtitle: "15 Questions • 7-10mins",
-                            imagePath: AppAssets.dailyQuizImage,
-                            buttonText: AppStrings.startNow,
-                          ),
-                          QuizCard(
-                            title: AppStrings.learningGoals,
-                            subtitle:
-                                "Choose how many quizzes you want to finish each week",
-                            imagePath: AppAssets.goalsImage,
-                            buttonText: AppStrings.setGoal,
-                          ),
-                          QuizCard(
-                            title: AppStrings.completeWithFriends,
-                            subtitle:
-                                "See how your rank compares on the leaderboard",
-                            imagePath: AppAssets.progressImage,
-                            buttonText: AppStrings.viewLeaderboard,
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ),
-
-              // ✅ Categories UNDER Daily Quiz
-              SliverToBoxAdapter(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.35, // Further reduced
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.backgroundLightGrey,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
+                      ),
+                      const SizedBox(width: 12),
+                      // Leaderboard
+                      Expanded(
+                        child: _buildActionButton(
+                          height: 140,
+                          icon: Icons.bar_chart,
+                          label: 'Leaderboard',
+                          color: const Color(0xFF00C853),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const LeaderboardPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Achievements
+                      Expanded(
+                        child: _buildActionButton(
+                          height: 140,
+                          icon: Icons.emoji_events_outlined,
+                          label: 'Achievements',
+                          color: const Color(0xFFFF6D00),
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Achievements coming soon!'),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),
-                  child: ClipRRect( // Add clipping to prevent overflow
-                    borderRadius: BorderRadius.circular(24),
-                    child: const CategoryPage(isScrollable: false),
-                  ),
                 ),
               ),
 
-              // Add bottom padding to account for bottom navigation bar
-              const SliverToBoxAdapter(child: SizedBox(height: 90)), // Increased padding
+              // Bottom Section - Continue Learning (User) / My Quizzes (Admin)
+              if (!_isAdmin) _buildContinueLearningSection(),
+              if (_isAdmin) _buildAdminQuizSection(),
+              
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           ),
         ),
       ),
-      // Floating Action Button
-      // floatingActionButton: Container(
-      //   height: 70,
-      //   width: 70,
-      //   child: FloatingActionButton(
-      //     onPressed: () {},
-      //     backgroundColor: const Color(0xFF6A2CA0),
-      //     // child: const Icon(Icons.add, size: 40, color: Colors.white),
-      //   ),
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-      // Bottom Navigation Bar
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
     );
   }
 
   // --- Helper Widgets ---
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+    double height = 100,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: height,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.4),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 32),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                height: 1.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showJoinQuizDialog() {
+    final codeController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Join a Quiz',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: TextField(
+          controller: codeController,
+          decoration: InputDecoration(
+            hintText: 'Enter quiz code',
+            prefixIcon: const Icon(Icons.vpn_key_outlined),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          textCapitalization: TextCapitalization.characters,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final code = codeController.text.trim();
+              Navigator.pop(ctx);
+              if (code.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Joining quiz with code: $code')),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF7C4DFF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Join',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildHeaderIcon(IconData icon, {bool hasBadge = false}) {
     return Stack(
@@ -346,7 +434,6 @@ class _UserHomePageState extends State<UserHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: AppTheme.categoryTitle),
-
             const Icon(Icons.chevron_right, color: Colors.white70),
           ],
         ),
@@ -416,6 +503,358 @@ class _UserHomePageState extends State<UserHomePage> {
           ),
         );
       },
+    );
+  }
+
+  
+
+  Widget _buildContinueLearningSection() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: const BoxDecoration(
+                color: Color(0xFF673AB7), // Deep purple like in screenshot
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Continue Quiz',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Icon(Icons.keyboard_arrow_up, color: Colors.white),
+                ],
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.1),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              child: Column(
+                children: [
+                  _buildContinueCard(
+                    title: 'Preposition',
+                    subtitle: 'time, place, movement',
+                    letter: 'P',
+                    color: Colors.green,
+                    progress: 0.75,
+                    time: '12 min',
+                    percent: '75%',
+                    date: '24 Jan, 2026',
+                  ),
+                  const SizedBox(height: 16),
+                  _buildContinueCard(
+                    title: 'Passive Voice',
+                    subtitle: 'present, past',
+                    letter: 'P',
+                    color: Colors.blue,
+                    progress: 0.5,
+                    time: '12 min',
+                    percent: '50%',
+                    date: '24 Jan, 2026',
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdminQuizSection() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: const BoxDecoration(
+                color: Color(0xFF673AB7), // Different color for admin
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'My Created Quizzes',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  
+                  Icon(Icons.keyboard_arrow_up, color: Colors.white),
+                ],
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.1),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              child: Column(
+                children: [
+                  _buildAdminQuizCard(
+                    title: 'Mathematics Advanced',
+                    participants: 45,
+                    avgScore: '82%',
+                    date: '22 Jan, 2026',
+                  ),
+                  const SizedBox(height: 16),
+                  _buildAdminQuizCard(
+                    title: 'Science Quiz',
+                    participants: 12,
+                    avgScore: '65%',
+                    date: '20 Jan, 2026',
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContinueCard({
+    required String title,
+    required String subtitle,
+    required String letter,
+    required Color color,
+    required double progress,
+    required String time,
+    required String percent,
+    required String date,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 25,
+                backgroundColor: color,
+                child: Text(
+                  letter,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              OutlinedButton(
+                onPressed: () {},
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFFFFC107)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                child: const Text(
+                  'Resume',
+                  style: TextStyle(color: Color(0xFFFFC107)),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              const Icon(Icons.access_time, size: 14, color: Colors.purple),
+              const SizedBox(width: 4),
+              Text(
+                time,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(width: 12),
+              const Text('|', style: TextStyle(color: Colors.grey)),
+              const SizedBox(width: 12),
+              Text(
+                percent,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(width: 12),
+              const Text('|', style: TextStyle(color: Colors.grey)),
+              const SizedBox(width: 12),
+              Text(
+                date,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          LinearProgressIndicator(
+            value: progress,
+            backgroundColor: Colors.grey[200],
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFFC107)),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdminQuizCard({
+    required String title,
+    required int participants,
+    required String avgScore,
+    required String date,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const CircleAvatar(
+                radius: 25,
+                backgroundColor: Color(0xFF673AB7),
+                child: Icon(Icons.quiz, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Created on $date',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF673AB7),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                child: const Text(
+                  'View Results',
+                  style: TextStyle(color: Colors.white, fontSize: 10),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStat('Participants', participants.toString()),
+              _buildStat('Avg. Score', avgScore),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+    Widget _buildStat(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF673AB7),
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.grey[600],
+          ),
+        ),
+      ],
     );
   }
 }

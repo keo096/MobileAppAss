@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:smart_quiz/data/models/leaderboard_model.dart';
 
 abstract class LeaderboardService {
-  Future<List<LeaderboardEntry>> fetchLeaderboard();
+  Future<List<LeaderboardEntry>> fetchLeaderboard({bool ascending = false});
 }
 
 class RemoteLeaderboardService implements LeaderboardService {
@@ -11,9 +11,11 @@ class RemoteLeaderboardService implements LeaderboardService {
   RemoteLeaderboardService(this._dio);
 
   @override
-  Future<List<LeaderboardEntry>> fetchLeaderboard() async {
+  Future<List<LeaderboardEntry>> fetchLeaderboard({bool ascending = false}) async {
     try {
-      final response = await _dio.get('/leaderboards');
+      final response = await _dio.get('/leaderboards', queryParameters: {
+        'sort': ascending ? 'asc' : 'desc',
+      });
       final dynamic data = _extractData(response.data);
       if (data is List) {
         return data
