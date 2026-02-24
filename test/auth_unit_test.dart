@@ -3,6 +3,7 @@ import 'package:smart_quiz/data/models/user_model.dart';
 import 'package:smart_quiz/data/services/auth_service.dart';
 import 'package:smart_quiz/features/auth/repository/auth_repository.dart';
 
+
 // Manual Mock for AuthService
 class MockAuthService implements AuthService {
   User? mockUser;
