@@ -18,6 +18,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   List<LeaderboardEntry> _leaderboard = [];
   User? _currentUser;
   bool _isLoading = true;
+  bool _isAdmin = false;
+  bool _hasPermission = false;
+  bool _sortAscending = false; // false = descending (top to bottom), true = ascending (bottom to top)
 
   @override
   void initState() {
@@ -28,23 +31,46 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   Future<void> _loadData() async {
     try {
       final results = await Future.wait([
-        ApiConfig.leaderboard.fetchLeaderboard(),
         ApiConfig.auth.getCurrentUser(),
+        ApiConfig.auth.isAdmin(),
       ]);
+
+      final user = results[0] as User?;
+      final isAdmin = results[1] as bool;
 
       if (mounted) {
         setState(() {
-          _leaderboard = results[0] as List<LeaderboardEntry>;
-          _currentUser = results[1] as User?;
-          _isLoading = false;
+          _currentUser = user;
+          _isAdmin = isAdmin;
+          _hasPermission = user != null && (user.role == 'user' || user.role == 'admin');
         });
+      }
+
+      // Only fetch leaderboard if user has permission
+      if (_hasPermission) {
+        await _fetchLeaderboard();
       }
     } catch (e) {
       if (mounted) {
         setState(() {
+          _hasPermission = false;
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _fetchLeaderboard() async {
+    final leaderboard = await ApiConfig.leaderboard.fetchLeaderboard(ascending: _sortAscending);
+    if (mounted) {
+      setState(() {
+        _leaderboard = leaderboard;
+      });
     }
   }
 
@@ -54,6 +80,92 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       return const Scaffold(
         backgroundColor: AppColors.primaryPurple,
         body: Center(child: CircularProgressIndicator(color: Colors.white)),
+      );
+    }
+
+    if (!_hasPermission) {
+      return Scaffold(
+        backgroundColor: AppColors.primaryPurple,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Purple header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Leaderboard',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.arrow_downward, color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+
+              // White rounded content with permission message
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 247, 246, 246),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(28),
+                      topRight: Radius.circular(28),
+                    ),
+                  ),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.lock_outline,
+                            size: 64,
+                            color: AppColors.primaryPurple,
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Access Restricted',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primaryPurple,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Please log in to view the leaderboard.',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: const BottomNavBar(currentIndex: 3),
       );
     }
 
@@ -76,15 +188,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.filter_list, color: Colors.white),
-                  ),
+                 
                 ],
               ),
             ),
@@ -103,60 +207,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 44),
-
-                    // Start New Quiz (large pill with gradient)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        height: 85,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 10,
-                              offset: const Offset(0, 6),
-                            )
-                          ],
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(16),
-                            onTap: () {
-                              // TODO: navigate to start quiz
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(Icons.add, color: Colors.white, size: 22),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    'Start New Quiz',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 18),
-
                     // Section title
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
