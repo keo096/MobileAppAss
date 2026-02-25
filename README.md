@@ -64,6 +64,9 @@ To ensure a stable experience while testing, use the following predefined accoun
 - The place for change is at assets/config.json
 - Device that we testing is IPhone and we run on Web browser because we can run on Android Emulator.
 
+--= This is new mock server that our team created:
+  https://d42fe5dc-7a4c-4436-986d-0cc3d2f0e0fb.mock.pstmn.io
+
 
 ============================= Thank you so much =========================
 
