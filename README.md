@@ -62,4 +62,8 @@ To ensure a stable experience while testing, use the following predefined accoun
 - So if when testing or check it have any error, it may be from the API.
 - We will submit with collection of mock API in case have error with it.
 - The place for change is at assets/config.json
+- Device that we testing is IPhone and we run on Web browser because we can run on Android Emulator.
+
+
+============================= Thank you so much =========================
 
